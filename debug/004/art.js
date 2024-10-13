@@ -29,8 +29,12 @@ export class Node1 extends Array {
     this[0] = String.fromCharCode(0)
     this[1] = null
   }
-  insert(keyByte){
+  insert(keyByte, debug = false){
     /**/
+    if(debug) console.log(
+      "node1-dbg",
+      debug
+    )
     if(!this[1]){ 
       /*console.log(
       "\tn1.ins dbg, kb",keyByte,"!this[1] case",
@@ -77,7 +81,6 @@ export class Node4 extends Array {
           break
         }
       }
-      if(match == -4) return match
       if(successor > -1){
         for(let j = this[2] - 1; j >= successor; j--){
           this[0][j+1] = this[0][j]
@@ -145,7 +148,7 @@ export class Node16 extends Array {
       else hi = MP - 1
     }
     return hi + 1
-  }
+  } 
   #binarySearch(key, LB, UB){
     let lo = LB
     let hi = UB
@@ -162,8 +165,9 @@ export class Node16 extends Array {
       let IP = this.#binarySearchForInsert(
         keyByte, 0, this[2]-1
       )
-      if(IP > 0 && keyByte == this[0][IP-1]
-) return -4
+      if(
+        IP > 0 && keyByte == this[0][IP-1]
+      ) return -6
       for(let j = this[2] - 1; j >= IP; j--){
         this[0][j+1] = this[0][j]
         this[1][j+1] = this[1][j]
@@ -172,7 +176,7 @@ export class Node16 extends Array {
       this[2]++
       return IP
     }
-    return -3
+    return -5
   }
   indexOf(keyByte){
     return this.#binarySearch(keyByte,0,this[2]- 1)
@@ -245,12 +249,12 @@ export class Node48 extends Array {
   insert(keyByte){
     if(this[2]<48){
       const index = this.#alloc(keyByte)
-      if(index < 0) return -6
+      if(index < 0) return -8
       this[0][keyByte] = index
       this[2]++
       return index
     }
-    return -5
+    return -7
   }
   indexOf(keyByte){
     return this[3].isSet(keyByte) ? this[0][keyByte] : -1
@@ -297,7 +301,7 @@ export class Node256 extends Array {
   }
   insert(keyByte){
     const ar = this.#alloc(keyByte)
-    if(ar < 0) return -7
+    if(ar < 0) return -9
     this[2]++
     return ar
   }
@@ -330,35 +334,40 @@ export class ART {
     let pnode = null
     let selfidx = -1
     let cnode = this.root
-    let root = this.root
-    let c185 = root.indexOf(185) >= 0 ?root[1][root.indexOf(185)] : "nullish"
-    let gc185= c185 instanceof Node1 ? c185[1] : (
-       c185 != "nullish" && c185.indexOf(41) > -1 ? c185[1][c185.indexOf(41)] : "nullref"
-    )
-    let ggc0 = gc185 instanceof Node1 ? (
-      c185 != "nullish" && gc185.indexOf(0) >= 0 && gc185[1] ? gc185[1] : "nullish"
-    ) : (
-      c185 != "nullish" && gc185 != "nullref" && gc185.indexOf(0) >= 0 && gc185[1][gc185.indexOf(0)] ? gc185[1][gc185.indexOf(0)] : "nullish"
-    )
-    let ggc253 = gc185 instanceof Node1 ? (
-      gc185.indexOf(253) >= 0 && gc185[1] ? gc185[1] : "nullish"
-    ) : (
-      c185 != "nullish" && gc185 != "nullref" && gc185.indexOf(253) >= 0 && gc185[1][gc185.indexOf(253)] ? gc185[1][gc185.indexOf(253)] : "nullish"
-    )
-    if(key[0] == 185) console.log(
-      "\tpre-ins, \n\t\troot",root.constructor.name,"\n\t\t185th child",c185.constructor.name,"\n\t\t41st (grand)child",gc185.constructor.name,"\n\t\t0th (great grand)child",ggc0.constructor.name,"\n\t\t253rd (great grand)child",ggc253.constructor.name
-    )
+    // let root = this.root
+    // let c185 = root.indexOf(185) >= 0 ?root[1][root.indexOf(185)] : "nullish"
+    // let gc185= c185 instanceof Node1 ? c185[1] : (
+    //    c185 != "nullish" && c185.indexOf(41) > -1 ? c185[1][c185.indexOf(41)] : "nullref"
+    // )
+    // let ggc0 = gc185 instanceof Node1 ? (
+    //   c185 != "nullish" && gc185.indexOf(0) >= 0 && gc185[1] ? gc185[1] : "nullish"
+    // ) : (
+    //   c185 != "nullish" && gc185 != "nullref" && gc185.indexOf(0) >= 0 && gc185[1][gc185.indexOf(0)] ? gc185[1][gc185.indexOf(0)] : "nullish"
+    // )
+    // let ggc253 = gc185 instanceof Node1 ? (
+    //   gc185.indexOf(253) >= 0 && gc185[1] ? gc185[1] : "nullish"
+    // ) : (
+    //   c185 != "nullish" && gc185 != "nullref" && gc185.indexOf(253) >= 0 && gc185[1][gc185.indexOf(253)] ? gc185[1][gc185.indexOf(253)] : "nullish"
+    // )
+    // if(key[0] == 185) console.log(
+    //   "\tpre-ins, \n\t\troot",root.constructor.name,"\n\t\t185th child",c185.constructor.name,"\n\t\t41st (grand)child",gc185.constructor.name,"\n\t\t0th (great grand)child",ggc0.constructor.name,"\n\t\t253rd (great grand)child",ggc253.constructor.name
+    // )
 
     while(depth < key.length){
       const isLast = depth == key.length - 1
       const kb = key[depth]
-      const ip = cnode.insert(kb)
       const cle = key.join("~")
-      if(cle == "185~143~51~136") console.log(
-        "insert dbg, depth",depth,"kb",kb,
-        "ip",ip,"typeof cnode",cnode?cnode.constructor.name:"nullish"
-      )
+      const ip = cnode.insert(kb, cle == "174~41~252~203" ? this.root[1][this.root.indexOf(174)] : false)
+      // if(cle == "185~143~51~136") console.log(
+      //   "insert dbg, depth",depth,"kb",kb,
+      //   "ip",ip,"typeof cnode",cnode?cnode.constructor.name:"nullish"
+      // )
       if(cnode instanceof Node1){
+        if(cle == "174~41~252~203") console.log(
+          "preswitch, typeof Node1, depth", depth,
+          "kb",kb,"ip",ip,"tree-tail",
+          this.root[1][this.root.indexOf(174)]
+        )
         switch(ip){
           case -1: {//full
             const rplc = new Node4()
@@ -393,11 +402,17 @@ export class ART {
             cnode[1] = next
             cnode = next
             depth++
+            if(cle == "174~239~41~145") console.log(
+              "postswitch, typeof Node1",
+              this.root[1][this.root.indexOf(174)],
+              "postswitch, pnode",
+              pnode
+            )
           }
         }
       } else {
         switch(ip){
-          case -1: { // N4 FULL
+          case -3: { // N4 FULL
             const replacement = new Node16()
             for(let ent of cnode){
               const i = replacement.insert(ent[0])
@@ -417,14 +432,14 @@ export class ART {
             depth++
             break
           }
-          case -2:{ // n4 dupe
+          case -4:{ // n4 dupe
             selfidx = cnode.indexOf(kb)
             pnode = cnode
             cnode = cnode[1][selfidx] 
             depth++
             break
           }        
-          case -3: { // N16 FULL
+          case -5: { // N16 FULL
             const replacement = new Node48()
             for(let ent of cnode){
               const i = replacement.insert(ent[0])
@@ -444,14 +459,14 @@ export class ART {
             depth++
             break
           }
-          case -4: { // N16 DUPE
+          case -6: { // N16 DUPE
             selfidx = cnode.indexOf(kb)
             pnode = cnode
             cnode = cnode[1][selfidx] 
             depth++
             break
           }
-          case -5: { // N48 FULL
+          case -7: { // N48 FULL
             const replacement = new Node256()
             for(let ent of cnode){
               const i = replacement.insert(ent[0])
@@ -471,14 +486,14 @@ export class ART {
             depth++
             break
           }
-          case -6: { // N48 DUPE
+          case -8: { // N48 DUPE
             selfidx = cnode.indexOf(kb)
             pnode = cnode
             cnode = cnode[1][selfidx] 
             depth++
             break
           }
-          case -7: { // N256 DUPE
+          case -9: { // N256 DUPE
             selfidx = cnode.indexOf(kb)
             pnode = cnode
             cnode = cnode[1][selfidx] 
@@ -486,24 +501,24 @@ export class ART {
             break
           }
           default: { 
-    root = this.root
-    c185 = root.indexOf(185) >= 0 ?root[1][root.indexOf(185)] : "nullish"
-    gc185= c185 instanceof Node1 ? c185[1] : (
-       c185 != "nullish" && c185.indexOf(41) > -1 ? c185[1][c185.indexOf(41)] : "nullref"
-    )
-    ggc0 = gc185 instanceof Node1 ? (
-      c185 != "nullish" && gc185.indexOf(0) >= 0 && gc185[1] ? gc185[1] : "nullish"
-    ) : (
-      c185 != "nullish" && gc185 != "nullref" && gc185.indexOf(0) >= 0 && gc185[1][gc185.indexOf(0)] ? gc185[1][gc185.indexOf(0)] : "nullish"
-    )
-    ggc253 = gc185 instanceof Node1 ? (
-      gc185.indexOf(253) >= 0 && gc185[1] ? gc185[1] : "nullish"
-    ) : (
-      c185 != "nullish" && gc185 != "nullref" && gc185.indexOf(253) >= 0 && gc185[1][gc185.indexOf(253)] ? gc185[1][gc185.indexOf(253)] : "nullish"
-    )
-    if(key[0] == 185) console.log(
-      "\tswitch-def pre, \n\t\troot",root.constructor.name,"\n\t\t185th child",c185.constructor.name,"\n\t\t41st (grand)child",gc185.constructor.name,"\n\t\t0th (great grand)child",ggc0.constructor.name,"\n\t\t253rd (great grand)child",ggc253.constructor.name
-    )
+    // root = this.root
+    // c185 = root.indexOf(185) >= 0 ?root[1][root.indexOf(185)] : "nullish"
+    // gc185= c185 instanceof Node1 ? c185[1] : (
+    //    c185 != "nullish" && c185.indexOf(41) > -1 ? c185[1][c185.indexOf(41)] : "nullref"
+    // )
+    // ggc0 = gc185 instanceof Node1 ? (
+    //   c185 != "nullish" && gc185.indexOf(0) >= 0 && gc185[1] ? gc185[1] : "nullish"
+    // ) : (
+    //   c185 != "nullish" && gc185 != "nullref" && gc185.indexOf(0) >= 0 && gc185[1][gc185.indexOf(0)] ? gc185[1][gc185.indexOf(0)] : "nullish"
+    // )
+    // ggc253 = gc185 instanceof Node1 ? (
+    //   gc185.indexOf(253) >= 0 && gc185[1] ? gc185[1] : "nullish"
+    // ) : (
+    //   c185 != "nullish" && gc185 != "nullref" && gc185.indexOf(253) >= 0 && gc185[1][gc185.indexOf(253)] ? gc185[1][gc185.indexOf(253)] : "nullish"
+    // )
+    // if(key[0] == 185) console.log(
+    //   "\tswitch-def pre, \n\t\troot",root.constructor.name,"\n\t\t185th child",c185.constructor.name,"\n\t\t41st (grand)child",gc185.constructor.name,"\n\t\t0th (great grand)child",ggc0.constructor.name,"\n\t\t253rd (great grand)child",ggc253.constructor.name
+    // )
             selfidx = ip
             pnode = cnode
             const next = isLast ? new NodeLeaf() : new Node1()
@@ -515,24 +530,24 @@ export class ART {
       }
     }
     if(value) cnode[0] = value 
-    root = this.root
-    c185 = root.indexOf(185) >= 0 ?root[1][root.indexOf(185)] : "nullish"
-    gc185= c185 instanceof Node1 ? c185[1] : (
-       c185 != "nullish" && c185.indexOf(41) > -1 ? c185[1][c185.indexOf(41)] : "nullref"
-    )
-    ggc0 = gc185 instanceof Node1 ? (
-      c185 != "nullish" && gc185.indexOf(0) >= 0 && gc185[1] ? gc185[1] : "nullish"
-    ) : (
-      c185 != "nullish" && gc185 != "nullref" && gc185.indexOf(0) >= 0 && gc185[1][gc185.indexOf(0)] ? gc185[1][gc185.indexOf(0)] : "nullish"
-    )
-    ggc253 = gc185 instanceof Node1 ? (
-      gc185.indexOf(253) >= 0 && gc185[1] ? gc185[1] : "nullish"
-    ) : (
-      c185 != "nullish" && gc185 != "nullref" && gc185.indexOf(253) >= 0 && gc185[1][gc185.indexOf(253)] ? gc185[1][gc185.indexOf(253)] : "nullish"
-    )
-    if(key[0] == 185) console.log(
-      "\tpost-ins, \n\t\troot",root.constructor.name,"\n\t\t185th child",c185.constructor.name,"\n\t\t41st (grand)child",gc185.constructor.name,"\n\t\t0th (great grand)child",ggc0.constructor.name,"\n\t\t253rd (great grand)child",ggc253.constructor.name
-    )
+    // root = this.root
+    // c185 = root.indexOf(185) >= 0 ?root[1][root.indexOf(185)] : "nullish"
+    // gc185= c185 instanceof Node1 ? c185[1] : (
+    //    c185 != "nullish" && c185.indexOf(41) > -1 ? c185[1][c185.indexOf(41)] : "nullref"
+    // )
+    // ggc0 = gc185 instanceof Node1 ? (
+    //   c185 != "nullish" && gc185.indexOf(0) >= 0 && gc185[1] ? gc185[1] : "nullish"
+    // ) : (
+    //   c185 != "nullish" && gc185 != "nullref" && gc185.indexOf(0) >= 0 && gc185[1][gc185.indexOf(0)] ? gc185[1][gc185.indexOf(0)] : "nullish"
+    // )
+    // ggc253 = gc185 instanceof Node1 ? (
+    //   gc185.indexOf(253) >= 0 && gc185[1] ? gc185[1] : "nullish"
+    // ) : (
+    //   c185 != "nullish" && gc185 != "nullref" && gc185.indexOf(253) >= 0 && gc185[1][gc185.indexOf(253)] ? gc185[1][gc185.indexOf(253)] : "nullish"
+    // )
+    // if(key[0] == 185) console.log(
+    //   "\tpost-ins, \n\t\troot",root.constructor.name,"\n\t\t185th child",c185.constructor.name,"\n\t\t41st (grand)child",gc185.constructor.name,"\n\t\t0th (great grand)child",ggc0.constructor.name,"\n\t\t253rd (great grand)child",ggc253.constructor.name
+    // )
   }
   insert2(key, value = null){
     let depth = 0

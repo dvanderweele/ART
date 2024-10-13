@@ -28,7 +28,7 @@ function getRandomInt(min, max) {
   )*/
   const [expect, dump] = expectation();
   expect(true, false, "canary failure")
-  /*
+  
   const n1 = new Node1()
   expect(n1.indexOf(5),-1,"5 not in empty n1")
   n1.insert(5)
@@ -66,21 +66,25 @@ function getRandomInt(min, max) {
     50,110,60,120,
     170,130,180,140
   ]
-  for(let n of ns) expect(
-    n16.indexOf(n) < 0, true,
-    "n not in n16 yet"
-  )
-  for(let n of ns) n16.insert(n)
-  for(let n of ns) expect(
-    n16.indexOf(n) >= 0, true,
-    "n in n16"
-  )
+  for(let n of ns){
+    expect(
+      n16.indexOf(n) < 0, true,
+      "n not in n16 yet"
+    )
+    n16.insert(n)
+    expect(
+      n16.indexOf(n) >= 0, true,
+      "n in n16"
+    )
+  }
   expect(n16.indexOf(190)<0,true,"190 not in n16")
-  for(let n of ns) n16.remove(n)
-  for(let n of ns) expect(
-    n16.indexOf(n) < 0, true,
-    "n no longer in n16"
-  )
+  for(let n of ns){
+    n16.remove(n)
+    expect(
+      n16.indexOf(n) < 0, true,
+      "n no longer in n16"
+    )
+  }
   const n48= new Node48()
   ns = [
     0,2,4,6,8,10,12,14,16,18,
@@ -124,7 +128,7 @@ function getRandomInt(min, max) {
   for(let n of ns) expect(
     n256.indexOf(n) < 0, true,
     "n no longer in n56"
-  ) */
+  ) 
   const a = new ART()
   /*const rset = new Set()
   const records = Array.from(
@@ -142,27 +146,27 @@ function getRandomInt(min, max) {
       } else return false
     }
   )
-  await fs.writeFile( "./debug.nums.json",
+  await fs.writeFile( "./debug2.nums.json",
     JSON.stringify( records ), {
       encoding:"utf8"
     })*/
   //const records = JSON.parse(recordsJSON)
   for(let i = 0; i < records.length;i++){
-    /*if(records[i][0] == 185) */console.log("ins loop", records[i])
+    if(records[i][0] == 174) console.log("ins loop", records[i])
     expect(
       a.search(records[i]),
       0,
       "key not inserted into tree yet results in 0 when sought"
     )
     a.insert(records[i],i)
-    /*if(
+    if(
       !(a.search(records[i]) instanceof NodeLeaf)
     ) console.log("404dbg",records[i],"ret",a.search(records[i],true))
     expect(
       a.search(records[i]) instanceof NodeLeaf,
       true,
       "key inserted into tree is yielded when sought"
-    )*/
+    )
   }
   dump(true)
 })()
