@@ -153,16 +153,14 @@ function getRandomInt(min, max) {
   //const records = JSON.parse(recordsJSON)
   
   for(let i = 0; i < records.length;i++){
-    console.log("ins loop, i", i,"rec",records[i], "root type", a.root.constructor.name)
+    console.log("ins loop pre, i", i,"rec",records[i], "root type", a.root.constructor.name)
     expect(
       a.search(records[i]),
       0,
       "key not inserted into tree yet results in 0 when sought"
     )
     a.insert(records[i],i)
-    if(records[i].join("~") == "94~19~77~77") console.log(
-      "n4 dupe dbg", a
-    )
+    console.log("ins loop post, i", i,"rec",records[i], "root type", a.root.constructor.name)
     const ret = a.search(records[i]) instanceof NodeLeaf
     if(!ret) console.log("404dbg",records[i],"ret",a.search(records[i],true),a.root.constructor.name)
     expect(

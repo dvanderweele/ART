@@ -29,21 +29,16 @@ export class Node1 extends Array {
     this[0] = String.fromCharCode(0)
     this[1] = null
   }
-  insert(keyByte, debug = false){
+  insert(keyByte){
     /**
      * REVIEW
      *
      * to ensure duplicate insertions when node full do not trigger resize response
      */
-    if(debug)console.log("n1dbg this state", !this[1], this)
     if(!this[1]){ 
       this[0] = String.fromCharCode(keyByte)
       return 0
     } else {
-      if(debug && this[0].charCodeAt(0) == keyByte) console.log(
-        "n1dbg case",-2
-      ) 
-      else if(debug && this[0].charCodeAt(0) != keyByte) console.log("n1dbg case",-1)
       if(this[0].charCodeAt(0) == keyByte) return -2
       else return -1
     }
@@ -67,15 +62,12 @@ export class Node4 extends Array {
     this[1] = [null,null,null,null]
     this[2] = 0
   }
-  insert(keyByte,debug = false){
+  insert(keyByte){
     /**
      * Node4 FAIL CODES
      * -3 FULL
      * -4 DUPE
      */
-    if(debug) console.log(
-      "n4.ins dbg",this
-    )
     switch(this[2]){
       case 0: {
         this[0][0] = keyByte
@@ -90,11 +82,9 @@ export class Node4 extends Array {
         return -3
       }
       default: {
-        if(debug) console.log("n4.ins, def case, enter")
         const kbs = this[0]
         const chs = this[1]
         for(let i = this[2] - 1; i > -1; i--){
-          if(debug) console.log("n4.ins, def case, loop i",i)
           if(kbs[i] > keyByte){
             /**
              * BUG
@@ -118,43 +108,6 @@ export class Node4 extends Array {
         }
       }
     }
-  }
-  insert2(keyByte){
-    if(this[2] < 4){
-    /*
-     * - 3  = Node4   FULL
-     * - 4  = Node4   DUPLICATE
-     *
-     * BUG
-     *
-     * - currently, if there are exactly 4 items AND a duplicate is inserted, it will incorrectly trigger growth response
-     */
-
-      let successor = -1
-      let match = -1
-      for(let i = 0; i < this[2]; i++){
-        if(this[0][i] == keyByte) return -4 // 
-        else if(this[0][i] > keyByte){ 
-          successor = i
-          break
-        }
-      }
-      if(successor > -1){
-        for(let j = this[2] - 1; j >= successor; j--){
-          this[0][j+1] = this[0][j]
-          this[1][j+1] = this[1][j]
-        }
-        this[0][successor] = keyByte
-        this[2]++
-        return successor
-      } else {
-        this[0][this[2]] = keyByte
-        const r = this[2]
-        this[2]++
-        return r
-      }
-    }
-    return -3
   }
   indexOf(keyByte){
     for(let i = 0; i < this[2]; i++){
@@ -223,6 +176,9 @@ export class Node16 extends Array {
      * Node16 FAIL CODES
      * -5 FULL
      * -6 DUPE
+     *
+     *  BUG 
+     *  DUPE insert of 43 erroneously causes -5 FULL return
      */
     switch(this[2]){
       case 0: {
@@ -234,8 +190,9 @@ export class Node16 extends Array {
         let IP = this.#binarySearchForInsert(
           keyByte, 0, this[2]-1
         )
+        if(keyByte == 43) console.log("n16.ins dbg, IP",IP, "keyByte",keyByte,"this[0][IP-1]", this[0][IP-1],"this[0][IP]",this[0][IP])
         if(
-          IP > 0 && keyByte == this[0][IP-1]
+          IP > 0 && keyByte == this[0][IP]
         ) return -6
         else return -5
       }
@@ -255,30 +212,6 @@ export class Node16 extends Array {
         return IP
       }
     }
-  }
-  insert2(keyByte){
-    /*
-     * BUG
-     *
-     * - currently, if there are exactly 16 items AND a duplicate is inserted, it will incorrectly trigger growth response
-     */
-
-    if(this[2] < 16){
-      let IP = this.#binarySearchForInsert(
-        keyByte, 0, this[2]-1
-      )
-      if(
-        IP > 0 && keyByte == this[0][IP-1]
-      ) return -6
-      for(let j = this[2] - 1; j >= IP; j--){
-        this[0][j+1] = this[0][j]
-        this[1][j+1] = this[1][j]
-      }
-      this[0][IP] = keyByte
-      this[2]++
-      return IP
-    }
-    return -5
   }
   indexOf(keyByte){
     return this.#binarySearch(keyByte,0,this[2]- 1)
@@ -368,22 +301,6 @@ export class Node48 extends Array {
       }
     }
   }
-  insert2(keyByte, dbg = false){
-    if(dbg) console.log("n48",this[2]<48)
-    /**
-     * BUG
-     *
-     * - currently, if there are exactly 48 items AND a duplicate is inserted, it will incorrectly trigger growth response
-     */
-    if(this[2]<48){
-      const index = this.#alloc(keyByte)
-      if(index < 0) return -8
-      this[0][keyByte] = index
-      this[2]++
-      return index
-    }
-    return -7
-  }
   indexOf(keyByte){
     return this[3].isSet(keyByte) ? this[0][keyByte] : -1
   }
@@ -427,9 +344,8 @@ export class Node256 extends Array {
     }
     return 0
   }
-  insert(keyByte, debug = false){
+  insert(keyByte){
     const ar = this.#alloc(keyByte)
-    if(debug) console.log("n256i",ar)
     if(ar < 0) return -9
     this[2]++
     return ar
@@ -459,40 +375,18 @@ export class ART {
     this.root = new Node1()
   }
   insert(key, value = null){
-    /**
-     *
-     * BUG
-     *  174~239~41~145
-     *  174~41~252~203
-     *
-     *  1 - on inserting 2nd value, n48 to n256 growth case occurs at the root
-     *  - it seems that growth should not happen if 174 is already in root
-     *  2 - also, perhaps as consequence of 1, the child 174 is not grown from n1 to n4 to accomodate 41 in addition to 239
-     */
-    //console.log("root.type",this.root.constructor.name,"root.size",this.root[2])
     let depth = 0
     let pnode = null
     let selfidx = -1
     let cnode = this.root
-    if(key.join("~") == "174~41~252~203") console.log(
-      "root dbg, 174th", this.root[1][this.root.indexOf(174)]
-    )
     while(depth < key.length){
       const isLast = depth == key.length - 1
       const kb = key[depth]
       const cle = key.join("~")
-      const ip = cnode.insert(kb,
-        key.join("~") == "94~19~77~77" && depth == 1 ? true : false
-      )
+      const ip = cnode.insert(kb)
+      if(key.join("~") == "43~33~124~104") console.log("art.ins loop, depth",depth,"kb",kb,"ip",ip,"cle",cle)
       switch(ip){
         case -1: {//full
-          /**
-           *  BUG
-           *  growth where original key is 192 and key being added is 19 results in an invalid Node4, where first two keys appear to both be 192, also there may be a child erroneously assigned to "undefined" property of new Node4's child array
-           */
-          if(key.join("~") =="94~19~77~77") console.log(
-            "n1f-pre, root's 94th", this.root[1][this.root.indexOf(94)],"pnode==root",pnode==this.root,"kb",kb
-          )
           const rplc = new Node4()
           for(let kc of cnode){
             const i = rplc.insert(kc[0])
@@ -504,19 +398,13 @@ export class ART {
             else 
               pnode[1][selfidx] = rplc
           } else this.root = rplc
-          const nip = key.join("~") =="94~19~77~77" ? rplc.insert(kb,true) : rplc.insert(kb)
-          if(key.join("~") =="94~19~77~77") console.log(
-            "n1f, nip val",nip
-          )
+          const nip = rplc.insert(kb)
           const next = isLast ? new NodeLeaf() : new Node1()
           rplc[1][nip] = next
           pnode = rplc
           selfidx = nip
           cnode = next
           depth++
-          if(key.join("~") =="94~19~77~77") console.log(
-            "n1f-post, root's 94th", this.root[1][this.root.indexOf(94)]
-          )
           break
         }
         case -2: {//dupe
@@ -580,11 +468,6 @@ export class ART {
           break
         }
         case -7: { // N48 FULL
-          if(key.join("~") == "174~41~252~203") console.log(
-            "n48 full -7,  depth", depth, "!pnode", !pnode,
-            "pre root's 174th",
-            this.root[1][this.root.indexOf(174)]
-          )
           const replacement = new Node256()
           for(let ent of cnode){
             const i = replacement.insert(ent[0])
@@ -601,10 +484,6 @@ export class ART {
           cnode = next
           selfidx = idx
           pnode = replacement
-          if(key.join("~") == "174~41~252~203") console.log(
-            "n48 full -7,  depth", depth, "post root's 174th",
-            this.root[1][this.root.indexOf(174)]
-          )
           depth++
           break
         }
@@ -624,9 +503,7 @@ export class ART {
         }
         default: { 
           if(cnode instanceof Node1){
-            if(key.join("~") == "174~41~252~203") console.log("idef",kb, key.join("~"),isLast)
             const next = isLast ? new NodeLeaf() : new Node1()
-            
             pnode = cnode
             cnode[1] = next
             cnode = next
@@ -644,136 +521,23 @@ export class ART {
     }
     if(value != null) cnode[0] = value 
   }
-  insert2(key, value = null){
-    let depth = 0
-    let pnode = null
-    let selfidx = -1
-    let cnode = this.root
-    while(depth < key.length){
-      const isLast = depth == key.length - 1
-      const kb = key[depth]
-      const ip = cnode.insert(kb)
-      switch(ip){
-        case -1: { // N4 FULL
-          const replacement = new Node16()
-          for(let ent of cnode){
-            const i = replacement.insert(ent[0])
-            replacement[1][i] = ent[1]
-          }
-          if(!pnode) this.root = replacement
-          else pnode[1][selfidx] = replacement
-          const idx = replacement.insert(kb)
-          const next = isLast ? new NodeLeaf() : new Node4()
-          replacement[1][idx] = next
-          cnode = next
-          selfidx = idx
-          pnode = replacement
-          depth++
-          break
-        }
-        case -2: { // N4 DUPE
-          selfidx = cnode.indexOf(keyByte)
-          pnode = cnode
-          cnode = cnode[1][selfidx] 
-          depth++
-          break
-        }
-        case -3: { // N16 FULL
-          const replacement = new Node48()
-          for(let ent of cnode){
-            const i = replacement.insert(ent[0])
-            replacement[1][i] = ent[1]
-          }
-          if(!pnode) this.root = replacement
-          else pnode[1][selfidx] = replacement
-          const idx = replacement.insert(kb)
-          const next = isLast ? new NodeLeaf() : new Node4()
-          replacement[1][idx] = next
-          cnode = next
-          selfidx = idx
-          pnode = replacement
-          depth++
-          break
-        }
-        case -4: { // N16 DUPE
-          selfidx = cnode.indexOf(keyByte)
-          pnode = cnode
-          cnode = cnode[1][selfidx] 
-          depth++
-          break
-        }
-        case -5: { // N48 FULL
-          const replacement = new Node256()
-          for(let ent of cnode){
-            const i = replacement.insert(ent[0])
-            replacement[1][i] = ent[1]
-          }
-          if(!pnode) this.root = replacement
-          else pnode[1][selfidx] = replacement
-          const idx = replacement.insert(kb)
-          const next = isLast ? new NodeLeaf() : new Node4()
-          replacement[1][idx] = next
-          cnode = next
-          selfidx = idx
-          pnode = replacement
-          depth++
-          break
-        }
-        case -6: { // N48 DUPE
-          selfidx = cnode.indexOf(kb)
-          pnode = cnode
-          cnode = cnode[1][selfidx] 
-          depth++
-          break
-        }
-        case -7: { // N256 DUPE
-          selfidx = cnode.indexOf(kb)
-          pnode = cnode
-          cnode = cnode[1][selfidx] 
-          depth++
-          break
-        }
-        default: {
-          selfidx = ip
-          pnode = cnode
-          const next = isLast ? new NodeLeaf() : new Node4()
-          cnode[1][ip] = next
-          cnode = cnode[1][ip]
-          depth++
-        }
-      }
-    }
-    cnode[0] = value 
-  }
-  search(key, debug = false){
+  search(key){
     /**
      * if not found and key is not prefix of another key in the tree, return 0
      * if not found and key is prefix of another key in the tree, return -1
      * else, return NodeLeaf
      */
-    const dbgk = "94~19~77~77"
     let depth = 0
     let cnode = this.root
-    /*if(key.join("~") == "174~41~252~203") console.log(
-      "search dbg, 174th of root", this.root[1][this.root.indexOf(174)], "41st of root's 174th manual",
-      this.root[1][this.root.indexOf(174)].indexOf(41),
-      this.root[1][this.root.indexOf(174)][ 0 ]
-    )*/
     while(depth < key.length){
-      if(key.join("~") == dbgk) console.log("sdl",depth)
       const idx = cnode.indexOf(key[depth])
-      /*if(key.join("~") == "174~41~252~203") console.log("\tsdbg, depth",depth,"ix",idx,"kb",key[depth])*/
       if(idx > -1){
         cnode = cnode instanceof Node1 ? cnode[1] : cnode[1][idx]
         depth++
       } else {
-        if(key.join("~") == dbgk) console.log(
-          "sr0, depth",depth,"kb",key[depth],"cnode",cnode
-        )
         return 0
       }
     }
-    if(key.join("~") == dbgk) console.log("spl",cnode.constructor.name)
     if(cnode instanceof NodeLeaf) return cnode
     else return -1
   } 

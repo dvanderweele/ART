@@ -67,15 +67,19 @@ function getRandomInt(min, max) {
     170,130,180,140
   ]
   for(let n of ns){
+    //console.log("n16.test loop, pre.idxOf:",n)
     expect(
       n16.indexOf(n) < 0, true,
       "n not in n16 yet"
     )
+    //console.log("n16.test loop, pre.insert:",n)
     n16.insert(n)
+    //console.log("n16.test loop, post.insert:",n)
     expect(
       n16.indexOf(n) >= 0, true,
       "n in n16"
     )
+    //console.log(n16)
   }
   expect(n16.indexOf(190)<0,true,"190 not in n16")
   for(let n of ns){
@@ -85,6 +89,7 @@ function getRandomInt(min, max) {
       "n no longer in n16"
     )
   }
+  
   const n48= new Node48()
   ns = [
     0,2,4,6,8,10,12,14,16,18,
@@ -130,7 +135,8 @@ function getRandomInt(min, max) {
     "n no longer in n56"
   ) 
   const a = new ART()
-  /*const rset = new Set()
+  
+ const rset = new Set()
   const records = Array.from(
     {length:500},
     ()=>Array.from(
@@ -149,20 +155,18 @@ function getRandomInt(min, max) {
   await fs.writeFile( "./debug2.nums.json",
     JSON.stringify( records ), {
       encoding:"utf8"
-    })*/
+    })
   //const records = JSON.parse(recordsJSON)
   
   for(let i = 0; i < records.length;i++){
-    console.log("ins loop, i", i,"rec",records[i], "root type", a.root.constructor.name)
+    console.log("ins loop pre, i", i,"rec",records[i], "root type", a.root.constructor.name)
     expect(
       a.search(records[i]),
       0,
       "key not inserted into tree yet results in 0 when sought"
     )
     a.insert(records[i],i)
-    if(records[i].join("~") == "94~19~77~77") console.log(
-      "n4 dupe dbg", a
-    )
+    console.log("ins loop post, i", i,"rec",records[i], "root type", a.root.constructor.name)
     const ret = a.search(records[i]) instanceof NodeLeaf
     if(!ret) console.log("404dbg",records[i],"ret",a.search(records[i],true),a.root.constructor.name)
     expect(

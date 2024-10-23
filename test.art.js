@@ -133,9 +133,9 @@ function getRandomInt(min, max) {
   const a = new ART()
   const rset = new Set()
   const records = Array.from(
-    {length:500},
+    {length:50000},
     ()=>Array.from(
-      {length:4},
+      {length:10},
       ()=>getRandomInt(0,256)
     )
   ).filter(

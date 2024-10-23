@@ -151,27 +151,22 @@ function getRandomInt(min, max) {
       encoding:"utf8"
     })*/
   //const records = JSON.parse(recordsJSON)
-  
   for(let i = 0; i < records.length;i++){
-    console.log("ins loop, i", i,"rec",records[i], "root type", a.root.constructor.name)
+    if(records[i][0] == 174) console.log("ins loop", records[i])
     expect(
       a.search(records[i]),
       0,
       "key not inserted into tree yet results in 0 when sought"
     )
     a.insert(records[i],i)
-    if(records[i].join("~") == "94~19~77~77") console.log(
-      "n4 dupe dbg", a
-    )
-    const ret = a.search(records[i]) instanceof NodeLeaf
-    if(!ret) console.log("404dbg",records[i],"ret",a.search(records[i],true),a.root.constructor.name)
+    if(
+      !(a.search(records[i]) instanceof NodeLeaf)
+    ) console.log("404dbg",records[i],"ret",a.search(records[i],true),a.root.constructor.name)
     expect(
-      ret,
+      a.search(records[i]) instanceof NodeLeaf,
       true,
       "key inserted into tree is yielded when sought"
     )
   }
-
-  
   dump(true)
 })()
