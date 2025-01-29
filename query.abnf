@@ -1,0 +1,18 @@
+; ART Query ABNF Grammar
+
+query            = *filter ; 0 filters matches everything
+filter           = minDepth maxDepth configByte 0*1reservedByte lowerBoundType lowerBoundLength lowerBound upperBoundType upperBoundLength upperBound
+minDepth         = 8OCTET ; f64 >= 0 
+maxDepth         = 8OCTET ; f64 >= max(0, minDepth)
+configByte       = 5"0" lazyBit expectLeaf hasReservedByte; 
+lazyBit          = BIT; 0 == eager, 1 == lazy
+expectLeaf       = BIT; 0 == can yield internal nodes, 1 can only yield leaves
+hasReservedByte  = BIT; 0 == no reserved byte, 1 == reserved byte, must be 1 unless minDepth == maxDepth
+reservedByte     = OCTET ; if included, keys only yielded when the byte is encountered within horizontal and vertical bounds
+lowerBoundType   = 7"0" ("0" / "1")  ; an OCTET, 0 for inclusive, 1 for exclusive
+lowerBoundLength = 8OCTET ; f64 >= 0
+lowerBound       = *OCTET 
+upperBoundType   = 7"0" ("0" / "1")  ; an OCTET, 0 for inclusive, 1 for exclusive
+upperBoundLength = 8OCTET ; f64 >= 0
+upperBound       = *OCTET ; 
+

@@ -14,8 +14,17 @@ export async function buildBinCompF64(
     const d = new DataView(
       new ArrayBuffer(9)
     )
-    d.setUint8(0,rankf64(n))
+    const r = rankf64(n)
+    d.setUint8(0,r)
     d.setFloat64(1,n)
+    if(r < 5){ 
+      d.setUint32(1, ~(
+        d.getUint32(1)
+      )>>>0) 
+      d.setUint32(5, ~(
+        d.getUint32(5)
+      )>>>0)
+    }
     return d
   }
 }

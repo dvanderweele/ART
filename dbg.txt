@@ -1,0 +1,504 @@
+constraint-dbg lbk Uint8Array(9) [
+    2,  63,  95, 151,
+  255, 255, 255, 255,
+  255
+] ubk Uint8Array(9) [
+    2,  63,  96, 191,
+  255, 255, 255, 255,
+  255
+]
+node-dbg descent? true ntype Node4 newLevel.size 0
+n4+ exhausted
+LA true RA true LI true RI true byte 2
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA true LI true RI true byte 63
+node-dbg descent? true ntype Node4 newLevel.size 0
+n4+ exhausted
+LA true RA true LI true RI true byte 95
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA false LI true RI true byte 160
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 230
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 102
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 102
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 102
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 101
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype  newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype  newLevel.size 1
+1
+constraint-dbg lbk Uint8Array(9) [
+  7, 64, 130, 192, 0,
+  0,  0,   0,   0
+] ubk Uint8Array(9) [
+  7, 64, 137, 0, 0,
+  0,  0,   0, 0
+]
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA true LI true RI true byte 7
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA true LI true RI true byte 64
+node-dbg descent? true ntype Node4 newLevel.size 0
+n4+ exhausted
+LA true RA true LI true RI true byte 132
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 165
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 153
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 153
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 153
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 153
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 154
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype  newLevel.size 1
+undepleted n4+ caught on ascent LA false RA false LI true RI true byte 134
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 72
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 204
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 204
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 204
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 204
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 205
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype  newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+2
+constraint-dbg lbk Uint8Array(9) [
+    4, 127, 255, 255,
+  255, 255, 255, 255,
+  255
+] ubk Uint8Array(9) [
+  7, 64, 98, 192, 0,
+  0,  0,  0,   0
+]
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA true LI true RI true byte 7
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA true LI true RI true byte 64
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA true LI true RI true byte 86
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 128
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA true RA true LI true RI true byte 7
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA true LI true RI true byte 64
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA true LI true RI true byte 96
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 224
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 0
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+2
+constraint-dbg lbk Uint8Array(9) [
+  9, 127, 248, 0, 0,
+  0,   0,   0, 0
+] ubk Uint8Array(9) [
+  9, 127, 248, 0, 0,
+  0,   0,   0, 0
+]
+
+CASE 2
+
+constraint-dbg lbk Uint8Array(9) [
+    2,  63,  95, 160,
+  230, 102, 102, 102,
+  101
+] ubk Uint8Array(9) [
+    2,  63,  96, 191,
+  255, 255, 255, 255,
+  255
+]
+node-dbg descent? true ntype Node4 newLevel.size 0
+n4+ exhausted
+LA true RA true LI true RI true byte 2
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA true LI true RI true byte 63
+node-dbg descent? true ntype Node4 newLevel.size 0
+n4+ exhausted
+LA true RA true LI true RI true byte 95
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA false LI true RI true byte 160
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA false LI true RI true byte 230
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA false LI true RI true byte 102
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA false LI true RI true byte 102
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA false LI true RI true byte 102
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA false LI true RI true byte 101
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype  newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype  newLevel.size 1
+1
+constraint-dbg lbk Uint8Array(9) [
+  7, 64, 130, 192, 0,
+  0,  0,   0,   0
+] ubk Uint8Array(9) [
+    7,  64, 134,  72,
+  204, 204, 204, 204,
+  205
+]
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA true LI true RI true byte 7
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA true LI true RI true byte 64
+node-dbg descent? true ntype Node4 newLevel.size 0
+n4+ exhausted
+LA true RA true LI true RI true byte 132
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 165
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 153
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 153
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 153
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 153
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 154
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype  newLevel.size 1
+undepleted n4+ caught on ascent LA false RA false LI true RI true byte 134
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 72
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 204
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 204
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 204
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 204
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 205
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype  newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+2
+constraint-dbg lbk Uint8Array(9) [
+    4, 127, 255, 255,
+  255, 255, 255, 255,
+  255
+] ubk Uint8Array(9) [
+  7, 64, 98, 192, 0,
+  0,  0,  0,   0
+]
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA true LI true RI true byte 7
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA true LI true RI true byte 64
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA true LI true RI true byte 86
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 128
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA true RA true LI true RI true byte 7
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA true LI true RI true byte 64
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA true LI true RI true byte 96
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 224
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 0
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+2
+constraint-dbg lbk Uint8Array(9) [
+  9, 127, 248, 0, 0,
+  0,   0,   0, 0
+] ubk Uint8Array(9) [
+  9, 127, 248, 0, 0,
+  0,   0,   0, 0
+]
+
+Case 3
+
+constraint-dbg lbk Uint8Array(9) [
+    2,  63,  95, 160,
+  230, 102, 102, 102,
+  101
+] ubk Uint8Array(9) [
+    2,  63, 112, 191,
+  255, 255, 255, 255,
+  255
+]
+node-dbg descent? true ntype Node4 newLevel.size 0
+n4+ exhausted
+LA true RA true LI true RI true byte 2
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA true LI true RI true byte 63
+node-dbg descent? true ntype Node4 newLevel.size 0
+n4+ exhausted
+LA true RA true LI true RI true byte 95
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA false LI true RI true byte 160
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA false LI true RI true byte 230
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA false LI true RI true byte 102
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA false LI true RI true byte 102
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA false LI true RI true byte 102
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA false LI true RI true byte 101
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype  newLevel.size 1
+undepleted n4+ caught on ascent LA true RA false LI true RI true byte 104
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA true RA false LI true RI true byte 148
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype  newLevel.size 1
+1
+constraint-dbg lbk Uint8Array(9) [
+    2,  64,  15, 255,
+  255, 255, 255, 255,
+  255
+] ubk Uint8Array(9) [
+    7,  64, 134,  72,
+  204, 204, 204, 204,
+  205
+]
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA true LI true RI true byte 7
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA true LI true RI true byte 64
+node-dbg descent? true ntype Node4 newLevel.size 0
+n4+ exhausted
+LA false RA true LI true RI true byte 124
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 36
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype  newLevel.size 1
+undepleted n4+ caught on ascent LA false RA false LI true RI true byte 132
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 165
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 153
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 153
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 153
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 153
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 154
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype  newLevel.size 2
+undepleted n4+ caught on ascent LA false RA false LI true RI true byte 134
+node-dbg descent? true ntype Node1 newLevel.size 2
+LA false RA false LI true RI true byte 72
+node-dbg descent? true ntype Node1 newLevel.size 2
+LA false RA false LI true RI true byte 204
+node-dbg descent? true ntype Node1 newLevel.size 2
+LA false RA false LI true RI true byte 204
+node-dbg descent? true ntype Node1 newLevel.size 2
+LA false RA false LI true RI true byte 204
+node-dbg descent? true ntype Node1 newLevel.size 2
+LA false RA false LI true RI true byte 204
+node-dbg descent? true ntype Node1 newLevel.size 2
+LA false RA false LI true RI true byte 205
+node-dbg descent? false ntype Node1 newLevel.size 3
+node-dbg descent? false ntype Node1 newLevel.size 3
+node-dbg descent? false ntype Node1 newLevel.size 3
+node-dbg descent? false ntype Node1 newLevel.size 3
+node-dbg descent? false ntype  newLevel.size 3
+node-dbg descent? false ntype Node1 newLevel.size 3
+node-dbg descent? false ntype Node1 newLevel.size 3
+3
+constraint-dbg lbk Uint8Array(9) [
+    2,  63, 209, 255,
+  255, 255, 255, 255,
+  255
+] ubk Uint8Array(9) [
+  7, 64, 98, 192, 0,
+  0,  0,  0,   0
+]
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA true LI true RI true byte 2
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA false LI true RI true byte 63
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA false LI true RI true byte 185
+node-dbg descent? false ntype Node1 newLevel.size 0
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA true RA true LI true RI true byte 7
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA true LI true RI true byte 64
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA true LI true RI true byte 86
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 128
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 0
+LA false RA false LI true RI true byte 0
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? false ntype Node1 newLevel.size 1
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA true RA true LI true RI true byte 7
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA true LI true RI true byte 64
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA true LI true RI true byte 96
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 224
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 0
+node-dbg descent? true ntype Node1 newLevel.size 1
+LA false RA false LI true RI true byte 0
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+node-dbg descent? false ntype Node1 newLevel.size 2
+2
+constraint-dbg lbk Uint8Array(9) [
+  9, 127, 248, 0, 0,
+  0,   0,   0, 0
+] ubk Uint8Array(9) [
+  9, 127, 248, 0, 0,
+  0,   0,   0, 0
+]
+15|25 15|25|55|65 3x fixed compound key fwd traversal #3
+failures: 1, successes: 0, label: canary failure
