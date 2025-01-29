@@ -1013,7 +1013,8 @@ export class ART {
             0b11111  // descent, LA, RA, LI, RI
           ]
           for(let constraint of constraints){
-            console.log("constraint-dbg lbk", constraint.lowerBoundKey, "ubk", constraint.upperBoundKey)
+            if(constraint.componentType != LEAF_COMPONENT) console.log("constraint-dbg lbk", constraint.lowerBoundKey, "ubk", constraint.upperBoundKey)
+            else console.log("LEAF COMPONENT")
             const newLevel = []
             if(constraint.componentType == LEAF_COMPONENT){
               for(let n of level) yield n
@@ -1027,8 +1028,8 @@ export class ART {
               for(let i = 0; i < level.length; i++){
                 let current = level[i]
                 let state = startState   
-                let lastLeftAlignedDepth = -1
-                let lastRightAlignedDepth = -1
+                let lastLeftAlignedDepth = 0
+                let lastRightAlignedDepth = 0
                 let stack = []
                 switch(constraint.componentType){
                   case FIXED_LENGTH_KEY: { 
@@ -1039,7 +1040,13 @@ export class ART {
                         "ntype", 
                         current.constructor.name,
                         "newLevel.size",
-                        newLevel.length
+                        newLevel.length,
+                        "stack.size",
+                        stack.length,
+                        "lastLeftAlignedDepth",
+                        lastLeftAlignedDepth,
+                        "lastRightAlignedDepth",
+                        lastRightAlignedDepth
                       )
                       //console.log(state.toString(2), DESCENT.toString(2))
                       if((state & DESCENT) == DESCENT){ 
@@ -1124,7 +1131,6 @@ export class ART {
                               stack.pop()
                               current = stack[stack.length-1]
                             } else {
-                              console.log("n4+ exhausted")
                               // populate value from iterator after checking !done
                               const { done, value } = iterator.next()
                               if(done){
@@ -1188,8 +1194,8 @@ export class ART {
                               current = v[1]
                               const boundIndex = stack.length 
                               const depth = boundIndex-1
-                              const LA = depth <= lastLeftAlignedDepth
-                              const RA = depth <= lastRightAlignedDepth
+                              const LA = depth < lastLeftAlignedDepth
+                              const RA = depth < lastRightAlignedDepth
                               const LI = constraint.lowerInclusivity == LOWER_BOUND_INCLUSIVE
                               const RI = constraint.upperInclusivity == UPPER_BOUND_INCLUSIVE
                               console.log("undepleted n4+ caught on ascent LA", LA,"RA",RA,"LI",LI,"RI",RI,"byte",v[0])

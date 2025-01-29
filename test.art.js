@@ -1028,6 +1028,7 @@ function getRandomInt(min, max) {
   ]))
   const fockArt = new ART()
   for(let pair of fixOnlyCompKeys){
+    console.log("FOCKART.INS:", pair[0], pair[1])
     fockArt.insert(pair[0], pair[1])
   }
   //console.log("start rangeQ")
