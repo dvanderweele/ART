@@ -36,6 +36,7 @@ export const FORWARD = 0,
 
 export class ByteStack {
   [Symbol.iterator] = function*(){
+    // forward iterator
     for(let i = 0; i < this.size; i++) yield this.dv.getUint8(i)
   }
   constructor(initialCapacity = 8){
@@ -97,6 +98,11 @@ export class ByteStack {
       j, dv.getUint8(j)
     )
     return r
+  }
+  peek(){
+    const s = this.size
+    if(s > 0) return this.dv.getUint8(s-1)
+    return -1
   }
 }
 
@@ -967,13 +973,411 @@ export class ART {
     }
     this.size--
     return result
+  } 
+  fullFwdRangeV(start = this.root){
+    return {
+      [Symbol.iterator]: function*(){
+        let root = start
+        if(!root) return
+        const stack = ["$"]
+        do {
+          switch(root.constructor.name){
+            case "Node1": {
+              do
+                root = root[1]
+              while(
+                root.constructor.name == "Node1"
+              )
+              continue
+            }
+            case "NodeLeaf": {
+              yield root
+              while(stack.length > 0){
+                root = stack[stack.length - 1]
+                if(root == "$")return
+                const {done, value} = root.next()
+                if(done)stack.pop()
+                else {
+                  root = value[1]
+                  break
+                }
+              }
+              continue
+            }
+            default: {
+              root[Symbol.iterator] = root.constructor["ITER_FWD_GE_TO_LE"]
+              root.ITER_LB = 0
+              root.ITER_UB = 255
+              const i = root[Symbol.iterator]()
+              stack.push(i)
+              const {value} = i.next()
+              root = value[1]
+              continue
+            }
+          }
+        } while(true)
+      }
+    }
+  } 
+  fullRevRangeV(start = this.root){ 
+    return {
+      [Symbol.iterator]: function*(){
+        let root = start
+        if(!root) return
+        const stack = ["$"]
+        do {
+          switch(root.constructor.name){
+            case "Node1": {
+              do
+                root = root[1]
+              while(
+                root.constructor.name == "Node1"
+              )
+              continue
+            }
+            case "NodeLeaf": {
+              yield root
+              while(stack.length > 0){
+                root = stack[stack.length - 1]
+                if(root == "$")return
+                const {done, value} = root.next()
+                if(done)stack.pop()
+                else {
+                  root = value[1]
+                  break
+                }
+              }
+              continue
+            }
+            default: {
+              root[Symbol.iterator] = root.constructor["ITER_REV_LE_TO_GE"]
+              root.ITER_LB = 0
+              root.ITER_UB = 255
+              const i = root[Symbol.iterator]()
+              stack.push(i)
+              const {value} = i.next()
+              root = value[1]
+              continue
+            }
+          }
+        } while(true)
+      }
+    }
+  } 
+  fullFwdRangeKV(start = this.root, prefix = new ByteStack()){ 
+    return {
+      [Symbol.iterator]: function*(){
+        let root = start
+        const limit = prefix.size 
+        if(!root) return
+        const kStack = new ByteStack(8+limit)
+        if(limit > 0){
+          for(let b of prefix) kStack.push(b)
+        }
+        const nStack = []
+        do {
+          switch(root.constructor.name){
+            case "Node1": {
+              do {
+                kStack.push(root[0].charCodeAt(0))
+                nStack.push(root)
+                root = root[1]
+              } while(
+                root.constructor.name == "Node1"
+              )
+              continue
+            }
+            case "NodeLeaf": {
+              yield [kStack.pull(), root]
+              let lla = true
+              kStack.pop()
+              root = nStack[nStack.length - 1]
+              while(
+                kStack.size >= limit
+                && kStack.size > 0
+                && lla
+              ){
+                if(root instanceof Node1){
+                  kStack.pop()
+                  nStack.pop()
+                  root = nStack[nStack.length - 1]
+
+                } else {
+                  const {done, value} = root.next()
+                  if(done){
+                    kStack.pop()
+                    nStack.pop()
+                    root = nStack[nStack.length - 1]
+
+                  } else {
+                    kStack.push(value[0])
+                    root = value[1]
+                    lla = false
+                  }
+                }
+              }
+              continue
+            }
+            default: {
+              root[Symbol.iterator] = root.constructor["ITER_FWD_GE_TO_LE"]
+              root.ITER_LB = 0
+              root.ITER_UB = 255
+              const i = root[Symbol.iterator]()
+              nStack.push(i)
+              const {value} = i.next()
+              kStack.push(value[0])
+              root = value[1]
+              continue
+            }
+          }
+        } while(kStack.size > limit)
+      }
+    }
+  } 
+  fullRevRangeKV(start = this.root, prefix = new ByteStack()){ 
+    return {
+      [Symbol.iterator]: function*(){
+        let root = start
+        const limit = prefix.size 
+        if(!root) return
+        const kStack = new ByteStack(8+limit)
+        if(limit > 0){
+          for(let b of prefix) kStack.push(b)
+        }
+        const nStack = []
+        do {
+          switch(root.constructor.name){
+            case "Node1": {
+              do {
+                kStack.push(root[0].charCodeAt(0))
+                nStack.push(root)
+                root = root[1]
+              } while(
+                root.constructor.name == "Node1"
+              )
+              continue
+            }
+            case "NodeLeaf": {
+              yield [kStack.pull(), root]
+              let lla = true
+              kStack.pop()
+              root = nStack[nStack.length - 1]
+              while(
+                kStack.size >= limit
+                && kStack.size > 0
+                && lla
+              ){
+                if(root instanceof Node1){
+                  kStack.pop()
+                  nStack.pop()
+                  root = nStack[nStack.length - 1]
+
+                } else {
+                  const {done, value} = root.next()
+                  if(done){
+                    kStack.pop()
+                    nStack.pop()
+                    root = nStack[nStack.length - 1]
+
+                  } else {
+                    kStack.push(value[0])
+                    root = value[1]
+                    lla = false
+                  }
+                }
+              }
+              continue
+            }
+            default: {
+              root[Symbol.iterator] = root.constructor["ITER_REV_LE_TO_GE"]
+              root.ITER_LB = 0
+              root.ITER_UB = 255
+              const i = root[Symbol.iterator]()
+              nStack.push(i)
+              const {value} = i.next()
+              kStack.push(value[0])
+              root = value[1]
+              continue
+            }
+          }
+        } while(kStack.size > limit)
+      }
+    }
+  }
+  hasPrefix(prefix){
+    let root = this.root
+    if(!root) return
+    for(
+      let i = 0; 
+      i < prefix.length; 
+      i++
+    ){
+      const kb = prefix[i]
+      switch(root.constructor.name){
+        case "Node1": {
+          if(root[0].charCodeAt(0) != kb) return false
+          root = root[1]
+          continue
+        }
+        case "NodeLeaf": return false
+        default: {
+          const idx = root.indexOf(kb)
+          if(idx == -1) return false
+          root = root[1][idx]
+          continue
+        }
+      }
+    }
+    return true
+  }
+  allWithPrefixFwdV(prefix){ 
+    const art = this
+    return {
+      [Symbol.iterator]: function*(){
+        let root = art.root
+        if(!root) return
+        for(
+          let i = 0; 
+          i < prefix.length; 
+          i++
+        ){
+          const kb = prefix[i]
+          switch(root.constructor.name){
+            case "Node1": {
+              if(root[0].charCodeAt(0) != kb) return
+              root = root[1]
+              continue
+            }
+            case "NodeLeaf": return
+            default: {
+              const idx = root.indexOf(kb)
+              if(idx == -1) return
+              root = root[1][idx]
+              continue
+            }
+          }
+        }
+        yield * (
+          art.fullFwdRangeV(root)
+        )[Symbol.iterator]()
+      }
+    }
+  }
+  allWithPrefixRevV(prefix){ 
+    const art = this
+    return {
+      [Symbol.iterator]: function*(){
+        let root = art.root
+        if(!root) return
+        for(
+          let i = 0; 
+          i < prefix.length; 
+          i++
+        ){
+          const kb = prefix[i]
+          switch(root.constructor.name){
+            case "Node1": {
+              if(root[0].charCodeAt(0) != kb) return
+              root = root[1]
+              continue
+            }
+            case "NodeLeaf": return
+            default: {
+              const idx = root.indexOf(kb)
+              if(idx == -1) return
+              root = root[1][idx]
+              continue
+            }
+          }
+        }
+        yield * (
+          art.fullRevRangeV(root)
+        )[Symbol.iterator]()
+      }
+    }
+  }
+  allWithPrefixFwdKV(prefix){
+    const art = this
+    return {
+      [Symbol.iterator]: function*(){
+        let root = art.root
+        if(!root) return
+        const pl = prefix.length
+        const b = new ByteStack(pl)
+        for(
+          let i = 0; 
+          i < prefix.length; 
+          i++
+        ){
+          const kb = prefix[i]
+          switch(root.constructor.name){
+            case "Node1": {
+              const k = root[0].charCodeAt(0)
+              if(k != kb) return
+              root = root[1]
+              b.push(k)
+              continue
+            }
+            case "NodeLeaf": return
+            default: {
+              const idx = root.indexOf(kb)
+              if(idx == -1) return
+              b.push(kb)
+              root = root[1][idx]
+              continue
+            }
+          }
+        }
+        yield * (
+          art.fullFwdRangeKV(root, b)
+        )[Symbol.iterator]()
+      }
+    }
+  }
+  allWithPrefixRevKV(prefix){
+    const art = this
+    return {
+      [Symbol.iterator]: function*(){
+        let root = art.root
+        if(!root) return
+        const pl = prefix.length
+        const b = new ByteStack(pl)
+        for(
+          let i = 0; 
+          i < prefix.length; 
+          i++
+        ){
+          const kb = prefix[i]
+          switch(root.constructor.name){
+            case "Node1": {
+              const k = root[0].charCodeAt(0)
+              if(k != kb) return
+              root = root[1]
+              b.push(k)
+              continue
+            }
+            case "NodeLeaf": return
+            default: {
+              const idx = root.indexOf(kb)
+              if(idx == -1) return
+              b.push(kb)
+              root = root[1][idx]
+              continue
+            }
+          }
+        }
+        yield * (
+          art.fullRevRangeKV(root, b)
+        )[Symbol.iterator]()
+      }
+    }
   }
   query(constraints = []){
     const art = this
     return {
       [Symbol.iterator]: function*(){
         if(constraints.length < 1){
-          
+           
         } else {
           let level = [art.root]
           //const keyStack = new ByteStack()

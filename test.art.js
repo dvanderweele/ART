@@ -972,7 +972,7 @@ function getRandomInt(min, max) {
       a.push(dv.getUint8(i))
     }
     return a
-  }
+  }  
   const frseqs = [
     [[13,23,33,43],53],
     [[13,23,34,44,54],64],
@@ -1031,6 +1031,13 @@ function getRandomInt(min, max) {
     console.log("FOCKART.INS:", pair[0], pair[1])
     fockArt.insert(pair[0], pair[1])
   }
+  console.log("debug")
+  console.log(fockArt.root)
+  console.log("=============")
+  console.log(fockArt.root[1][0][0].charCodeAt(0))
+  console.log("=============")
+  console.log(fockArt.root[1][0])
+  console.log("debug")
   //console.log("start rangeQ")
   expect(
     [...(fockArt.query([
@@ -1159,7 +1166,93 @@ function getRandomInt(min, max) {
     )))].join("|"),
     "15|25|55|65", 
     "3x fixed compound key fwd traversal #3"
+  ) 
+  const FRseqs = [
+    [[11,21,31,41,51],5],
+    [[11,21,32,42,52],15],
+    [[11,21,33,43,53],25],
+    [[11,21,34,44,54],35],
+    [[11,22,35,45,55],45],
+    [[11,22,36,46,56],55],
+    [[11,22,37,47,57],65]
+  ];
+  const fullRangeART = new ART();
+  for(let pair of FRseqs) fullRangeART.insert(...pair); 
+  let pcix = 0
+  for(let pair of FRseqs){
+    const p = pair[0]
+    for(let i = p.length-1; i>-1; i--){
+      const prfx = p.slice(0,i)
+      expect(
+        fullRangeART.hasPrefix(prfx),
+        true,
+        `hasPrefix ${pcix}-${i}`
+      )
+    }
+    pcix++
+  }
+  expect(
+    [...(fullRangeART.fullFwdRangeV())].join("|"),
+    "5|15|25|35|45|55|65",
+    "full forward range iteration"
+  ) 
+  expect(
+    [...(fullRangeART.fullRevRangeV())].join("|"),
+    "65|55|45|35|25|15|5",
+    "full reverse range iteration"
+  ) 
+  expect(
+    [
+      ...(
+        fullRangeART.allWithPrefixFwdV(
+          [11, 21]
+        )
+      )
+    ].join("|"),
+    "5|15|25|35",
+    "forward range with prefix"
+  ) 
+  expect(
+    [
+      ...(
+        fullRangeART.allWithPrefixRevV(
+          [11, 21]
+        )
+      )
+    ].join("|"),
+    "35|25|15|5",
+    "reverse range with prefix"
+  ) 
+  expect(
+    [...(fullRangeART.fullFwdRangeKV())].map(
+      p => [dv2arr(p[0]).join(","),p[1]].join("],")
+    ).join("|"),
+    "11,21,31,41,51],5|11,21,32,42,52],15|11,21,33,43,53],25|11,21,34,44,54],35|11,22,35,45,55],45|11,22,36,46,56],55|11,22,37,47,57],65",
+    "full forward kv range iteration"
+  ) 
+  expect(
+    [...(fullRangeART.allWithPrefixFwdKV([11,22]))].map(
+      p => [dv2arr(p[0]).join(","),p[1]].join("~")
+    ).join("|"),
+    "11,22,35,45,55~45|11,22,36,46,56~55|11,22,37,47,57~65",
+    "allprefix fwd kv"
   )
+  expect(
+    [...(fullRangeART.fullRevRangeKV())].map(
+      p => [dv2arr(p[0]).join(","),p[1]].join("],")
+    ).join("|"),
+    "11,21,31,41,51],5|11,21,32,42,52],15|11,21,33,43,53],25|11,21,34,44,54],35|11,22,35,45,55],45|11,22,36,46,56],55|11,22,37,47,57],65".split("|").reverse().join("|"),
+    "full reverse kv range iteration"
+  ) 
+  expect(
+    [...(fullRangeART.allWithPrefixRevKV([11,22]))].map(
+      p => [dv2arr(p[0]).join(","),p[1]].join("~")
+    ).join("|"),
+    "11,22,35,45,55~45|11,22,36,46,56~55|11,22,37,47,57~65".split("|").reverse().join("|"),
+    "allprefix rev kv"
+  )
+
+
 
   dump(true);
 })()
