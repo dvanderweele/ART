@@ -106,6 +106,10 @@ export class ByteStack {
   }
 }
 
+class OneWayPathCounter {
+  count = 0
+}
+
 export class Node1 extends Array {
   constructor(){
     super()
@@ -1372,10 +1376,121 @@ export class ART {
       }
     }
   }
+  queryNew(constraints = []){
+    const art = this 
+    return {
+      [Symbol.iterator]: function*(){
+        if(constraints.length < 1){
+          yield * (
+            art.fullFwdRangeV(root)
+          )[Symbol.iterator]()
+        } else {
+          let level = [art.root] 
+          const iters = [
+            "ITER_FWD_GT_TO_LT", // EXC + EXC + FWD = 0 + 0 + 0
+            "ITER_FWD_GE_TO_LT", // LBI + EXC + FWD = 1 + 0 + 0
+            "ITER_FWD_GT_TO_LE", // EXC + UBI + FWD = 0 + 2 + 0
+            "ITER_FWD_GE_TO_LE", // LBI + UBI + FWD = 1 + 2 + 0
+            "ITER_REV_LT_TO_GT", // EXC + EXC + REV = 0 + 0 + 4
+            "ITER_REV_LT_TO_GE", // LBI + EXC + REV = 1 + 0 + 4
+            "ITER_REV_LE_TO_GT", // EXC + UBI + REV = 0 + 2 + 4
+            "ITER_REV_LE_TO_GE"  // LBI + UBI + REV = 1 + 2 + 4
+          ]
+          const DESCENT         = 0b10000
+          const LEFT_ALIGNED    = 0b01000
+          const RIGHT_ALIGNED   = 0b00100
+          const LEFT_INCLUSIVE  = 0b00010
+          const RIGHT_INCLUSIVE = 0b00001
+          // bootstrap state vals
+          const initialStates = [
+            0b11100, // descent, LA, RA 
+            0b11110, // descent, LA, RA  LI
+            0b11101, // descent, LA, RA, RI
+            0b11111  // descent, LA, RA, LI, RI
+          ] 
+          for(
+            let constraint of constraints
+          ){
+            const newLevel = []
+            if(
+              constraint.componentType == LEAF_COMPONENT
+            ){
+              for(let n of level) yield n
+            } else {
+              const startState = initialStates[
+                constraint.lowerInclusivity +
+                constraint.upperInclusivity
+              ]
+              const newLevel = []
+              for(
+                let i = 0; 
+                i < level.length; 
+                i++
+              ){
+                let current = level[i]
+                let state = startState   
+                let lastLeftAlignedDepth = 0
+                let lastRightAlignedDepth = 0
+                let stack = ["$"]
+                switch(
+                  constraint.componentType
+                ){
+                  case FIXED_LENGTH_KEY: {
+                    let depth = 0
+                    if(
+                      current instanceof Node1
+                    ) stack.push(
+                      new OneWayPathCounter()
+                    )
+                    do {
+                      switch(
+                        current.constructor.name
+                      ){
+                        case "Node1": {
+                          const boundIndex = stack.length 
+                          const LA = (state & LEFT_ALIGNED) == LEFT_ALIGNED
+                          const RA = (state & RIGHT_ALIGNED) == RIGHT_ALIGNED
+                          const LI = constraint.lowerInclusivity == LOWER_BOUND_INCLUSIVE
+                          const RI = constraint.upperInclusivity == UPPER_BOUND_INCLUSIVE
+                          const lbb = LA ? constraint.lowerBoundKey[boundIndex] : 0
+                          const ubb = RA ? constraint.upperBoundKey[boundIndex] : 255
+                          const tb = current[0].charCodeAt(0)
+
+                          if(
+                            depth < constraint.length
+                          ){
+                            stack[stack.length-1].count++
+                            depth++
+                          } else {
+                            ;
+                          }
+                        }
+                        default: {
+                          ;
+                        }
+                      }
+                    } while(true)
+                    continue
+                  } 
+                  case VARIABLE_LENGTH_KEY: {
+                    continue
+                  }
+                  default: {
+                    continue
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
   query(constraints = []){
     const art = this
     return {
       [Symbol.iterator]: function*(){
+        if(!art.root) return
         if(constraints.length < 1){
            
         } else {
@@ -1390,7 +1505,7 @@ export class ART {
       FIXED_LENGTH_KEY = 5,
       VARIABLE_LENGTH_KEY = 6,
       LEAF_COMPONENT = 7
-           */
+           */ 
           const iters = [
             "ITER_FWD_GT_TO_LT", // EXC + EXC + FWD = 0 + 0 + 0
             "ITER_FWD_GE_TO_LT", // LBI + EXC + FWD = 1 + 0 + 0
@@ -1415,7 +1530,7 @@ export class ART {
             0b11110, // descent, LA, RA  LI
             0b11101, // descent, LA, RA, RI
             0b11111  // descent, LA, RA, LI, RI
-          ]
+          ] 
           for(let constraint of constraints){
             if(constraint.componentType != LEAF_COMPONENT) console.log("constraint-dbg lbk", constraint.lowerBoundKey, "ubk", constraint.upperBoundKey)
             else console.log("LEAF COMPONENT")
@@ -1568,18 +1683,18 @@ export class ART {
                       } else { // ASCENT 
                         switch(current.constructor.name){
                           case "Node1": {
-                            const depth = stack.length - 1
-                            if(depth == lastLeftAlignedDepth) lastLeftAlignedDepth--
-                            if(depth == lastRightAlignedDepth) lastRightAlignedDepth--
+                            const depth = stack.length
+                            if(depth <= lastLeftAlignedDepth) lastLeftAlignedDepth = depth - 1
+                            if(depth <= lastRightAlignedDepth) lastRightAlignedDepth = depth - 1
                             stack.pop()
                             current = stack[stack.length-1]
                             continue
                           }
                           case "NodeLeaf":{
                             // ungrammatical leaf, do not yield, instead ascend
-                            const depth = stack.length - 1
-                            if(depth == lastLeftAlignedDepth) lastLeftAlignedDepth--
-                            if(depth == lastRightAlignedDepth) lastRightAlignedDepth--
+                            const depth = stack.length
+                            if(depth <= lastLeftAlignedDepth) lastLeftAlignedDepth = depth - 1
+                            if(depth <= lastRightAlignedDepth) lastRightAlignedDepth = depth - 1
                             stack.pop()
                             current = stack[stack.length -1]
                             continue
@@ -1588,16 +1703,16 @@ export class ART {
                             //console.log(1141,current.constructor.name)
                             const result = current.next()
                             if(result.done){
-                              const depth = stack.length - 1
-                              if(depth == lastLeftAlignedDepth) lastLeftAlignedDepth--
-                              if(depth == lastRightAlignedDepth) lastRightAlignedDepth--
+                              const depth = stack.length 
+                              if(depth <= lastLeftAlignedDepth) lastLeftAlignedDepth = depth - 1
+                              if(depth <= lastRightAlignedDepth) lastRightAlignedDepth = depth - 1
                               stack.pop()
                               current = stack[stack.length -1]
                             } else {
                               const v = result.value
                               current = v[1]
                               const boundIndex = stack.length 
-                              const depth = boundIndex-1
+                              const depth = boundIndex
                               const LA = depth < lastLeftAlignedDepth
                               const RA = depth < lastRightAlignedDepth
                               const LI = constraint.lowerInclusivity == LOWER_BOUND_INCLUSIVE
