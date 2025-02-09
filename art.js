@@ -106,10 +106,6 @@ export class ByteStack {
   }
 }
 
-class OneWayPathCounter {
-  count = 0
-}
-
 export class Node1 extends Array {
   constructor(){
     super()
@@ -1376,116 +1372,6 @@ export class ART {
       }
     }
   }
-  queryNew(constraints = []){
-    const art = this 
-    return {
-      [Symbol.iterator]: function*(){
-        if(constraints.length < 1){
-          yield * (
-            art.fullFwdRangeV(root)
-          )[Symbol.iterator]()
-        } else {
-          let level = [art.root] 
-          const iters = [
-            "ITER_FWD_GT_TO_LT", // EXC + EXC + FWD = 0 + 0 + 0
-            "ITER_FWD_GE_TO_LT", // LBI + EXC + FWD = 1 + 0 + 0
-            "ITER_FWD_GT_TO_LE", // EXC + UBI + FWD = 0 + 2 + 0
-            "ITER_FWD_GE_TO_LE", // LBI + UBI + FWD = 1 + 2 + 0
-            "ITER_REV_LT_TO_GT", // EXC + EXC + REV = 0 + 0 + 4
-            "ITER_REV_LT_TO_GE", // LBI + EXC + REV = 1 + 0 + 4
-            "ITER_REV_LE_TO_GT", // EXC + UBI + REV = 0 + 2 + 4
-            "ITER_REV_LE_TO_GE"  // LBI + UBI + REV = 1 + 2 + 4
-          ]
-          const DESCENT         = 0b10000
-          const LEFT_ALIGNED    = 0b01000
-          const RIGHT_ALIGNED   = 0b00100
-          const LEFT_INCLUSIVE  = 0b00010
-          const RIGHT_INCLUSIVE = 0b00001
-          // bootstrap state vals
-          const initialStates = [
-            0b11100, // descent, LA, RA 
-            0b11110, // descent, LA, RA  LI
-            0b11101, // descent, LA, RA, RI
-            0b11111  // descent, LA, RA, LI, RI
-          ] 
-          for(
-            let constraint of constraints
-          ){
-            const newLevel = []
-            if(
-              constraint.componentType == LEAF_COMPONENT
-            ){
-              for(let n of level) yield n
-            } else {
-              const startState = initialStates[
-                constraint.lowerInclusivity +
-                constraint.upperInclusivity
-              ]
-              const newLevel = []
-              for(
-                let i = 0; 
-                i < level.length; 
-                i++
-              ){
-                let current = level[i]
-                let state = startState   
-                let lastLeftAlignedDepth = 0
-                let lastRightAlignedDepth = 0
-                let stack = ["$"]
-                switch(
-                  constraint.componentType
-                ){
-                  case FIXED_LENGTH_KEY: {
-                    let depth = 0
-                    if(
-                      current instanceof Node1
-                    ) stack.push(
-                      new OneWayPathCounter()
-                    )
-                    do {
-                      switch(
-                        current.constructor.name
-                      ){
-                        case "Node1": {
-                          const boundIndex = stack.length 
-                          const LA = (state & LEFT_ALIGNED) == LEFT_ALIGNED
-                          const RA = (state & RIGHT_ALIGNED) == RIGHT_ALIGNED
-                          const LI = constraint.lowerInclusivity == LOWER_BOUND_INCLUSIVE
-                          const RI = constraint.upperInclusivity == UPPER_BOUND_INCLUSIVE
-                          const lbb = LA ? constraint.lowerBoundKey[boundIndex] : 0
-                          const ubb = RA ? constraint.upperBoundKey[boundIndex] : 255
-                          const tb = current[0].charCodeAt(0)
-
-                          if(
-                            depth < constraint.length
-                          ){
-                            stack[stack.length-1].count++
-                            depth++
-                          } else {
-                            ;
-                          }
-                        }
-                        default: {
-                          ;
-                        }
-                      }
-                    } while(true)
-                    continue
-                  } 
-                  case VARIABLE_LENGTH_KEY: {
-                    continue
-                  }
-                  default: {
-                    continue
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
   query(constraints = []){
     const art = this
     return {
@@ -1565,10 +1451,27 @@ export class ART {
                         "lastLeftAlignedDepth",
                         lastLeftAlignedDepth,
                         "lastRightAlignedDepth",
-                        lastRightAlignedDepth
+                        lastRightAlignedDepth,
+                        "LA",
+                        (state & LEFT_ALIGNED) == LEFT_ALIGNED,
+                        "RA",
+                        (state & RIGHT_ALIGNED) == RIGHT_ALIGNED
                       )
                       //console.log(state.toString(2), DESCENT.toString(2))
                       if((state & DESCENT) == DESCENT){ 
+                        /**
+                         * DESCENT is mandated to manage the ALIGNMENT STATE values thusly:
+                         * 
+                         *  WHEN ALIGNMENT STATE VALUES INDICATE WE ARE ALIGNED:
+                         *    IF A CHILD PATH IS CHOSEN FULLY WITHIN ALIGNMENT BOUND (NOT ON IT):
+                         *      THEN UNSET ALIGNMENT STATE
+                         *      AND DO NOT ALTER LAST ALIGNED DEPTH VALUE
+                         *    ELSE IF A CHILD PATH IS CHOSEN DIRECTLY ON/ALONG THE ALIGNMENT BOUND:
+                         *      THEN SET LAST ALIGNED DEPTH VALUE AS CURRENT DEPTH BEFORE DESCENDING
+                         * 
+                         *  WHEN ALIGNMENT STATE VALUES INDICATE WE ARE NOT ALIGNED:
+                         *    THEN DO NOTHING
+                         */
                         //console.log(current.constructor.name)
                         switch(current.constructor.name){
                           case "Node1": {
@@ -1599,6 +1502,9 @@ export class ART {
                                 state &= (~(DESCENT)>>>0)
                                 stack.pop()
                                 current = stack[stack.length-1]
+                                const depth = stack.length
+                                if(depth <= lastLeftAlignedDepth) lastLeftAlignedDepth--
+                                if(depth <= lastRightAlignedDepth) lastRightAlignedDepth--
                               } else{
                                 if(
                                   LA && 
@@ -1681,6 +1587,28 @@ export class ART {
                           }
                         }
                       } else { // ASCENT 
+                        /**
+                         * ASCENT is mandated to manage the ALIGNMENT STATE values thusly:
+                         * 
+                         *  WHEN ALIGNMENT STATE VALUES INDICATE WE ARE ALIGNED:
+                         *    IF CHOOSING A CHILD PATH:
+                         *      IF CHOSEN CHILD PATH IS FULLY WITHIN ALIGNMENT BOUND (NOT ON IT):
+                         *        THEN DECREMENT THE LAST ALIGNED DEPTH VALUE BY ONE
+                         *        AND UNSET THE ALIGNMENT STATE
+                         *      ELSE IF CHOSEN CHILD PATH IS DIRECTLY ON ALIGNMENT BOUND:
+                         *        THEN INCREMENT THE LAST ALIGNED DEPTH VALUE
+                         *    ELSE IF CONTINUING ASCENT:
+                         *      THEN DECREMENT LAST ALIGNED DEPTH VALUE
+                         * 
+                         *  WHEN ALIGNMENT STATE VALUES INDICATE WE ARE NOT ALIGNED:
+                         *    IF DEPTH MATCHES LAST ALIGNED DEPTH:
+                         *      IF CHOSEN CHILD PATH IS DIRECTLY ON ALIGNMENT BOUND:
+                         *        THEN SET STATE AS ALIGNED 
+                         *      ELSE IF CHOSEN CHILD PATH IS FULLY WITHIN ALIGNMENT BOUND (NOT ON IT):
+                         *        THEN DECREMENT THE LAST ALIGNED DEPTH VALUE BY ONE
+                         *    ELSE IF DEPTH IS GREATER THAN LAST ALIGNED DEPTH:
+                         *      THEN DO NOT MODIFY ALIGNMENT STATE
+                         */
                         switch(current.constructor.name){
                           case "Node1": {
                             const depth = stack.length
@@ -1713,8 +1641,8 @@ export class ART {
                               current = v[1]
                               const boundIndex = stack.length 
                               const depth = boundIndex
-                              const LA = depth < lastLeftAlignedDepth
-                              const RA = depth < lastRightAlignedDepth
+                              const LA = (state & LEFT_ALIGNED) == LEFT_ALIGNED
+                              const RA = (state & RIGHT_ALIGNED) == RIGHT_ALIGNED
                               const LI = constraint.lowerInclusivity == LOWER_BOUND_INCLUSIVE
                               const RI = constraint.upperInclusivity == UPPER_BOUND_INCLUSIVE
                               console.log("undepleted n4+ caught on ascent LA", LA,"RA",RA,"LI",LI,"RI",RI,"byte",v[0])
