@@ -1031,6 +1031,7 @@ function getRandomInt(min, max) {
     console.log("FOCKART.INS:", pair[0], pair[1])
     fockArt.insert(pair[0], pair[1])
   }
+  /*
   console.log("debug")
   console.log(fockArt.root)
   console.log("=============")
@@ -1038,7 +1039,9 @@ function getRandomInt(min, max) {
   console.log("=============")
   console.log(fockArt.root[1][0])
   console.log("debug")
+  */
   //console.log("start rangeQ")
+  console.log("\nCASE 1\n")
   expect(
     [...(fockArt.query([
       { 
@@ -1125,7 +1128,7 @@ function getRandomInt(min, max) {
     "3x fixed compound key fwd traversal #2"
   ) 
   console.log("\nCase 3\n")
-  console.log(
+  expect(
     [...(fockArt.query([
       { 
         componentType: FIXED_LENGTH_KEY,
@@ -1164,9 +1167,52 @@ function getRandomInt(min, max) {
         upperBoundKey: new Uint8Array(binCompF64(query.upperBoundKey).buffer)
       })
     )))].join("|"),
-    "15|25|55|65", 
+    "15|25|55|65|75", 
     "3x fixed compound key fwd traversal #3"
   ) 
+  console.log("\nCase 4\n")
+  expect(
+    [...(fockArt.query([
+      { 
+        componentType: FIXED_LENGTH_KEY,
+        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+        upperInclusivity: UPPER_BOUND_INCLUSIVE,
+        order: FORWARD,
+        length: 9,
+        lowerBoundKey: -2095.55,
+        upperBoundKey: -1000
+      },
+      { 
+        componentType: FIXED_LENGTH_KEY,
+        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+        upperInclusivity: UPPER_BOUND_INCLUSIVE,
+        order: REVERSE,
+        length: 9,
+        lowerBoundKey: -1,
+        upperBoundKey: 713.1
+      },
+      { 
+        componentType: FIXED_LENGTH_KEY,
+        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+        upperInclusivity: UPPER_BOUND_INCLUSIVE,
+        order: FORWARD,
+        length: 9,
+        lowerBoundKey: -15,
+        upperBoundKey: 150
+      },
+      {
+        componentType: LEAF_COMPONENT
+      }
+    ].map(
+      query => ({
+        ...query,
+        lowerBoundKey: new Uint8Array(binCompF64(query.lowerBoundKey).buffer),
+        upperBoundKey: new Uint8Array(binCompF64(query.upperBoundKey).buffer)
+      })
+    )))].join("|"),
+    "75|55|65|25|15",
+    "3x fixed compound key fwd-rev-fwd traversal #4"
+  )
   const FRseqs = [
     [[11,21,31,41,51],5],
     [[11,21,32,42,52],15],

@@ -30,5 +30,14 @@ export async function buildBinCompF64(
 }
 
 export function unBinCompF64(n){
+  const r = n.getUint8(0)
+  if(r < 5){
+    n.setUint32(1, ~(
+      n.getUint32(1)
+    )>>>0) 
+    n.setUint32(5, ~(
+      n.getUint32(5)      
+    )>>>0)
+  }
   return n.getFloat64(1)
 }

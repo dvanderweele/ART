@@ -1419,7 +1419,7 @@ export class ART {
           ] 
           for(let constraint of constraints){
             if(constraint.componentType != LEAF_COMPONENT) console.log("constraint-dbg lbk", constraint.lowerBoundKey, "ubk", constraint.upperBoundKey)
-            else console.log("LEAF COMPONENT")
+            else console.log("LEAF COMPONENT", level.length, ...(level.map(l=>l[0])))
             const newLevel = []
             if(constraint.componentType == LEAF_COMPONENT){
               for(let n of level) yield n
@@ -1430,11 +1430,113 @@ export class ART {
                 constraint.upperInclusivity
               ]
               const newLevel = []
-              for(let i = 0; i < level.length; i++){
+              for(let i = (
+                constraint.order == FORWARD ? 0 : level.length-1
+              ); (
+                constraint.order == FORWARD ? i < level.length : i > -1
+              ); (
+                constraint.order == FORWARD ? i++ : i--
+              )){
                 let current = level[i]
                 let state = startState   
                 let lastLeftAlignedDepth = 0
-                let lastRightAlignedDepth = 0
+                let lastRightAlignedDepth = 0 
+                const alignD = (
+                  depth,
+                  TLAP, // taking left aligned path 
+                  TRAP, // taking right aligned path 
+                ) => {
+                  if(
+                    ((
+                      state & LEFT_ALIGNED
+                    )>>>0) == LEFT_ALIGNED
+                  ){
+                    if(TLAP) lastLeftAlignedDepth = depth
+                    else state &= (~(LEFT_ALIGNED)>>>0)
+                  }
+                  if(
+                    ((
+                      state & RIGHT_ALIGNED
+                    )>>>0) == RIGHT_ALIGNED
+                  ){
+                    if(TRAP) lastRightAlignedDepth = depth
+                    else state &= (~(RIGHT_ALIGNED)>>>0)
+                  }
+                } 
+                const alignA = (
+                  depth,
+                  TLAP, // taking left aligned path 
+                  TRAP, // taking right aligned path 
+                  CCP // choosing child path (rather than continue ascent)
+                ) => {//DBG, len-stck 1 k == lbb true k == ubb false k 2 lbb 2 ubb 7
+                  if(
+                    ((
+                      state & LEFT_ALIGNED
+                    )>>>0) == LEFT_ALIGNED
+                  ){
+                    if(CCP){
+                      if(TLAP) lastLeftAlignedDepth++
+                      else {
+                        lastLeftAlignedDepth--
+                        state &= (~(LEFT_ALIGNED)>>>0)
+                      }
+                    } else lastLeftAlignedDepth--
+                  } else {
+                    console.log("dbg1485 depth", depth, "llad", lastLeftAlignedDepth,"CCP",CCP,"TLAP",TLAP)
+                    if(
+                      depth == lastLeftAlignedDepth
+                      && CCP
+                    ){
+                      if(TLAP) state |= (LEFT_ALIGNED>>>0)
+                      else lastLeftAlignedDepth-- 
+                    }
+                  }
+                  if(
+                    ((
+                      state & RIGHT_ALIGNED
+                    )>>>0) == RIGHT_ALIGNED
+                  ){
+                    if(CCP){
+                      if(TRAP) lastRightAlignedDepth++
+                      else {
+                        lastRightAlignedDepth--
+                        state &= (~(RIGHT_ALIGNED)>>>0)
+                      }
+                    } else lastRightAlignedDepth--
+                  } else {
+                    if(
+                      depth == lastRightAlignedDepth
+                      && CCP
+                    ){
+                      if(TRAP) state |= (RIGHT_ALIGNED>>>0)
+                      else lastRightAlignedDepth-- 
+                    }
+                  }
+                  /**
+                         * ASCENT is mandated to manage the ALIGNMENT STATE values thusly:
+                         * 
+                         *  WHEN ALIGNMENT STATE VALUES INDICATE WE ARE ALIGNED:
+                         *    IF CHOOSING A CHILD PATH:
+                         *      IF CHOSEN CHILD PATH IS FULLY WITHIN ALIGNMENT BOUND (NOT ON IT):
+                         *        THEN DECREMENT THE LAST ALIGNED DEPTH VALUE BY ONE
+                         *        AND UNSET THE ALIGNMENT STATE
+                         *      ELSE IF CHOSEN CHILD PATH IS DIRECTLY ON ALIGNMENT BOUND:
+                         *        THEN INCREMENT THE LAST ALIGNED DEPTH VALUE
+                         *    ELSE IF CONTINUING ASCENT:
+                         *      THEN DECREMENT LAST ALIGNED DEPTH VALUE
+                         * 
+                         *  WHEN ALIGNMENT STATE VALUES INDICATE WE ARE NOT ALIGNED:
+                         *    IF DEPTH MATCHES LAST ALIGNED DEPTH:
+                         *      IF CHOSEN CHILD PATH IS DIRECTLY ON ALIGNMENT BOUND:
+                         *        THEN SET STATE AS ALIGNED 
+                         *      ELSE IF CHOSEN CHILD PATH IS FULLY WITHIN ALIGNMENT BOUND (NOT ON IT):
+                         *        THEN DECREMENT THE LAST ALIGNED DEPTH VALUE BY ONE
+                         *    ELSE IF DEPTH IS GREATER THAN LAST ALIGNED DEPTH:
+                         *      THEN DO NOT MODIFY ALIGNMENT STATE
+                         */
+
+                  ;
+                }
                 let stack = []
                 switch(constraint.componentType){
                   case FIXED_LENGTH_KEY: { 
@@ -1484,6 +1586,97 @@ export class ART {
                             const ubb = RA ? constraint.upperBoundKey[boundIndex] : 255
                             const tb = current[0].charCodeAt(0)
                             console.log("LA",LA,"RA",RA,"LI",LI,"RI",RI,"byte",tb)
+                            if(boundIndex == finalIdx){
+                              /**
+                               * on last index,
+                               * yield if:
+                               * 0 left unbounded and right unbounded
+                               * 1 left unbounded and kb compatible with right bound
+                               * 2 right unbounded and kb compatible with left bound
+                               * 3 kb compatible with both bound
+                               */
+                              let x = 0
+                              if(RA) x++
+                              if(LA) x+=2
+                              switch(x){
+                                case 0: {
+                                  newLevel.push(current[1])
+                                  state &= (~(DESCENT)>>>0)
+                                  stack.pop()
+                                  current = stack[stack.length-1]
+                                  break
+                                }
+                                case 1: {
+                                  if(
+                                    (RI && tb <= ubb)
+                                    || tb < ubb
+                                  ){
+                                    newLevel.push(current[1])
+                                    state &= (~(DESCENT)>>>0)
+                                    stack.pop()
+                                    current = stack[stack.length-1]
+                                  } else {
+                                    state &= (~(DESCENT)>>>0)
+                                    stack.pop()
+                                    current = stack[stack.length -1]
+                                  }
+                                  break
+                                }
+                                case 2: {
+                                  if(
+                                    (LI && tb >= lbb)
+                                    || tb > lbb
+                                  ){
+                                    newLevel.push(current[1])
+                                    state &= (~(DESCENT)>>>0)
+                                    stack.pop()
+                                    current = stack[stack.length-1]
+                                  } else {
+                                    state &= (~(DESCENT)>>>0)
+                                    stack.pop()
+                                    current = stack[stack.length -1]
+                                  }
+                                  break
+                                }
+                                case 3: {
+                                  if(
+                                    (
+                                      (RI && tb <= ubb)
+                                      || tb < ubb
+                                    ) && (
+                                      (LI && tb >= lbb)
+                                      || tb > lbb
+                                    )
+                                  ){
+                                    newLevel.push(current[1])
+                                    state &= (~(DESCENT)>>>0)
+                                    stack.pop()
+                                    current = stack[stack.length-1]
+                                  } else {
+                                    state &= (~(DESCENT)>>>0)
+                                    stack.pop()
+                                    current = stack[stack.length -1]
+                                  }
+                                  break
+                                }
+                              }
+                            } else {
+                              if(tb >= lbb && tb <= ubb){
+                                stack.push(current)
+                                alignD(
+                                  stack.length-1,
+                                  LA && tb == lbb,
+                                  RA && tb == ubb
+                                ) 
+                                current = current[1]
+                              } else {
+                                state &= (~(DESCENT)>>>0)
+                                stack.pop()
+                                current = stack[stack.length -1]
+                              }
+                            }
+                            /*
+                             * OLD
                             if(
                               (
                                 (
@@ -1526,6 +1719,7 @@ export class ART {
                               stack.pop()
                               current = stack[stack.length -1]
                             }
+                            */
                             continue
                           }
                           case "NodeLeaf":{
@@ -1536,7 +1730,6 @@ export class ART {
                             continue
                           }
                           default:{ 
-                            current[Symbol.iterator] = current.constructor[iters[constraint.order + constraint.lowerInclusivity + constraint.upperInclusivity]]
                             const boundIndex = stack.length 
                             const LA = (state & LEFT_ALIGNED) == LEFT_ALIGNED
                             const RA = (state & RIGHT_ALIGNED) == RIGHT_ALIGNED
@@ -1546,8 +1739,247 @@ export class ART {
                             const ubb = RA ? constraint.upperBoundKey[boundIndex] : 255
                             current.ITER_LB = lbb
                             current.ITER_UB = ubb
-                            const iterator = current[Symbol.iterator]()  
+                            console.log("CONF 4+ ITER, LBB",lbb,"UBB",ubb)
+                            //const iterator = current[Symbol.iterator]()  
                             if(boundIndex == finalIdx){
+                              /**
+                               * on last index,
+                               * yield if:
+                               * 0 left unbounded and right unbounded
+                               * 1 left unbounded and kb compatible with right bound
+                               * 2 right unbounded and kb compatible with left bound
+                               * 3 kb compatible with both bound 
+                               * const iters = [
+            "ITER_FWD_GT_TO_LT", // EXC + EXC + FWD = 0 + 0 + 0
+            "ITER_FWD_GE_TO_LT", // LBI + EXC + FWD = 1 + 0 + 0
+            "ITER_FWD_GT_TO_LE", // EXC + UBI + FWD = 0 + 2 + 0
+            "ITER_FWD_GE_TO_LE", // LBI + UBI + FWD = 1 + 2 + 0
+            "ITER_REV_LT_TO_GT", // EXC + EXC + REV = 0 + 0 + 4
+            "ITER_REV_LT_TO_GE", // LBI + EXC + REV = 1 + 0 + 4
+            "ITER_REV_LE_TO_GT", // EXC + UBI + REV = 0 + 2 + 4
+            "ITER_REV_LE_TO_GE"  // LBI + UBI + REV = 1 + 2 + 4
+          ]
+                              UBI
+                              LBI
+                              FWD
+      export const FORWARD = 0,
+      EXCLUSIVE = 0,
+      LOWER_BOUND_INCLUSIVE = 1,
+      UPPER_BOUND_INCLUSIVE = 2,
+      REVERSE = 4,
+
+                               */
+                              let x = 0
+                              if(RA) x++
+                              if(LA) x+=2
+                              switch(x){
+                                case 0:{
+                                  console.log("n4+.d0 !LA !RA",iters[constraint.order == FORWARD ? 3 : 7])
+                                  // fwd3, rev7 
+                                  current[Symbol.iterator] = current.constructor[iters[constraint.order == FORWARD ? 3 : 7]]
+                                  break
+                                }
+                                case 1:{
+                                  // r.inc: fwd3, rev7
+                                  // r.exc: fwd2, rev5 
+                                  // rinc.fwd = 2+0=2
+                                  // rinc.rev = 2+4=6
+                                  // rexc.fwd = 0+0=0
+                                  // rexc.rev = 0+4=4 
+                                  let s = 0
+                                  if(constraint.order == REVERSE) s+=4
+                                  if(constraint.upperInclusivity == UPPER_BOUND_INCLUSIVE) s+= 2
+                                  switch(s){
+                                    case 6: { 
+                                      console.log("n4+.d1.6 !LA RA",iters[7])
+                                      current[
+                                        Symbol.iterator
+                                      ] = current.constructor[
+                                        iters[7]
+                                      ]
+                                      break
+                                    }
+                                    case 4: { 
+                                      console.log("n4+.d1.4 !LA RA",iters[5])
+                                      current[
+                                        Symbol.iterator
+                                      ] = current.constructor[
+                                        iters[5]
+                                      ]
+                                      break
+                                    }
+                                    case 2: { 
+                                      console.log("n4+.d1.2 !LA RA",iters[3])
+                                      current[
+                                        Symbol.iterator
+                                      ] = current.constructor[
+                                        iters[3]
+                                      ]
+                                      break
+                                    }
+                                    default: { 
+                                      console.log("n4+.d1.D !LA RA",iters[1])
+                                      current[
+                                        Symbol.iterator
+                                      ] = current.constructor[
+                                        iters[1]
+                                      ]
+                                      break
+                                    }
+                                  }
+                                  break
+                                }
+                                case 2:{
+                                  // l.inc: fwd3, rev7
+                                  // l.exc: fwd2, rev6
+                                  // linc.fwd 2+0=2
+                                  // linc.rev 2+4=6
+                                  // lexc.fwd 0+0=0
+                                  // lexc.rev 0+4=4 
+                                  let s = 0
+                                  if(constraint.order == REVERSE) s+=4
+                                  if(constraint.lowerInclusivity == LOWER_BOUND_INCLUSIVE) s+= 2
+                                  switch(s){
+                                    case 6: { 
+                                      console.log("n4+.d2.6 LA !RA",iters[7])
+                                      current[
+                                        Symbol.iterator
+                                      ] = current.constructor[
+                                        iters[7]
+                                      ]
+                                      break
+                                    }
+                                    case 4: { 
+                                      console.log("n4+.d2.4 LA !RA",iters[5])
+                                      current[
+                                        Symbol.iterator
+                                      ] = current.constructor[
+                                        iters[5]
+                                      ]
+                                      break
+                                    }
+                                    case 2: { 
+                                      console.log("n4+.d2.2 LA !RA",iters[3])
+                                      current[
+                                        Symbol.iterator
+                                      ] = current.constructor[
+                                        iters[3]
+                                      ]
+                                      break
+                                    }
+                                    default: { 
+                                      console.log("n4+.d2.D LA !RA",iters[2])
+                                      current[
+                                        Symbol.iterator
+                                      ] = current.constructor[
+                                        iters[2]
+                                      ]
+                                      break
+                                    }
+                                  }
+                                  break
+                                }
+                                case 3:{
+                                  // fwd:linc,rinc 0+0+0=0
+                                  // fwd:linc,rexc 0+0+1=1
+                                  // fwd:lexc,rinc 0+2+0=2
+                                  // fwd:lexc,rexc 0+2+1=3
+                                  // rev:linc,rinc 4+0+0=4
+                                  // rev:linc,rexc 4+0+1=5
+                                  // rev:lexc,rinc 4+2+0=6
+                                  // rev:lexc,rexc 4+2+1=7
+                                  /**
+                                  "ITER_FWD_GT_TO_LT",  
+                                  "ITER_FWD_GE_TO_LT",
+                                  "ITER_FWD_GT_TO_LE",
+                                  "ITER_FWD_GE_TO_LE", 
+                                  "ITER_REV_LT_TO_GT", 
+                                  "ITER_REV_LT_TO_GE", 
+                                  "ITER_REV_LE_TO_GT", 
+                                  "ITER_REV_LE_TO_GE"  
+                                   */
+                                  let s = 0
+                                  if(constraint.order == REVERSE) s+=4
+                                  if(constraint.lowerInclusivity == EXCLUSIVE) s+= 2
+                                  if(constraint.upperInclusivity == EXCLUSIVE) s+= 1
+                                  switch(s){
+                                    case 0:{ //
+                                      console.log("n4+.d3.0 LA RA",iters[3])
+                                      current[
+                                        Symbol.iterator
+                                      ] = current.constructor[
+                                        iters[3]
+                                      ]
+                                      break
+                                    }
+                                    case 1:{ //
+                                      console.log("n4+.d3.1 LA RA",iters[1])
+                                      current[
+                                        Symbol.iterator
+                                      ] = current.constructor[
+                                        iters[1]
+                                      ]
+                                      break
+                                    }
+                                    case 2:{ //
+                                      console.log("n4+.d3.2 LA RA",iters[2])
+                                      current[
+                                        Symbol.iterator
+                                      ] = current.constructor[
+                                        iters[2]
+                                      ]
+                                      break
+                                    }
+                                    case 3:{ //
+                                      console.log("n4+.d3.3 LA RA",iters[0])
+                                      current[
+                                        Symbol.iterator
+                                      ] = current.constructor[
+                                        iters[0]
+                                      ]
+                                      break
+                                    }
+                                    case 4:{ //
+                                      console.log("n4+.d3.4 LA RA",iters[7])
+                                      current[
+                                        Symbol.iterator
+                                      ] = current.constructor[
+                                        iters[7]
+                                      ]
+                                      break
+                                    }
+                                    case 5:{ //
+                                      console.log("n4+.d3.5 LA RA",iters[5])
+                                      current[
+                                        Symbol.iterator
+                                      ] = current.constructor[
+                                        iters[5]
+                                      ]
+                                      break
+                                    }
+                                    case 6:{ //
+                                      console.log("n4+.d3.6 LA RA",iters[6])
+                                      current[
+                                        Symbol.iterator
+                                      ] = current.constructor[
+                                        iters[6]
+                                      ]
+                                      break
+                                    }
+                                    default:{ //
+                                      console.log("n4+.d3.D LA RA",iters[4])
+                                      current[
+                                        Symbol.iterator
+                                      ] = current.constructor[
+                                        iters[4]
+                                      ]
+                                      break
+                                    }
+                                  }
+                                  break
+                                }
+                              }
+                              const iterator = current[Symbol.iterator]()
                               for(let value of iterator){
                                 newLevel.push(value[1])
                                 console.log("newLevel+ byte", value[0])
@@ -1556,29 +1988,37 @@ export class ART {
                               stack.pop()
                               current = stack[stack.length-1]
                             } else {
-                              // populate value from iterator after checking !done
+                              console.log("n4+(nonfinal)",constraint.order == FORWARD ? iters[3] : iters[7]);
+                              if(
+                                constraint.order == FORWARD
+                              ) current[
+                                Symbol.iterator
+                              ] = current.constructor[
+                                iters[3]
+                              ]
+                              else current[
+                                Symbol.iterator
+                              ] = current.constructor[
+                                iters[7]
+                              ]
+                              const iterator = current[Symbol.iterator]()
                               const { done, value } = iterator.next()
                               if(done){
+                              // continue here
                                 //console.log(1107,iters[constraint.order + constraint.lowerInclusivity + constraint.upperInclusivity],LA,RA,LI,RI,lbb,ubb)
                                 state &= (~(DESCENT)>>>0)
                                 stack.pop()
                                 current = stack[stack.length-1]
                               } else {
-                                console.log("LA",LA,"RA",RA,"LI",LI,"RI",RI,"byte",value[0])
-                                const v = value[0]
-                                if(
-                                  LA && 
-                                  LI && 
-                                  v == lbb
-                                ) lastLeftAlignedDepth++
-                                else state &= (~(LEFT_ALIGNED)>>>0)
-                                if(
-                                  RA &&
-                                  RI &&
-                                  v == ubb
-                                ) lastRightAlignedDepth++
-                                else state &= (~(RIGHT_ALIGNED)>>>0)
+                                console.log("ALIGND.DBG, len-stck",stack.length,"LA,",LA,"LBB",lbb,"RA",RA,"UBB",ubb)
                                 stack.push(iterator)
+                                alignD(
+                                  stack.length-1,
+                                  LA && value[0] == lbb,
+                                  RA && value[0] == ubb
+                                )
+                                // OLD
+                                console.log("LA",LA,"RA",RA,"LI",LI,"RI",RI,"byte",value[0])
                                 current = value[1]
                               }
                             }
@@ -1609,11 +2049,23 @@ export class ART {
                          *    ELSE IF DEPTH IS GREATER THAN LAST ALIGNED DEPTH:
                          *      THEN DO NOT MODIFY ALIGNMENT STATE
                          */
+                        const boundIndex = stack.length - 1 
+                        const LA = (state & LEFT_ALIGNED) == LEFT_ALIGNED || stack.length-1 <= lastLeftAlignedDepth
+                        const RA = (state & RIGHT_ALIGNED) == RIGHT_ALIGNED || stack.length-1 <= lastRightAlignedDepth
+
+                        const LI = constraint.lowerInclusivity == LOWER_BOUND_INCLUSIVE
+                        const RI = constraint.upperInclusivity == UPPER_BOUND_INCLUSIVE
+                        const lbb = LA ? constraint.lowerBoundKey[boundIndex] : 0
+                        const ubb = RA ? constraint.upperBoundKey[boundIndex] : 255
                         switch(current.constructor.name){
                           case "Node1": {
-                            const depth = stack.length
-                            if(depth <= lastLeftAlignedDepth) lastLeftAlignedDepth = depth - 1
-                            if(depth <= lastRightAlignedDepth) lastRightAlignedDepth = depth - 1
+                            const tb = current[0].charCodeAt(0)
+                            alignA(
+                              stack.length-1,
+                              LA && tb == lbb,
+                              RA && tb == ubb,
+                              false
+                            )
                             stack.pop()
                             current = stack[stack.length-1]
                             continue
@@ -1628,18 +2080,39 @@ export class ART {
                             continue
                           }
                           default:{
+                            // carry on
+                            // OLD
                             //console.log(1141,current.constructor.name)
                             const result = current.next()
                             if(result.done){
                               const depth = stack.length 
-                              if(depth <= lastLeftAlignedDepth) lastLeftAlignedDepth = depth - 1
-                              if(depth <= lastRightAlignedDepth) lastRightAlignedDepth = depth - 1
+                              alignA(
+                                stack.length-1,
+                                false,
+                                false,
+                                false
+                              )
+                              //if(depth <= lastLeftAlignedDepth) lastLeftAlignedDepth = depth - 1
+                              //if(depth <= lastRightAlignedDepth) lastRightAlignedDepth = depth - 1
                               stack.pop()
                               current = stack[stack.length -1]
                             } else {
+                              const k = result.value[0]
+                              console.log("ALIGNA.DBG, len-stck",stack.length, "k == lbb", k == lbb, "k == ubb", k == ubb,"k",k,"lbb",lbb,"ubb",ubb)
+                              alignA(
+                                stack.length-1,
+                                /**
+                                 * following LA/RA && conditions may prevent the TLAP/TRAP conditions from being rightfully fulfilled in cases where we reach the final byte in a yielded sequence and it is properly aligned once again. this causes decrementation rather than incrementation of tge lastAlignedDepth value
+                                 */
+                                k == lbb,
+                                k == ubb,
+                                true
+                              )
+                              state |= ((DESCENT)>>>0)
                               const v = result.value
                               current = v[1]
-                              const boundIndex = stack.length 
+                              console.log("undepleted n4+ caught on ascent LA", LA,"RA",RA,"LI",LI,"RI",RI,"byte",v[0], (state & DESCENT) == DESCENT)
+                              /*const boundIndex = stack.length 
                               const depth = boundIndex
                               const LA = (state & LEFT_ALIGNED) == LEFT_ALIGNED
                               const RA = (state & RIGHT_ALIGNED) == RIGHT_ALIGNED
@@ -1662,7 +2135,7 @@ export class ART {
                                 lastRightAlignedDepth++
                                 state |= ((RIGHT_ALIGNED)>>>0)
                               }
-                              state |= ((DESCENT)>>>0)
+                              state |= ((DESCENT)>>>0)*/
                             }
                             continue
                           }
@@ -1687,6 +2160,13 @@ export class ART {
                         }
                       }
                     } while(stack.length > 0)
+                  }
+                  case LEAF_COMPONENT: {
+                    console.log("LEAF LAYER!")
+                    for(let lf of level){
+                      if(lf instanceof NodeLeaf) yield lf
+                    }
+                    break
                   }
                   default: 
                     return
