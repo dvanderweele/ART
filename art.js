@@ -1382,7 +1382,9 @@ export class ART {
       [Symbol.iterator]: function*(){
         if(!art.root) return
         if(constraints.length < 1){
-           
+          yield * (
+            this.fullFwdRangeKV()
+          )[Symbol.iterator]()
         } else {
           let level = [art.root]
           //const keyStack = new ByteStack()
@@ -1422,11 +1424,17 @@ export class ART {
             0b11111  // descent, LA, RA, LI, RI
           ] 
           for(let constraint of constraints){
-            if(constraint.componentType != LEAF_COMPONENT) console.log("constraint-dbg lbk", constraint.lowerBoundKey, "ubk", constraint.upperBoundKey)
-            else console.log("LEAF COMPONENT", level.length, ...(level.map(l=>l[0])))
+            if(!("limit" in constraint)) constraint.limit = Infinity
+            /*if(constraint.componentType != LEAF_COMPONENT) console.log("constraint-dbg lbk", constraint.lowerBoundKey, "ubk", constraint.upperBoundKey)
+            else console.log("LEAF COMPONENT", level.length, ...(level.map(l=>l[0])))*/
             const newLevel = []
             if(constraint.componentType == LEAF_COMPONENT){
-              for(let n of level) yield n
+              let c = 0
+              for(let n of level){
+                if(c >= constraint.limit) return
+                yield n
+                c++
+              }
             } else { 
               const finalIdx = constraint.length - 1
               const startState = initialStates[
@@ -1486,7 +1494,7 @@ export class ART {
                       }
                     } else lastLeftAlignedDepth--
                   } else {
-                    console.log("dbg1485 depth", depth, "llad", lastLeftAlignedDepth,"CCP",CCP,"TLAP",TLAP)
+                    //console.log("dbg1485 depth", depth, "llad", lastLeftAlignedDepth,"CCP",CCP,"TLAP",TLAP)
                     if(
                       depth == lastLeftAlignedDepth
                       && CCP
@@ -1545,7 +1553,8 @@ export class ART {
                 switch(constraint.componentType){
                   case FIXED_LENGTH_KEY: { 
                     do { 
-                      console.log(
+                      if(newLevel.length >= constraint.limit) break
+                      /*console.log(
                         "node-dbg descent?", 
                         (state & DESCENT) == DESCENT, 
                         "ntype", 
@@ -1562,7 +1571,7 @@ export class ART {
                         (state & LEFT_ALIGNED) == LEFT_ALIGNED,
                         "RA",
                         (state & RIGHT_ALIGNED) == RIGHT_ALIGNED
-                      )
+                      )*/
                       //console.log(state.toString(2), DESCENT.toString(2))
                       if((state & DESCENT) == DESCENT){ 
                         /**
@@ -1589,7 +1598,7 @@ export class ART {
                             const lbb = LA ? constraint.lowerBoundKey[boundIndex] : 0
                             const ubb = RA ? constraint.upperBoundKey[boundIndex] : 255
                             const tb = current[0].charCodeAt(0)
-                            console.log("LA",LA,"RA",RA,"LI",LI,"RI",RI,"byte",tb)
+                            //console.log("LA",LA,"RA",RA,"LI",LI,"RI",RI,"byte",tb)
                             if( 
                               (
                                 constraint.componentType == FIXED_LENGTH_KEY 
@@ -1751,7 +1760,7 @@ export class ART {
                             const ubb = RA ? constraint.upperBoundKey[boundIndex] : 255
                             current.ITER_LB = lbb
                             current.ITER_UB = ubb
-                            console.log("CONF 4+ ITER, LBB",lbb,"UBB",ubb)
+                            //console.log("CONF 4+ ITER, LBB",lbb,"UBB",ubb)
                             //const iterator = current[Symbol.iterator]()  
                             if( 
                               (
@@ -1795,7 +1804,7 @@ export class ART {
                               if(LA) x+=2
                               switch(x){
                                 case 0:{
-                                  console.log("n4+.d0 !LA !RA",iters[constraint.order == FORWARD ? 3 : 7])
+                                  //console.log("n4+.d0 !LA !RA",iters[constraint.order == FORWARD ? 3 : 7])
                                   // fwd3, rev7 
                                   current[Symbol.iterator] = current.constructor[iters[constraint.order == FORWARD ? 3 : 7]]
                                   break
@@ -1812,7 +1821,7 @@ export class ART {
                                   if(constraint.upperInclusivity == UPPER_BOUND_INCLUSIVE) s+= 2
                                   switch(s){
                                     case 6: { 
-                                      console.log("n4+.d1.6 !LA RA",iters[7])
+                                      //console.log("n4+.d1.6 !LA RA",iters[7])
                                       current[
                                         Symbol.iterator
                                       ] = current.constructor[
@@ -1821,7 +1830,7 @@ export class ART {
                                       break
                                     }
                                     case 4: { 
-                                      console.log("n4+.d1.4 !LA RA",iters[5])
+                                      //console.log("n4+.d1.4 !LA RA",iters[5])
                                       current[
                                         Symbol.iterator
                                       ] = current.constructor[
@@ -1830,7 +1839,7 @@ export class ART {
                                       break
                                     }
                                     case 2: { 
-                                      console.log("n4+.d1.2 !LA RA",iters[3])
+                                      //console.log("n4+.d1.2 !LA RA",iters[3])
                                       current[
                                         Symbol.iterator
                                       ] = current.constructor[
@@ -1839,7 +1848,7 @@ export class ART {
                                       break
                                     }
                                     default: { 
-                                      console.log("n4+.d1.D !LA RA",iters[1])
+                                      //console.log("n4+.d1.D !LA RA",iters[1])
                                       current[
                                         Symbol.iterator
                                       ] = current.constructor[
@@ -1862,7 +1871,7 @@ export class ART {
                                   if(constraint.lowerInclusivity == LOWER_BOUND_INCLUSIVE) s+= 2
                                   switch(s){
                                     case 6: { 
-                                      console.log("n4+.d2.6 LA !RA",iters[7])
+                                      //console.log("n4+.d2.6 LA !RA",iters[7])
                                       current[
                                         Symbol.iterator
                                       ] = current.constructor[
@@ -1871,7 +1880,7 @@ export class ART {
                                       break
                                     }
                                     case 4: { 
-                                      console.log("n4+.d2.4 LA !RA",iters[5])
+                                      //console.log("n4+.d2.4 LA !RA",iters[5])
                                       current[
                                         Symbol.iterator
                                       ] = current.constructor[
@@ -1880,7 +1889,7 @@ export class ART {
                                       break
                                     }
                                     case 2: { 
-                                      console.log("n4+.d2.2 LA !RA",iters[3])
+                                      //console.log("n4+.d2.2 LA !RA",iters[3])
                                       current[
                                         Symbol.iterator
                                       ] = current.constructor[
@@ -1889,7 +1898,7 @@ export class ART {
                                       break
                                     }
                                     default: { 
-                                      console.log("n4+.d2.D LA !RA",iters[2])
+                                      //console.log("n4+.d2.D LA !RA",iters[2])
                                       current[
                                         Symbol.iterator
                                       ] = current.constructor[
@@ -1925,7 +1934,7 @@ export class ART {
                                   if(constraint.upperInclusivity == EXCLUSIVE) s+= 1
                                   switch(s){
                                     case 0:{ //
-                                      console.log("n4+.d3.0 LA RA",iters[3])
+                                      //console.log("n4+.d3.0 LA RA",iters[3])
                                       current[
                                         Symbol.iterator
                                       ] = current.constructor[
@@ -1934,7 +1943,7 @@ export class ART {
                                       break
                                     }
                                     case 1:{ //
-                                      console.log("n4+.d3.1 LA RA",iters[1])
+                                      //console.log("n4+.d3.1 LA RA",iters[1])
                                       current[
                                         Symbol.iterator
                                       ] = current.constructor[
@@ -1943,7 +1952,7 @@ export class ART {
                                       break
                                     }
                                     case 2:{ //
-                                      console.log("n4+.d3.2 LA RA",iters[2])
+                                      //console.log("n4+.d3.2 LA RA",iters[2])
                                       current[
                                         Symbol.iterator
                                       ] = current.constructor[
@@ -1952,7 +1961,7 @@ export class ART {
                                       break
                                     }
                                     case 3:{ //
-                                      console.log("n4+.d3.3 LA RA",iters[0])
+                                      //console.log("n4+.d3.3 LA RA",iters[0])
                                       current[
                                         Symbol.iterator
                                       ] = current.constructor[
@@ -1961,7 +1970,7 @@ export class ART {
                                       break
                                     }
                                     case 4:{ //
-                                      console.log("n4+.d3.4 LA RA",iters[7])
+                                      //console.log("n4+.d3.4 LA RA",iters[7])
                                       current[
                                         Symbol.iterator
                                       ] = current.constructor[
@@ -1970,7 +1979,7 @@ export class ART {
                                       break
                                     }
                                     case 5:{ //
-                                      console.log("n4+.d3.5 LA RA",iters[5])
+                                      //console.log("n4+.d3.5 LA RA",iters[5])
                                       current[
                                         Symbol.iterator
                                       ] = current.constructor[
@@ -1979,7 +1988,7 @@ export class ART {
                                       break
                                     }
                                     case 6:{ //
-                                      console.log("n4+.d3.6 LA RA",iters[6])
+                                      //console.log("n4+.d3.6 LA RA",iters[6])
                                       current[
                                         Symbol.iterator
                                       ] = current.constructor[
@@ -1988,7 +1997,7 @@ export class ART {
                                       break
                                     }
                                     default:{ //
-                                      console.log("n4+.d3.D LA RA",iters[4])
+                                      //console.log("n4+.d3.D LA RA",iters[4])
                                       current[
                                         Symbol.iterator
                                       ] = current.constructor[
@@ -2003,13 +2012,13 @@ export class ART {
                               const iterator = current[Symbol.iterator]()
                               for(let value of iterator){
                                 newLevel.push(value[1])
-                                console.log("newLevel+ byte", value[0])
+                                //console.log("newLevel+ byte", value[0])
                               }
                               state &= (~(DESCENT)>>>0)
                               stack.pop()
                               current = stack[stack.length-1]
                             } else {
-                              console.log("n4+(nonfinal)",constraint.order == FORWARD ? iters[3] : iters[7]);
+                              //console.log("n4+(nonfinal)",constraint.order == FORWARD ? iters[3] : iters[7]);
                               if(
                                 constraint.order == FORWARD
                               ) current[
@@ -2031,7 +2040,7 @@ export class ART {
                                 stack.pop()
                                 current = stack[stack.length-1]
                               } else {
-                                console.log("ALIGND.DBG, len-stck",stack.length,"LA,",LA,"LBB",lbb,"RA",RA,"UBB",ubb)
+                                // sconsole.log("ALIGND.DBG, len-stck",stack.length,"LA,",LA,"LBB",lbb,"RA",RA,"UBB",ubb)
                                 stack.push(iterator)
                                 alignD(
                                   stack.length-1,
@@ -2039,7 +2048,7 @@ export class ART {
                                   RA && value[0] == ubb
                                 )
                                 // OLD
-                                console.log("LA",LA,"RA",RA,"LI",LI,"RI",RI,"byte",value[0])
+                                //console.log("LA",LA,"RA",RA,"LI",LI,"RI",RI,"byte",value[0])
                                 current = value[1]
                               }
                             }
@@ -2119,7 +2128,7 @@ export class ART {
                               current = stack[stack.length -1]
                             } else {
                               const k = result.value[0]
-                              console.log("ALIGNA.DBG, len-stck",stack.length, "k == lbb", k == lbb, "k == ubb", k == ubb,"k",k,"lbb",lbb,"ubb",ubb)
+                              //console.log("ALIGNA.DBG, len-stck",stack.length, "k == lbb", k == lbb, "k == ubb", k == ubb,"k",k,"lbb",lbb,"ubb",ubb)
                               alignA(
                                 stack.length-1,
                                 /**
@@ -2132,7 +2141,7 @@ export class ART {
                               state |= ((DESCENT)>>>0)
                               const v = result.value
                               current = v[1]
-                              console.log("undepleted n4+ caught on ascent LA", LA,"RA",RA,"LI",LI,"RI",RI,"byte",v[0], (state & DESCENT) == DESCENT)
+                              //console.log("undepleted n4+ caught on ascent LA", LA,"RA",RA,"LI",LI,"RI",RI,"byte",v[0], (state & DESCENT) == DESCENT)
                               /*const boundIndex = stack.length 
                               const depth = boundIndex
                               const LA = (state & LEFT_ALIGNED) == LEFT_ALIGNED
@@ -2167,6 +2176,7 @@ export class ART {
                   }
                   case VARIABLE_LENGTH_KEY: { 
                     do { 
+                      if(newLevel.length >= constraint.limit) break
                       console.log(
                         "node-dbg descent?", 
                         (state & DESCENT) == DESCENT, 
@@ -2809,11 +2819,10 @@ export class ART {
                         }
                       }
                     } while(stack.length > 0)
-                   break
-
+                    break
                   }
                   case LEAF_COMPONENT: {
-                    console.log("LEAF LAYER!")
+                    //console.log("LEAF LAYER!")
                     for(let lf of level){
                       if(lf instanceof NodeLeaf) yield lf
                     }
@@ -2823,7 +2832,7 @@ export class ART {
                     return
                 } 
               }
-              console.log(newLevel.length)
+              //console.log(newLevel.length)
               level = newLevel
             }          
           }

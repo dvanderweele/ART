@@ -1371,6 +1371,49 @@ function getRandomInt(min, max) {
   for(let v of vkt.fullFwdRangeV()) console.log(varkeys[v[0]])
   console.log("###")
   for(let v of vkt.allWithPrefixFwdV(Latin1.getL1SortKey("And").slice(0,3))) console.log(varkeys[v[0]])
+  expect(
+    [...(fockArt.query([
+      { 
+        componentType: FIXED_LENGTH_KEY,
+        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+        upperInclusivity: UPPER_BOUND_INCLUSIVE,
+        order: FORWARD,
+        length: 9,
+        lowerBoundKey: -2095.55,
+        upperBoundKey: -1000
+      },
+      { 
+        componentType: FIXED_LENGTH_KEY,
+        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+        upperInclusivity: UPPER_BOUND_INCLUSIVE,
+        order: REVERSE,
+        length: 9,
+        lowerBoundKey: -1,
+        upperBoundKey: 713.1
+      },
+      { 
+        componentType: FIXED_LENGTH_KEY,
+        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+        upperInclusivity: UPPER_BOUND_INCLUSIVE,
+        order: FORWARD,
+        length: 9,
+        lowerBoundKey: -15,
+        upperBoundKey: 150,
+        limit:1
+      },
+      {
+        componentType: LEAF_COMPONENT
+      }
+    ].map(
+      query => ({
+        ...query,
+        lowerBoundKey: new Uint8Array(binCompF64(query.lowerBoundKey).buffer),
+        upperBoundKey: new Uint8Array(binCompF64(query.upperBoundKey).buffer)
+      })
+    )))].join("|"),
+    "75",
+    "3x fixed compound key fwd-rev-fwd traversal #5"
+  )
 
   dump(true);
 })()
