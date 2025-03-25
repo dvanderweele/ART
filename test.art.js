@@ -28,6 +28,8 @@ import {
   buildBinCompF64,
   unBinCompF64
 } from "./BinCompF64.js"
+import Latin1 from "./collations/Latin1/Latin1.js"
+import BinComp2sComplement from "./BinComp2sComplements.js"
 
 const L = x => console.log(x);
 function getRandomInt(min, max) {
@@ -1297,8 +1299,78 @@ function getRandomInt(min, max) {
     "11,22,35,45,55~45|11,22,36,46,56~55|11,22,37,47,57~65".split("|").reverse().join("|"),
     "allprefix rev kv"
   )
-
-
+  const varkeys = [
+    '’Twas brillig, and the slithy toves', 
+    'Did gyre and gimble in the wabe:',
+    'All mimsy were the borogoves,',
+    'And the mome raths outgrabe.',
+    '“Beware the Jabberwock, my son!',
+    'The jaws that bite, the claws that catch!',
+    'Beware the Jubjub bird, and shun',
+    'The frumious Bandersnatch!”',
+    'He took his vorpal sword in hand;',
+    'Long time the manxome foe he sought—',
+    'So rested he by the Tumtum tree',
+    'And stood awhile in thought.',
+    'And, as in uffish thought he stood,',
+    'The Jabberwock, with eyes of flame,',
+    'Came whiffling through the tulgey wood,',
+    'And burbled as it came!',
+    'One, two! One, two! And through and through',
+    'The vorpal blade went snicker-snack!',
+    'He left it dead, and with its head',
+    'He went galumphing back.',
+    '“And hast thou slain the Jabberwock?',
+    'Come to my arms, my beamish boy!',
+    'O frabjous day! Callooh! Callay!”',
+    'He chortled in his joy.',
+    '’Twas brillig, and the slithy toves',
+    'Did gyre and gimble in the wabe:', 
+    'All mimsy were the borogoves,',
+    'And the mome raths outgrabe.'
+  ]
+  const vkt = new ART()
+  for(let i = 0; i < varkeys.length; i++){
+    const sk = Latin1.getL1SortKey(varkeys[i])
+    const cle = new Uint8Array(sk.length+1)
+    for(let j = 0; j < sk.length; j++) cle[j] = sk[j]
+    cle[sk.length] = i
+    vkt.insert(cle, i)
+  }
+  /*
+  for(
+    let pk of vkt.query([
+      {
+        componentType: VARIABLE_LENGTH_KEY,
+        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+        upperInclusivity: UPPER_BOUND_INCLUSIVE,
+        order: FORWARD,
+        lowerBoundKey: Latin1.getL1SortKey(String.fromCharCode(0)),
+        upperBoundKey: Latin1.getL1SortKey(
+          Array.from(
+            { 
+              length: 256 
+            }, 
+            _ => String.fromCharCode(255)
+          ).join("")
+        ),
+        sentinel: 0
+      }, {
+        componentType: FIXED_LENGTH_KEY,
+        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+        upperInclusivity: UPPER_BOUND_INCLUSIVE,
+        order: FORWARD,
+        length: 1,
+        lowerBoundKey: 0,
+        upperBoundKey: 255
+      }, {
+        componentType: LEAF_COMPONENT
+      }
+    ])
+  ) console.log(pk)*/
+  for(let v of vkt.fullFwdRangeV()) console.log(varkeys[v[0]])
+  console.log("###")
+  for(let v of vkt.allWithPrefixFwdV(Latin1.getL1SortKey("And").slice(0,3))) console.log(varkeys[v[0]])
 
   dump(true);
 })()

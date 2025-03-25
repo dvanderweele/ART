@@ -7,7 +7,7 @@
  * BigInt64
  */
 
-function BinComp2sComplement(
+export default function BinComp2sComplement(
   dataView
 ){
   return dataView.setUint8(

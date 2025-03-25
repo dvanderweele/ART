@@ -1,0 +1,3074 @@
+[
+	{
+		"CharacterReference": "&#000;",
+		"Hex": "00",
+		"Character": "^@",
+		"EntityName": "&nbsp",
+		"Description": "null",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#001;",
+		"Hex": "01",
+		"Character": "^A",
+		"EntityName": "&nbsp",
+		"Description": "start of heading",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#002;",
+		"Hex": "02",
+		"Character": "^B",
+		"EntityName": "&nbsp",
+		"Description": "start of text",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#003;",
+		"Hex": "03",
+		"Character": "^C",
+		"EntityName": "&nbsp",
+		"Description": "end of text",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#004;",
+		"Hex": "04",
+		"Character": "^D",
+		"EntityName": "&nbsp",
+		"Description": "end of transmission",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#005;",
+		"Hex": "05",
+		"Character": "^E",
+		"EntityName": "&nbsp",
+		"Description": "enquiry",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#006;",
+		"Hex": "06",
+		"Character": "^F",
+		"EntityName": " ",
+		"Description": "acknowledge",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#007;",
+		"Hex": "07",
+		"Character": "^G",
+		"EntityName": " ",
+		"Description": "bell",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#008;",
+		"Hex": "08",
+		"Character": "^H",
+		"EntityName": " ",
+		"Description": "backpace",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#014;",
+		"Hex": "0E",
+		"Character": "^N",
+		"EntityName": " ",
+		"Description": "shift out",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#015;",
+		"Hex": "0F",
+		"Character": "^O",
+		"EntityName": " ",
+		"Description": "shift in",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#016;",
+		"Hex": "10",
+		"Character": "^P",
+		"EntityName": " ",
+		"Description": "data link escape",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#017;",
+		"Hex": "11",
+		"Character": "^Q",
+		"EntityName": " ",
+		"Description": "device control 1",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#018;",
+		"Hex": "12",
+		"Character": "^R",
+		"EntityName": " ",
+		"Description": "device control 2",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#019;",
+		"Hex": "13",
+		"Character": "^S",
+		"EntityName": " ",
+		"Description": "device control 3",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#020;",
+		"Hex": "14",
+		"Character": "^T",
+		"EntityName": " ",
+		"Description": "device control 4",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#021;",
+		"Hex": "15",
+		"Character": "^U",
+		"EntityName": " ",
+		"Description": "negative acknowledge",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#022;",
+		"Hex": "16",
+		"Character": "^V",
+		"EntityName": " ",
+		"Description": "synchonous idle",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#023;",
+		"Hex": "17",
+		"Character": "^W",
+		"EntityName": " ",
+		"Description": "end of transmission block",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#024;",
+		"Hex": "18",
+		"Character": "^X",
+		"EntityName": " ",
+		"Description": "cancel",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#025;",
+		"Hex": "19",
+		"Character": "^Y",
+		"EntityName": " ",
+		"Description": "end of medium",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#026;",
+		"Hex": "1A",
+		"Character": "^Z",
+		"EntityName": " ",
+		"Description": "substitute",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#027;",
+		"Hex": "1B",
+		"Character": "^[",
+		"EntityName": " ",
+		"Description": "escape",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#028;",
+		"Hex": "1C",
+		"Character": "^\\",
+		"EntityName": " ",
+		"Description": "file separator",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#029;",
+		"Hex": "1D",
+		"Character": "^]",
+		"EntityName": " ",
+		"Description": "group separator",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#030;",
+		"Hex": "1E",
+		"Character": "^^",
+		"EntityName": " ",
+		"Description": "record separator",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#031;",
+		"Hex": "1F",
+		"Character": "^_",
+		"EntityName": " ",
+		"Description": "unit separator",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#127;",
+		"Hex": "7F",
+		"Character": "^?",
+		"EntityName": " ",
+		"Description": "delete",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#128;",
+		"Hex": "80",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": " ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#129;",
+		"Hex": "81",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": " ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#130;",
+		"Hex": "82",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#131;",
+		"Hex": "83",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#132;",
+		"Hex": "84",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#134;",
+		"Hex": "86",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#135;",
+		"Hex": "87",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#136;",
+		"Hex": "88",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#137;",
+		"Hex": "89",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#138;",
+		"Hex": "8A",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#139;",
+		"Hex": "8B",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#140;",
+		"Hex": "8C",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#141;",
+		"Hex": "8D",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#142;",
+		"Hex": "8E",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#143;",
+		"Hex": "8F",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#144;",
+		"Hex": "90",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#145;",
+		"Hex": "91",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#146;",
+		"Hex": "92",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#147;",
+		"Hex": "93",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#148;",
+		"Hex": "94",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#149;",
+		"Hex": "95",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#150;",
+		"Hex": "96",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#151;",
+		"Hex": "97",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#152;",
+		"Hex": "98",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#153;",
+		"Hex": "99",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#154;",
+		"Hex": "9A",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#155;",
+		"Hex": "9B",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#156;",
+		"Hex": "9C",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#157;",
+		"Hex": "9D",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#158;",
+		"Hex": "9E",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#159;",
+		"Hex": "9F",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#173;",
+		"Hex": "AD",
+		"Character": "­",
+		"EntityName": "&shy;",
+		"Description": "soft hyphen",
+		"CollationElements": [
+			0,
+			0,
+			0
+		]
+	},
+	{
+		"CharacterReference": "&#009;",
+		"Hex": "09",
+		"Character": "^I",
+		"EntityName": " ",
+		"Description": "horizontal tab",
+		"CollationElements": [
+			1,
+			1,
+			1
+		]
+	},
+	{
+		"CharacterReference": "&#010;",
+		"Hex": "0A",
+		"Character": "^J",
+		"EntityName": " ",
+		"Description": "line feed, new line",
+		"CollationElements": [
+			2,
+			2,
+			2
+		]
+	},
+	{
+		"CharacterReference": "&#011;",
+		"Hex": "0B",
+		"Character": "^K",
+		"EntityName": " ",
+		"Description": "vertical tab",
+		"CollationElements": [
+			3,
+			3,
+			3
+		]
+	},
+	{
+		"CharacterReference": "&#012;",
+		"Hex": "0C",
+		"Character": "^L",
+		"EntityName": " ",
+		"Description": "form feed, new page",
+		"CollationElements": [
+			4,
+			4,
+			4
+		]
+	},
+	{
+		"CharacterReference": "&#013;",
+		"Hex": "0D",
+		"Character": "^M",
+		"EntityName": " ",
+		"Description": "carriage return",
+		"CollationElements": [
+			5,
+			5,
+			5
+		]
+	},
+	{
+		"CharacterReference": "&#133;",
+		"Hex": "85",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "&nbsp; ",
+		"CollationElements": [
+			6,
+			6,
+			6
+		]
+	},
+	{
+		"CharacterReference": "&#032;",
+		"Hex": "20",
+		"Character": " ",
+		"EntityName": "&sp;",
+		"Description": "space",
+		"CollationElements": [
+			7,
+			7,
+			7
+		]
+	},
+	{
+		"CharacterReference": "&#160;",
+		"Hex": "A0",
+		"Character": " ",
+		"EntityName": " ",
+		"Description": "non-breaking space",
+		"CollationElements": [
+			7,
+			7,
+			8
+		]
+	},
+	{
+		"CharacterReference": "&#095;",
+		"Hex": "5F",
+		"Character": "_",
+		"EntityName": "&lowbar; &nbsp; &horbar;",
+		"Description": "spacing underscore, low line, horizontal bar",
+		"CollationElements": [
+			8,
+			8,
+			9
+		]
+	},
+	{
+		"CharacterReference": "&#045;",
+		"Hex": "2D",
+		"Character": "-",
+		"EntityName": "&minus; &nbsp; &hyphen;",
+		"Description": "minus sign, hyphen",
+		"CollationElements": [
+			9,
+			9,
+			10
+		]
+	},
+	{
+		"CharacterReference": "&#044;",
+		"Hex": "2C",
+		"Character": ",",
+		"EntityName": "&comma;",
+		"Description": "comma",
+		"CollationElements": [
+			10,
+			10,
+			11
+		]
+	},
+	{
+		"CharacterReference": "&#059;",
+		"Hex": "3B",
+		"Character": ";",
+		"EntityName": "&semi;",
+		"Description": "semicolon",
+		"CollationElements": [
+			11,
+			11,
+			12
+		]
+	},
+	{
+		"CharacterReference": "&#058;",
+		"Hex": "3A",
+		"Character": ":",
+		"EntityName": "&colon;",
+		"Description": "colon",
+		"CollationElements": [
+			12,
+			12,
+			13
+		]
+	},
+	{
+		"CharacterReference": "&#033;",
+		"Hex": "21",
+		"Character": "!",
+		"EntityName": "&excl;",
+		"Description": "exclamation mark",
+		"CollationElements": [
+			13,
+			13,
+			14
+		]
+	},
+	{
+		"CharacterReference": "&#161;",
+		"Hex": "A1",
+		"Character": "¡",
+		"EntityName": "&iexcl;",
+		"Description": "inverted exclamation mark",
+		"CollationElements": [
+			14,
+			14,
+			15
+		]
+	},
+	{
+		"CharacterReference": "&#063;",
+		"Hex": "3F",
+		"Character": "?",
+		"EntityName": "&quest;",
+		"Description": "question mark",
+		"CollationElements": [
+			15,
+			15,
+			16
+		]
+	},
+	{
+		"CharacterReference": "&#191;",
+		"Hex": "BF",
+		"Character": "¿",
+		"EntityName": "&iquest;",
+		"Description": "inverted question mark",
+		"CollationElements": [
+			16,
+			16,
+			17
+		]
+	},
+	{
+		"CharacterReference": "&#046;",
+		"Hex": "2E",
+		"Character": ".",
+		"EntityName": "&period;",
+		"Description": "period, decimal point, full stop",
+		"CollationElements": [
+			17,
+			17,
+			18
+		]
+	},
+	{
+		"CharacterReference": "&#183;",
+		"Hex": "B7",
+		"Character": "·",
+		"EntityName": "&middot;",
+		"Description": "middle dot, centered dot",
+		"CollationElements": [
+			18,
+			18,
+			19
+		]
+	},
+	{
+		"CharacterReference": "&#039;",
+		"Hex": "27",
+		"Character": "'",
+		"EntityName": "&apos;",
+		"Description": "apostrophe, single quote mark",
+		"CollationElements": [
+			19,
+			19,
+			20
+		]
+	},
+	{
+		"CharacterReference": "&#034;",
+		"Hex": "22",
+		"Character": "\"",
+		"EntityName": "&quot;",
+		"Description": "double quotation mark",
+		"CollationElements": [
+			20,
+			20,
+			21
+		]
+	},
+	{
+		"CharacterReference": "&#171;",
+		"Hex": "AB",
+		"Character": "«",
+		"EntityName": "&laquo;",
+		"Description": "left double angle quote or guillemet",
+		"CollationElements": [
+			21,
+			21,
+			22
+		]
+	},
+	{
+		"CharacterReference": "&#187;",
+		"Hex": "BB",
+		"Character": "»",
+		"EntityName": "&raquo;;",
+		"Description": "right double angle quote or guillemet",
+		"CollationElements": [
+			22,
+			22,
+			23
+		]
+	},
+	{
+		"CharacterReference": "&#040;",
+		"Hex": "28",
+		"Character": "(",
+		"EntityName": "&lpar;",
+		"Description": "left parenthesis",
+		"CollationElements": [
+			23,
+			23,
+			24
+		]
+	},
+	{
+		"CharacterReference": "&#041;",
+		"Hex": "29",
+		"Character": ")",
+		"EntityName": "&rpar;",
+		"Description": "right parenthesis",
+		"CollationElements": [
+			24,
+			24,
+			25
+		]
+	},
+	{
+		"CharacterReference": "&#091;",
+		"Hex": "5B",
+		"Character": "[",
+		"EntityName": "&lsqb;",
+		"Description": "left square bracket",
+		"CollationElements": [
+			25,
+			25,
+			26
+		]
+	},
+	{
+		"CharacterReference": "&#093;",
+		"Hex": "5D",
+		"Character": "]",
+		"EntityName": "&rsqb;",
+		"Description": "right square bracket",
+		"CollationElements": [
+			26,
+			26,
+			27
+		]
+	},
+	{
+		"CharacterReference": "&#123;",
+		"Hex": "7B",
+		"Character": "{",
+		"EntityName": "&lcub;",
+		"Description": "left brace, left curly bracket",
+		"CollationElements": [
+			27,
+			27,
+			28
+		]
+	},
+	{
+		"CharacterReference": "&#125;",
+		"Hex": "7D",
+		"Character": "}",
+		"EntityName": "&rcub;",
+		"Description": "right brace, right curly bracket",
+		"CollationElements": [
+			28,
+			28,
+			29
+		]
+	},
+	{
+		"CharacterReference": "&#167;",
+		"Hex": "A7",
+		"Character": "§",
+		"EntityName": "&sect;",
+		"Description": "section sign",
+		"CollationElements": [
+			29,
+			29,
+			30
+		]
+	},
+	{
+		"CharacterReference": "&#182;",
+		"Hex": "B6",
+		"Character": "¶",
+		"EntityName": "&para;",
+		"Description": "paragraph sign, pilcrow sign",
+		"CollationElements": [
+			30,
+			30,
+			31
+		]
+	},
+	{
+		"CharacterReference": "&#064;",
+		"Hex": "40",
+		"Character": "@",
+		"EntityName": "&commat;",
+		"Description": "commercial at sign",
+		"CollationElements": [
+			31,
+			31,
+			32
+		]
+	},
+	{
+		"CharacterReference": "&#042;",
+		"Hex": "2A",
+		"Character": "*",
+		"EntityName": "&ast;",
+		"Description": "asterisk",
+		"CollationElements": [
+			32,
+			32,
+			33
+		]
+	},
+	{
+		"CharacterReference": "&#047;",
+		"Hex": "2F",
+		"Character": "/",
+		"EntityName": "&sol;",
+		"Description": "slash, virgule, solidus",
+		"CollationElements": [
+			33,
+			33,
+			34
+		]
+	},
+	{
+		"CharacterReference": "&#092;",
+		"Hex": "5C",
+		"Character": "\\",
+		"EntityName": "&bsol;",
+		"Description": "backslash, reverse solidus",
+		"CollationElements": [
+			34,
+			34,
+			35
+		]
+	},
+	{
+		"CharacterReference": "&#038;",
+		"Hex": "26",
+		"Character": "&",
+		"EntityName": "&amp;",
+		"Description": "ampersand",
+		"CollationElements": [
+			35,
+			35,
+			36
+		]
+	},
+	{
+		"CharacterReference": "&#035;",
+		"Hex": "23",
+		"Character": "#",
+		"EntityName": "&num;",
+		"Description": "number sign, pound",
+		"CollationElements": [
+			36,
+			36,
+			37
+		]
+	},
+	{
+		"CharacterReference": "&#037;",
+		"Hex": "25",
+		"Character": "%",
+		"EntityName": "&percnt;",
+		"Description": "percent sign",
+		"CollationElements": [
+			37,
+			37,
+			38
+		]
+	},
+	{
+		"CharacterReference": "&#096;",
+		"Hex": "60",
+		"Character": "`",
+		"EntityName": "&grave;",
+		"Description": "spacing grave accent, back apostrophe",
+		"CollationElements": [
+			38,
+			38,
+			39
+		]
+	},
+	{
+		"CharacterReference": "&#180;",
+		"Hex": "B4",
+		"Character": "´",
+		"EntityName": "&acute;",
+		"Description": "spacing accute accent",
+		"CollationElements": [
+			39,
+			39,
+			40
+		]
+	},
+	{
+		"CharacterReference": "&#094;",
+		"Hex": "5E",
+		"Character": "^",
+		"EntityName": "&circ;",
+		"Description": "spacing circumflex accent",
+		"CollationElements": [
+			40,
+			40,
+			41
+		]
+	},
+	{
+		"CharacterReference": "&#175;",
+		"Hex": "AF",
+		"Character": "¯",
+		"EntityName": "&macr; &hibar;",
+		"Description": "spacing macron long accent",
+		"CollationElements": [
+			41,
+			41,
+			42
+		]
+	},
+	{
+		"CharacterReference": "&#168;",
+		"Hex": "A8",
+		"Character": "¨",
+		"EntityName": "&uml; &die;",
+		"Description": "spacing dieresis or umlaut",
+		"CollationElements": [
+			42,
+			42,
+			43
+		]
+	},
+	{
+		"CharacterReference": "&#184;",
+		"Hex": "B8",
+		"Character": "¸",
+		"EntityName": "&cedil;",
+		"Description": "spacing cedilla",
+		"CollationElements": [
+			43,
+			43,
+			44
+		]
+	},
+	{
+		"CharacterReference": "&#176;",
+		"Hex": "B0",
+		"Character": "°",
+		"EntityName": "&deg;",
+		"Description": "degree sign",
+		"CollationElements": [
+			44,
+			44,
+			45
+		]
+	},
+	{
+		"CharacterReference": "&#169;",
+		"Hex": "A9",
+		"Character": "©",
+		"EntityName": "&copy;",
+		"Description": "copyright sign",
+		"CollationElements": [
+			45,
+			45,
+			46
+		]
+	},
+	{
+		"CharacterReference": "&#174;",
+		"Hex": "AE",
+		"Character": "®",
+		"EntityName": "&reg;",
+		"Description": "registered trademark sign",
+		"CollationElements": [
+			46,
+			46,
+			47
+		]
+	},
+	{
+		"CharacterReference": "&#043;",
+		"Hex": "2B",
+		"Character": "+",
+		"EntityName": "&plus;",
+		"Description": "plus sign",
+		"CollationElements": [
+			47,
+			47,
+			48
+		]
+	},
+	{
+		"CharacterReference": "&#177;",
+		"Hex": "B1",
+		"Character": "±",
+		"EntityName": "&plusmn;",
+		"Description": "plus-or-minus sign",
+		"CollationElements": [
+			48,
+			48,
+			49
+		]
+	},
+	{
+		"CharacterReference": "&#247;",
+		"Hex": "F7",
+		"Character": "÷",
+		"EntityName": "&divide;",
+		"Description": "division sign",
+		"CollationElements": [
+			49,
+			49,
+			50
+		]
+	},
+	{
+		"CharacterReference": "&#215;",
+		"Hex": "D7",
+		"Character": "×",
+		"EntityName": "&times;",
+		"Description": "multiplication sign",
+		"CollationElements": [
+			50,
+			50,
+			51
+		]
+	},
+	{
+		"CharacterReference": "&#060;",
+		"Hex": "3C",
+		"Character": "<",
+		"EntityName": "&lt;",
+		"Description": "less-than sign",
+		"CollationElements": [
+			51,
+			51,
+			52
+		]
+	},
+	{
+		"CharacterReference": "&#061;",
+		"Hex": "3D",
+		"Character": "=",
+		"EntityName": "&equals;",
+		"Description": "equal sign",
+		"CollationElements": [
+			52,
+			52,
+			53
+		]
+	},
+	{
+		"CharacterReference": "&#062;",
+		"Hex": "3E",
+		"Character": ">",
+		"EntityName": "&gt;",
+		"Description": "greater-than sign",
+		"CollationElements": [
+			53,
+			53,
+			54
+		]
+	},
+	{
+		"CharacterReference": "&#172;",
+		"Hex": "AC",
+		"Character": "¬",
+		"EntityName": "&not;",
+		"Description": "logical not sign",
+		"CollationElements": [
+			54,
+			54,
+			55
+		]
+	},
+	{
+		"CharacterReference": "&#124;",
+		"Hex": "7C",
+		"Character": "|",
+		"EntityName": "&verbar;",
+		"Description": "vertical bar",
+		"CollationElements": [
+			55,
+			55,
+			56
+		]
+	},
+	{
+		"CharacterReference": "&#166;",
+		"Hex": "A6",
+		"Character": "¦",
+		"EntityName": "&brkbar; &brvbar;",
+		"Description": "broken vertical bar",
+		"CollationElements": [
+			56,
+			56,
+			57
+		]
+	},
+	{
+		"CharacterReference": "&#126;",
+		"Hex": "7E",
+		"Character": "~",
+		"EntityName": "&tilde;",
+		"Description": "tilde accent",
+		"CollationElements": [
+			57,
+			57,
+			58
+		]
+	},
+	{
+		"CharacterReference": "&#164;",
+		"Hex": "A4",
+		"Character": "¤",
+		"EntityName": "&curren;",
+		"Description": "general currency sign",
+		"CollationElements": [
+			58,
+			58,
+			59
+		]
+	},
+	{
+		"CharacterReference": "&#162;",
+		"Hex": "A2",
+		"Character": "¢",
+		"EntityName": "&cent;",
+		"Description": "cent sign",
+		"CollationElements": [
+			59,
+			59,
+			60
+		]
+	},
+	{
+		"CharacterReference": "&#036;",
+		"Hex": "24",
+		"Character": "$",
+		"EntityName": "&dollar;",
+		"Description": "dollar sign",
+		"CollationElements": [
+			60,
+			60,
+			61
+		]
+	},
+	{
+		"CharacterReference": "&#163;",
+		"Hex": "A3",
+		"Character": "£",
+		"EntityName": "&pound;",
+		"Description": "pound sterling sign",
+		"CollationElements": [
+			61,
+			61,
+			62
+		]
+	},
+	{
+		"CharacterReference": "&#165;",
+		"Hex": "A5",
+		"Character": "¥",
+		"EntityName": "&yen;",
+		"Description": "yen sign",
+		"CollationElements": [
+			62,
+			62,
+			63
+		]
+	},
+	{
+		"CharacterReference": "&#048;",
+		"Hex": "30",
+		"Character": "0",
+		"EntityName": " ",
+		"Description": "digit 0",
+		"CollationElements": [
+			63,
+			63,
+			64
+		]
+	},
+	{
+		"CharacterReference": "&#049;",
+		"Hex": "31",
+		"Character": "1",
+		"EntityName": " ",
+		"Description": "digit 1",
+		"CollationElements": [
+			64,
+			64,
+			65
+		]
+	},
+	{
+		"CharacterReference": "&#185;",
+		"Hex": "B9",
+		"Character": "¹",
+		"EntityName": "&sup1;",
+		"Description": "superscript 1",
+		"CollationElements": [
+			64,
+			64,
+			66
+		]
+	},
+	{
+		"CharacterReference": "&#189;",
+		"Hex": "BD",
+		"Character": "½",
+		"EntityName": "&frac12; &half;",
+		"Description": "fraction 1/2",
+		"CollationElements": [
+			65,
+			65,
+			67
+		]
+	},
+	{
+		"CharacterReference": "&#188;",
+		"Hex": "BC",
+		"Character": "¼",
+		"EntityName": "&frac14;",
+		"Description": "fraction 1/4",
+		"CollationElements": [
+			66,
+			66,
+			68
+		]
+	},
+	{
+		"CharacterReference": "&#050;",
+		"Hex": "32",
+		"Character": "2",
+		"EntityName": " ",
+		"Description": "digit 2",
+		"CollationElements": [
+			67,
+			67,
+			69
+		]
+	},
+	{
+		"CharacterReference": "&#178;",
+		"Hex": "B2",
+		"Character": "²",
+		"EntityName": "&sup2;",
+		"Description": "superscript 2",
+		"CollationElements": [
+			67,
+			67,
+			70
+		]
+	},
+	{
+		"CharacterReference": "&#051;",
+		"Hex": "33",
+		"Character": "3",
+		"EntityName": " ",
+		"Description": "digit 3",
+		"CollationElements": [
+			68,
+			68,
+			71
+		]
+	},
+	{
+		"CharacterReference": "&#179;",
+		"Hex": "B3",
+		"Character": "³",
+		"EntityName": "&sup3;",
+		"Description": "superscript 3",
+		"CollationElements": [
+			68,
+			68,
+			72
+		]
+	},
+	{
+		"CharacterReference": "&#190;",
+		"Hex": "BE",
+		"Character": "¾",
+		"EntityName": "&frac34;",
+		"Description": "fraction 3/4",
+		"CollationElements": [
+			69,
+			69,
+			73
+		]
+	},
+	{
+		"CharacterReference": "&#052;",
+		"Hex": "34",
+		"Character": "4",
+		"EntityName": " ",
+		"Description": "digit 4",
+		"CollationElements": [
+			70,
+			70,
+			74
+		]
+	},
+	{
+		"CharacterReference": "&#053;",
+		"Hex": "35",
+		"Character": "5",
+		"EntityName": " ",
+		"Description": "digit 5",
+		"CollationElements": [
+			71,
+			71,
+			75
+		]
+	},
+	{
+		"CharacterReference": "&#054;",
+		"Hex": "36",
+		"Character": "6",
+		"EntityName": " ",
+		"Description": "digit 6",
+		"CollationElements": [
+			72,
+			72,
+			76
+		]
+	},
+	{
+		"CharacterReference": "&#055;",
+		"Hex": "37",
+		"Character": "7",
+		"EntityName": " ",
+		"Description": "digit 7",
+		"CollationElements": [
+			73,
+			73,
+			77
+		]
+	},
+	{
+		"CharacterReference": "&#056;",
+		"Hex": "38",
+		"Character": "8",
+		"EntityName": " ",
+		"Description": "digit 8",
+		"CollationElements": [
+			74,
+			74,
+			78
+		]
+	},
+	{
+		"CharacterReference": "&#057;",
+		"Hex": "39",
+		"Character": "9",
+		"EntityName": " ",
+		"Description": "digit 9",
+		"CollationElements": [
+			75,
+			75,
+			79
+		]
+	},
+	{
+		"CharacterReference": "&#097;",
+		"Hex": "61",
+		"Character": "a",
+		"EntityName": " ",
+		"Description": "small a",
+		"CollationElements": [
+			76,
+			76,
+			80
+		]
+	},
+	{
+		"CharacterReference": "&#065;",
+		"Hex": "41",
+		"Character": "A",
+		"EntityName": " ",
+		"Description": "capital A",
+		"CollationElements": [
+			76,
+			76,
+			81
+		]
+	},
+	{
+		"CharacterReference": "&#170;",
+		"Hex": "AA",
+		"Character": "ª",
+		"EntityName": "&ordf;",
+		"Description": "feminine ordinal sign",
+		"CollationElements": [
+			76,
+			76,
+			82
+		]
+	},
+	{
+		"CharacterReference": "&#225;",
+		"Hex": "E1",
+		"Character": "á",
+		"EntityName": "&aacute;",
+		"Description": "small a acute",
+		"CollationElements": [
+			76,
+			77,
+			83
+		]
+	},
+	{
+		"CharacterReference": "&#193;",
+		"Hex": "C1",
+		"Character": "Á",
+		"EntityName": "&Aacute;",
+		"Description": "capital A acute",
+		"CollationElements": [
+			76,
+			77,
+			84
+		]
+	},
+	{
+		"CharacterReference": "&#224;",
+		"Hex": "E0",
+		"Character": "à",
+		"EntityName": "&agrave;",
+		"Description": "small a grave",
+		"CollationElements": [
+			76,
+			78,
+			85
+		]
+	},
+	{
+		"CharacterReference": "&#192;",
+		"Hex": "C0",
+		"Character": "À",
+		"EntityName": "&Agrave;",
+		"Description": "capital A grave",
+		"CollationElements": [
+			76,
+			78,
+			86
+		]
+	},
+	{
+		"CharacterReference": "&#226;",
+		"Hex": "E2",
+		"Character": "â",
+		"EntityName": "&acirc;",
+		"Description": "small a circumflex",
+		"CollationElements": [
+			76,
+			79,
+			87
+		]
+	},
+	{
+		"CharacterReference": "&#194;",
+		"Hex": "C2",
+		"Character": "Â",
+		"EntityName": "&Acirc;",
+		"Description": "capital A circumflex",
+		"CollationElements": [
+			76,
+			79,
+			88
+		]
+	},
+	{
+		"CharacterReference": "&#229;",
+		"Hex": "E5",
+		"Character": "å",
+		"EntityName": "&aring;",
+		"Description": "small a ring",
+		"CollationElements": [
+			76,
+			80,
+			89
+		]
+	},
+	{
+		"CharacterReference": "&#197;",
+		"Hex": "C5",
+		"Character": "Å",
+		"EntityName": "&Aring;",
+		"Description": "capital A ring",
+		"CollationElements": [
+			76,
+			80,
+			90
+		]
+	},
+	{
+		"CharacterReference": "&#228;",
+		"Hex": "E4",
+		"Character": "ä",
+		"EntityName": "&auml;",
+		"Description": "small a dieresis or umlaut",
+		"CollationElements": [
+			76,
+			81,
+			91
+		]
+	},
+	{
+		"CharacterReference": "&#196;",
+		"Hex": "C4",
+		"Character": "Ä",
+		"EntityName": "&Auml;",
+		"Description": "capital A dieresis or umlaut",
+		"CollationElements": [
+			76,
+			81,
+			92
+		]
+	},
+	{
+		"CharacterReference": "&#227;",
+		"Hex": "E3",
+		"Character": "ã",
+		"EntityName": "&atilde;",
+		"Description": "small a tilde",
+		"CollationElements": [
+			76,
+			82,
+			93
+		]
+	},
+	{
+		"CharacterReference": "&#195;",
+		"Hex": "C3",
+		"Character": "Ã",
+		"EntityName": "&Atilde;",
+		"Description": "capital A tilde",
+		"CollationElements": [
+			76,
+			82,
+			94
+		]
+	},
+	{
+		"CharacterReference": "&#230;",
+		"Hex": "E6",
+		"Character": "æ",
+		"EntityName": "&aelig;",
+		"Description": "small ae ligature",
+		"CollationElements": [
+			77,
+			83,
+			95
+		]
+	},
+	{
+		"CharacterReference": "&#198;",
+		"Hex": "C6",
+		"Character": "Æ",
+		"EntityName": "&AElig;",
+		"Description": "capital AE ligature",
+		"CollationElements": [
+			77,
+			83,
+			96
+		]
+	},
+	{
+		"CharacterReference": "&#098;",
+		"Hex": "62",
+		"Character": "b",
+		"EntityName": " ",
+		"Description": "small b",
+		"CollationElements": [
+			78,
+			84,
+			97
+		]
+	},
+	{
+		"CharacterReference": "&#066;",
+		"Hex": "42",
+		"Character": "B",
+		"EntityName": " ",
+		"Description": "capital B",
+		"CollationElements": [
+			78,
+			84,
+			98
+		]
+	},
+	{
+		"CharacterReference": "&#099;",
+		"Hex": "63",
+		"Character": "c",
+		"EntityName": " ",
+		"Description": "small c",
+		"CollationElements": [
+			79,
+			85,
+			99
+		]
+	},
+	{
+		"CharacterReference": "&#067;",
+		"Hex": "43",
+		"Character": "C",
+		"EntityName": " ",
+		"Description": "capital C",
+		"CollationElements": [
+			79,
+			85,
+			100
+		]
+	},
+	{
+		"CharacterReference": "&#231;",
+		"Hex": "E7",
+		"Character": "ç",
+		"EntityName": "&ccedil;",
+		"Description": "small c cedilla",
+		"CollationElements": [
+			79,
+			86,
+			101
+		]
+	},
+	{
+		"CharacterReference": "&#199;",
+		"Hex": "C7",
+		"Character": "Ç",
+		"EntityName": "&Ccedil;",
+		"Description": "capital C cedilla",
+		"CollationElements": [
+			79,
+			86,
+			102
+		]
+	},
+	{
+		"CharacterReference": "&#100;",
+		"Hex": "64",
+		"Character": "d",
+		"EntityName": " ",
+		"Description": "small d",
+		"CollationElements": [
+			80,
+			87,
+			103
+		]
+	},
+	{
+		"CharacterReference": "&#068;",
+		"Hex": "44",
+		"Character": "D",
+		"EntityName": " ",
+		"Description": "capital D",
+		"CollationElements": [
+			80,
+			87,
+			104
+		]
+	},
+	{
+		"CharacterReference": "&#240;",
+		"Hex": "F0",
+		"Character": "ð",
+		"EntityName": "&eth;",
+		"Description": "small eth",
+		"CollationElements": [
+			80,
+			88,
+			105
+		]
+	},
+	{
+		"CharacterReference": "&#208;",
+		"Hex": "D0",
+		"Character": "Ð",
+		"EntityName": "&ETH;",
+		"Description": "capital ETH",
+		"CollationElements": [
+			80,
+			88,
+			106
+		]
+	},
+	{
+		"CharacterReference": "&#101;",
+		"Hex": "65",
+		"Character": "e",
+		"EntityName": " ",
+		"Description": "small e",
+		"CollationElements": [
+			81,
+			89,
+			107
+		]
+	},
+	{
+		"CharacterReference": "&#069;",
+		"Hex": "45",
+		"Character": "E",
+		"EntityName": " ",
+		"Description": "capital E",
+		"CollationElements": [
+			81,
+			89,
+			108
+		]
+	},
+	{
+		"CharacterReference": "&#233;",
+		"Hex": "E9",
+		"Character": "é",
+		"EntityName": "&eacute;",
+		"Description": "small e acute",
+		"CollationElements": [
+			81,
+			90,
+			109
+		]
+	},
+	{
+		"CharacterReference": "&#201;",
+		"Hex": "C9",
+		"Character": "É",
+		"EntityName": "&Eacute;",
+		"Description": "capital E acute",
+		"CollationElements": [
+			81,
+			90,
+			110
+		]
+	},
+	{
+		"CharacterReference": "&#232;",
+		"Hex": "E8",
+		"Character": "è",
+		"EntityName": "&egrave;",
+		"Description": "small e grave",
+		"CollationElements": [
+			81,
+			91,
+			111
+		]
+	},
+	{
+		"CharacterReference": "&#200;",
+		"Hex": "C8",
+		"Character": "È",
+		"EntityName": "&Egrave;",
+		"Description": "capital E grave",
+		"CollationElements": [
+			81,
+			91,
+			112
+		]
+	},
+	{
+		"CharacterReference": "&#234;",
+		"Hex": "EA",
+		"Character": "ê",
+		"EntityName": "&ecirc;",
+		"Description": "small e circumflex",
+		"CollationElements": [
+			81,
+			92,
+			113
+		]
+	},
+	{
+		"CharacterReference": "&#202;",
+		"Hex": "CA",
+		"Character": "Ê",
+		"EntityName": "&Ecirc;",
+		"Description": "capital E circumflex",
+		"CollationElements": [
+			81,
+			92,
+			114
+		]
+	},
+	{
+		"CharacterReference": "&#235;",
+		"Hex": "EB",
+		"Character": "ë",
+		"EntityName": "&euml;",
+		"Description": "small e dieresis or umlaut",
+		"CollationElements": [
+			81,
+			93,
+			115
+		]
+	},
+	{
+		"CharacterReference": "&#203;",
+		"Hex": "CB",
+		"Character": "Ë",
+		"EntityName": "&Euml;",
+		"Description": "capital E dieresis or umlaut",
+		"CollationElements": [
+			81,
+			93,
+			116
+		]
+	},
+	{
+		"CharacterReference": "&#102;",
+		"Hex": "66",
+		"Character": "f",
+		"EntityName": " ",
+		"Description": "small f",
+		"CollationElements": [
+			82,
+			94,
+			117
+		]
+	},
+	{
+		"CharacterReference": "&#070;",
+		"Hex": "46",
+		"Character": "F",
+		"EntityName": " ",
+		"Description": "capital F",
+		"CollationElements": [
+			82,
+			94,
+			118
+		]
+	},
+	{
+		"CharacterReference": "&#103;",
+		"Hex": "67",
+		"Character": "g",
+		"EntityName": " ",
+		"Description": "small g",
+		"CollationElements": [
+			83,
+			95,
+			119
+		]
+	},
+	{
+		"CharacterReference": "&#071;",
+		"Hex": "47",
+		"Character": "G",
+		"EntityName": " ",
+		"Description": "capital G",
+		"CollationElements": [
+			83,
+			95,
+			120
+		]
+	},
+	{
+		"CharacterReference": "&#104;",
+		"Hex": "68",
+		"Character": "h",
+		"EntityName": " ",
+		"Description": "small h",
+		"CollationElements": [
+			84,
+			96,
+			121
+		]
+	},
+	{
+		"CharacterReference": "&#072;",
+		"Hex": "48",
+		"Character": "H",
+		"EntityName": " ",
+		"Description": "capital H",
+		"CollationElements": [
+			84,
+			96,
+			122
+		]
+	},
+	{
+		"CharacterReference": "&#105;",
+		"Hex": "69",
+		"Character": "i",
+		"EntityName": " ",
+		"Description": "small i",
+		"CollationElements": [
+			85,
+			97,
+			123
+		]
+	},
+	{
+		"CharacterReference": "&#073;",
+		"Hex": "49",
+		"Character": "I",
+		"EntityName": " ",
+		"Description": "capital I",
+		"CollationElements": [
+			85,
+			97,
+			124
+		]
+	},
+	{
+		"CharacterReference": "&#237;",
+		"Hex": "ED",
+		"Character": "í",
+		"EntityName": "&iacute;",
+		"Description": "small i acute",
+		"CollationElements": [
+			85,
+			98,
+			125
+		]
+	},
+	{
+		"CharacterReference": "&#205;",
+		"Hex": "CD",
+		"Character": "Í",
+		"EntityName": "&Iacute;",
+		"Description": "capital I acute",
+		"CollationElements": [
+			85,
+			98,
+			126
+		]
+	},
+	{
+		"CharacterReference": "&#236;",
+		"Hex": "EC",
+		"Character": "ì",
+		"EntityName": "&igrave;",
+		"Description": "small i grave",
+		"CollationElements": [
+			85,
+			99,
+			127
+		]
+	},
+	{
+		"CharacterReference": "&#204;",
+		"Hex": "CC",
+		"Character": "Ì",
+		"EntityName": "&Igrave;",
+		"Description": "capital I grave",
+		"CollationElements": [
+			85,
+			99,
+			128
+		]
+	},
+	{
+		"CharacterReference": "&#238;",
+		"Hex": "EE",
+		"Character": "î",
+		"EntityName": "&icirc;",
+		"Description": "small i circumflex",
+		"CollationElements": [
+			85,
+			100,
+			129
+		]
+	},
+	{
+		"CharacterReference": "&#206;",
+		"Hex": "CE",
+		"Character": "Î",
+		"EntityName": "&Icirc;",
+		"Description": "capital I circumflex",
+		"CollationElements": [
+			85,
+			100,
+			130
+		]
+	},
+	{
+		"CharacterReference": "&#239;",
+		"Hex": "EF",
+		"Character": "ï",
+		"EntityName": "&iuml;",
+		"Description": "small i dieresis or umlaut",
+		"CollationElements": [
+			85,
+			101,
+			131
+		]
+	},
+	{
+		"CharacterReference": "&#207;",
+		"Hex": "CF",
+		"Character": "Ï",
+		"EntityName": "&Iuml;",
+		"Description": "capital I dieresis or umlaut",
+		"CollationElements": [
+			85,
+			101,
+			132
+		]
+	},
+	{
+		"CharacterReference": "&#106;",
+		"Hex": "6A",
+		"Character": "j",
+		"EntityName": " ",
+		"Description": "small j",
+		"CollationElements": [
+			86,
+			102,
+			133
+		]
+	},
+	{
+		"CharacterReference": "&#074;",
+		"Hex": "4A",
+		"Character": "J",
+		"EntityName": " ",
+		"Description": "capital J",
+		"CollationElements": [
+			86,
+			102,
+			134
+		]
+	},
+	{
+		"CharacterReference": "&#107;",
+		"Hex": "6B",
+		"Character": "k",
+		"EntityName": " ",
+		"Description": "small k",
+		"CollationElements": [
+			87,
+			103,
+			135
+		]
+	},
+	{
+		"CharacterReference": "&#075;",
+		"Hex": "4B",
+		"Character": "K",
+		"EntityName": " ",
+		"Description": "capital K",
+		"CollationElements": [
+			87,
+			103,
+			136
+		]
+	},
+	{
+		"CharacterReference": "&#108;",
+		"Hex": "6C",
+		"Character": "l",
+		"EntityName": " ",
+		"Description": "small l",
+		"CollationElements": [
+			88,
+			104,
+			137
+		]
+	},
+	{
+		"CharacterReference": "&#076;",
+		"Hex": "4C",
+		"Character": "L",
+		"EntityName": " ",
+		"Description": "capital L",
+		"CollationElements": [
+			88,
+			104,
+			138
+		]
+	},
+	{
+		"CharacterReference": "&#109;",
+		"Hex": "6D",
+		"Character": "m",
+		"EntityName": " ",
+		"Description": "small m",
+		"CollationElements": [
+			89,
+			105,
+			139
+		]
+	},
+	{
+		"CharacterReference": "&#077;",
+		"Hex": "4D",
+		"Character": "M",
+		"EntityName": " ",
+		"Description": "capital M",
+		"CollationElements": [
+			89,
+			105,
+			140
+		]
+	},
+	{
+		"CharacterReference": "&#110;",
+		"Hex": "6E",
+		"Character": "n",
+		"EntityName": " ",
+		"Description": "small n",
+		"CollationElements": [
+			90,
+			106,
+			141
+		]
+	},
+	{
+		"CharacterReference": "&#078;",
+		"Hex": "4E",
+		"Character": "N",
+		"EntityName": " ",
+		"Description": "capital N",
+		"CollationElements": [
+			90,
+			106,
+			142
+		]
+	},
+	{
+		"CharacterReference": "&#241;",
+		"Hex": "F1",
+		"Character": "ñ",
+		"EntityName": "&ntilde;",
+		"Description": "small n tilde",
+		"CollationElements": [
+			90,
+			107,
+			143
+		]
+	},
+	{
+		"CharacterReference": "&#209;",
+		"Hex": "D1",
+		"Character": "Ñ",
+		"EntityName": "&Ntilde;",
+		"Description": "capital N tilde",
+		"CollationElements": [
+			90,
+			107,
+			144
+		]
+	},
+	{
+		"CharacterReference": "&#111;",
+		"Hex": "6F",
+		"Character": "o",
+		"EntityName": " ",
+		"Description": "small o",
+		"CollationElements": [
+			91,
+			108,
+			145
+		]
+	},
+	{
+		"CharacterReference": "&#079;",
+		"Hex": "4F",
+		"Character": "O",
+		"EntityName": " ",
+		"Description": "capital O",
+		"CollationElements": [
+			91,
+			108,
+			146
+		]
+	},
+	{
+		"CharacterReference": "&#186;",
+		"Hex": "BA",
+		"Character": "º",
+		"EntityName": "&ordm;",
+		"Description": "masculine ordinal indicator",
+		"CollationElements": [
+			91,
+			108,
+			147
+		]
+	},
+	{
+		"CharacterReference": "&#243;",
+		"Hex": "F3",
+		"Character": "ó",
+		"EntityName": "&oacute;",
+		"Description": "small o acute",
+		"CollationElements": [
+			91,
+			109,
+			148
+		]
+	},
+	{
+		"CharacterReference": "&#211;",
+		"Hex": "D3",
+		"Character": "Ó",
+		"EntityName": "&Oacute;",
+		"Description": "capital O acute",
+		"CollationElements": [
+			91,
+			109,
+			149
+		]
+	},
+	{
+		"CharacterReference": "&#242;",
+		"Hex": "F2",
+		"Character": "ò",
+		"EntityName": "&ograve;",
+		"Description": "small o grave",
+		"CollationElements": [
+			91,
+			110,
+			150
+		]
+	},
+	{
+		"CharacterReference": "&#210;",
+		"Hex": "D2",
+		"Character": "Ò",
+		"EntityName": "&Ograve;",
+		"Description": "capital O grave",
+		"CollationElements": [
+			91,
+			110,
+			151
+		]
+	},
+	{
+		"CharacterReference": "&#244;",
+		"Hex": "F4",
+		"Character": "ô",
+		"EntityName": "&ocirc;",
+		"Description": "small o circumflex",
+		"CollationElements": [
+			91,
+			111,
+			152
+		]
+	},
+	{
+		"CharacterReference": "&#212;",
+		"Hex": "D4",
+		"Character": "Ô",
+		"EntityName": "&Ocirc;",
+		"Description": "capital O circumflex",
+		"CollationElements": [
+			91,
+			111,
+			153
+		]
+	},
+	{
+		"CharacterReference": "&#246;",
+		"Hex": "F6",
+		"Character": "ö",
+		"EntityName": "&ouml;",
+		"Description": "small o dieresis or umlaut",
+		"CollationElements": [
+			91,
+			112,
+			154
+		]
+	},
+	{
+		"CharacterReference": "&#214;",
+		"Hex": "D6",
+		"Character": "Ö",
+		"EntityName": "&Ouml;",
+		"Description": "capital O dieresis or umlaut",
+		"CollationElements": [
+			91,
+			112,
+			155
+		]
+	},
+	{
+		"CharacterReference": "&#245;",
+		"Hex": "F5",
+		"Character": "õ",
+		"EntityName": "&otilde;",
+		"Description": "small o tilde",
+		"CollationElements": [
+			91,
+			113,
+			156
+		]
+	},
+	{
+		"CharacterReference": "&#213;",
+		"Hex": "D5",
+		"Character": "Õ",
+		"EntityName": "&Otilde;",
+		"Description": "capital O tilde",
+		"CollationElements": [
+			91,
+			113,
+			157
+		]
+	},
+	{
+		"CharacterReference": "&#248;",
+		"Hex": "F8",
+		"Character": "ø",
+		"EntityName": "&oslash;",
+		"Description": "small o slash",
+		"CollationElements": [
+			91,
+			114,
+			158
+		]
+	},
+	{
+		"CharacterReference": "&#216;",
+		"Hex": "D8",
+		"Character": "Ø",
+		"EntityName": "&Oslash;",
+		"Description": "capital O slash",
+		"CollationElements": [
+			91,
+			114,
+			159
+		]
+	},
+	{
+		"CharacterReference": "&#112;",
+		"Hex": "70",
+		"Character": "p",
+		"EntityName": " ",
+		"Description": "small p",
+		"CollationElements": [
+			92,
+			115,
+			160
+		]
+	},
+	{
+		"CharacterReference": "&#080;",
+		"Hex": "50",
+		"Character": "P",
+		"EntityName": " ",
+		"Description": "capital P",
+		"CollationElements": [
+			92,
+			115,
+			161
+		]
+	},
+	{
+		"CharacterReference": "&#113;",
+		"Hex": "71",
+		"Character": "q",
+		"EntityName": " ",
+		"Description": "small q",
+		"CollationElements": [
+			93,
+			116,
+			162
+		]
+	},
+	{
+		"CharacterReference": "&#081;",
+		"Hex": "51",
+		"Character": "Q",
+		"EntityName": " ",
+		"Description": "capital Q",
+		"CollationElements": [
+			93,
+			116,
+			163
+		]
+	},
+	{
+		"CharacterReference": "&#114;",
+		"Hex": "72",
+		"Character": "r",
+		"EntityName": " ",
+		"Description": "small r",
+		"CollationElements": [
+			94,
+			117,
+			164
+		]
+	},
+	{
+		"CharacterReference": "&#082;",
+		"Hex": "52",
+		"Character": "R",
+		"EntityName": " ",
+		"Description": "capital R",
+		"CollationElements": [
+			94,
+			117,
+			165
+		]
+	},
+	{
+		"CharacterReference": "&#115;",
+		"Hex": "73",
+		"Character": "s",
+		"EntityName": " ",
+		"Description": "small s",
+		"CollationElements": [
+			95,
+			118,
+			166
+		]
+	},
+	{
+		"CharacterReference": "&#083;",
+		"Hex": "53",
+		"Character": "S",
+		"EntityName": " ",
+		"Description": "capital S",
+		"CollationElements": [
+			95,
+			118,
+			167
+		]
+	},
+	{
+		"CharacterReference": "&#223;",
+		"Hex": "DF",
+		"Character": "ß",
+		"EntityName": "&szlig;",
+		"Description": "small sharp s, sz ligature",
+		"CollationElements": [
+			96,
+			119,
+			168
+		]
+	},
+	{
+		"CharacterReference": "&#116;",
+		"Hex": "74",
+		"Character": "t",
+		"EntityName": " ",
+		"Description": "small t",
+		"CollationElements": [
+			97,
+			120,
+			169
+		]
+	},
+	{
+		"CharacterReference": "&#084;",
+		"Hex": "54",
+		"Character": "T",
+		"EntityName": " ",
+		"Description": "capital T",
+		"CollationElements": [
+			97,
+			120,
+			170
+		]
+	},
+	{
+		"CharacterReference": "&#117;",
+		"Hex": "75",
+		"Character": "u",
+		"EntityName": " ",
+		"Description": "small u",
+		"CollationElements": [
+			98,
+			121,
+			171
+		]
+	},
+	{
+		"CharacterReference": "&#085;",
+		"Hex": "55",
+		"Character": "U",
+		"EntityName": " ",
+		"Description": "capital U",
+		"CollationElements": [
+			98,
+			121,
+			172
+		]
+	},
+	{
+		"CharacterReference": "&#250;",
+		"Hex": "FA",
+		"Character": "ú",
+		"EntityName": "&uacute;",
+		"Description": "small u acute",
+		"CollationElements": [
+			98,
+			122,
+			173
+		]
+	},
+	{
+		"CharacterReference": "&#218;",
+		"Hex": "DA",
+		"Character": "Ú",
+		"EntityName": "&Uacute;",
+		"Description": "capital U acute",
+		"CollationElements": [
+			98,
+			122,
+			174
+		]
+	},
+	{
+		"CharacterReference": "&#249;",
+		"Hex": "F9",
+		"Character": "ù",
+		"EntityName": "&ugrave;",
+		"Description": "small u grave",
+		"CollationElements": [
+			98,
+			123,
+			175
+		]
+	},
+	{
+		"CharacterReference": "&#217;",
+		"Hex": "D9",
+		"Character": "Ù",
+		"EntityName": "&Ugrave;",
+		"Description": "capital U grave",
+		"CollationElements": [
+			98,
+			123,
+			176
+		]
+	},
+	{
+		"CharacterReference": "&#251;",
+		"Hex": "FB",
+		"Character": "û",
+		"EntityName": "&ucirc;",
+		"Description": "small u circumflex",
+		"CollationElements": [
+			98,
+			124,
+			177
+		]
+	},
+	{
+		"CharacterReference": "&#219;",
+		"Hex": "DB",
+		"Character": "Û",
+		"EntityName": "&Ucirc;",
+		"Description": "capital U circumflex",
+		"CollationElements": [
+			98,
+			124,
+			178
+		]
+	},
+	{
+		"CharacterReference": "&#252;",
+		"Hex": "FC",
+		"Character": "ü",
+		"EntityName": "&uuml;",
+		"Description": "small u dieresis or umlaut",
+		"CollationElements": [
+			98,
+			125,
+			179
+		]
+	},
+	{
+		"CharacterReference": "&#220;",
+		"Hex": "DC",
+		"Character": "Ü",
+		"EntityName": "&Uuml;",
+		"Description": "capital U dieresis or umlaut",
+		"CollationElements": [
+			98,
+			125,
+			180
+		]
+	},
+	{
+		"CharacterReference": "&#118;",
+		"Hex": "76",
+		"Character": "v",
+		"EntityName": " ",
+		"Description": "small v",
+		"CollationElements": [
+			99,
+			126,
+			181
+		]
+	},
+	{
+		"CharacterReference": "&#086;",
+		"Hex": "56",
+		"Character": "V",
+		"EntityName": " ",
+		"Description": "capital V",
+		"CollationElements": [
+			99,
+			126,
+			182
+		]
+	},
+	{
+		"CharacterReference": "&#119;",
+		"Hex": "77",
+		"Character": "w",
+		"EntityName": " ",
+		"Description": "small w",
+		"CollationElements": [
+			100,
+			127,
+			183
+		]
+	},
+	{
+		"CharacterReference": "&#087;",
+		"Hex": "57",
+		"Character": "W",
+		"EntityName": " ",
+		"Description": "capital W",
+		"CollationElements": [
+			100,
+			127,
+			184
+		]
+	},
+	{
+		"CharacterReference": "&#120;",
+		"Hex": "78",
+		"Character": "x",
+		"EntityName": " ",
+		"Description": "small x",
+		"CollationElements": [
+			101,
+			128,
+			185
+		]
+	},
+	{
+		"CharacterReference": "&#088;",
+		"Hex": "58",
+		"Character": "X",
+		"EntityName": " ",
+		"Description": "capital X",
+		"CollationElements": [
+			101,
+			128,
+			186
+		]
+	},
+	{
+		"CharacterReference": "&#121;",
+		"Hex": "79",
+		"Character": "y",
+		"EntityName": " ",
+		"Description": "small y",
+		"CollationElements": [
+			102,
+			129,
+			187
+		]
+	},
+	{
+		"CharacterReference": "&#089;",
+		"Hex": "59",
+		"Character": "Y",
+		"EntityName": " ",
+		"Description": "capital Y",
+		"CollationElements": [
+			102,
+			129,
+			188
+		]
+	},
+	{
+		"CharacterReference": "&#253;",
+		"Hex": "FD",
+		"Character": "ý",
+		"EntityName": "&yacute;",
+		"Description": "small y acute",
+		"CollationElements": [
+			102,
+			130,
+			189
+		]
+	},
+	{
+		"CharacterReference": "&#221;",
+		"Hex": "DD",
+		"Character": "Ý",
+		"EntityName": "&Yacute;",
+		"Description": "capital Y acute",
+		"CollationElements": [
+			102,
+			130,
+			190
+		]
+	},
+	{
+		"CharacterReference": "&#255;",
+		"Hex": "FF",
+		"Character": "ÿ",
+		"EntityName": "&yuml;",
+		"Description": "small y dieresis or umlaut",
+		"CollationElements": [
+			102,
+			131,
+			191
+		]
+	},
+	{
+		"CharacterReference": "&#122;",
+		"Hex": "7A",
+		"Character": "z",
+		"EntityName": " ",
+		"Description": "small z",
+		"CollationElements": [
+			103,
+			132,
+			192
+		]
+	},
+	{
+		"CharacterReference": "&#090;",
+		"Hex": "5A",
+		"Character": "Z",
+		"EntityName": " ",
+		"Description": "capital Z",
+		"CollationElements": [
+			103,
+			132,
+			193
+		]
+	},
+	{
+		"CharacterReference": "&#254;",
+		"Hex": "FE",
+		"Character": "þ",
+		"EntityName": "&thorn;",
+		"Description": "small thorn",
+		"CollationElements": [
+			104,
+			133,
+			194
+		]
+	},
+	{
+		"CharacterReference": "&#222;",
+		"Hex": "DE",
+		"Character": "Þ",
+		"EntityName": "&THORN;",
+		"Description": "capital THORN",
+		"CollationElements": [
+			104,
+			133,
+			195
+		]
+	},
+	{
+		"CharacterReference": "&#181;",
+		"Hex": "B5",
+		"Character": "µ",
+		"EntityName": "&micro;",
+		"Description": "micro sign, mu",
+		"CollationElements": [
+			105,
+			134,
+			196
+		]
+	}
+]

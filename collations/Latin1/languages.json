@@ -1,0 +1,25 @@
+[
+  {"Identifier": "en", "Description": "English"},
+  {"Identifier": "de", "Description": "German"},
+  {"Identifier": "fr", "Description": "French"},
+  {"Identifier": "es", "Description": "Spanish"},
+  {"Identifier": "it", "Description": "Italian"},
+  {"Identifier": "nl", "Description": "Dutch"},
+  {"Identifier": "pt", "Description": "Portuguese"},
+  {"Identifier": "da", "Description": "Danish"},
+  {"Identifier": "sv", "Description": "Swedish"},
+  {"Identifier": "nb", "Description": "Norwegian Bokmål"},
+  {"Identifier": "nn", "Description": "Norwegian Nynorsk"},
+  {"Identifier": "fi", "Description": "Finnish"},
+  {"Identifier": "pl", "Description": "Polish"},
+  {"Identifier": "cs", "Description": "Czech"},
+  {"Identifier": "hu", "Description": "Hungarian"},
+  {"Identifier": "sk", "Description": "Slovak"},
+  {"Identifier": "sl", "Description": "Slovenian"},
+  {"Identifier": "is", "Description": "Icelandic"},
+  {"Identifier": "tr", "Description": "Turkish"},
+  {"Identifier": "et", "Description": "Estonian"},
+  {"Identifier": "eo", "Description": "Esperanto"},
+  {"Identifier": "af", "Description": "Afrikaans"}
+]
+
