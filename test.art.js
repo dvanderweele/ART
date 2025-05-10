@@ -1414,6 +1414,223 @@ function getRandomInt(min, max) {
     "75",
     "3x fixed compound key fwd-rev-fwd traversal #5"
   )
+  // boundedRangeFixN tests
+  /**
+   * LB
+   * UB
+   * LEN
+   * LI
+   * UI
+   * order
+   * limit
+   * root
+   */
+  expect(
+    [
+      ...(
+        function*(){
+          for(let i of fockArt.boundedRangeFixN(
+            new Uint8Array(binCompF64(-2100).buffer),
+            new Uint8Array(binCompF64(-2000).buffer),
+            9,
+            LOWER_BOUND_INCLUSIVE,
+            UPPER_BOUND_INCLUSIVE,
+            FORWARD
+          )){
+            for(let j of fockArt.boundedRangeFixN(
+              new Uint8Array(binCompF64(600).buffer),
+              new Uint8Array(binCompF64(800).buffer),
+              9,
+              LOWER_BOUND_INCLUSIVE,
+              UPPER_BOUND_INCLUSIVE,
+              FORWARD,
+              Infinity,
+              i
+            )){
+              for(let k of fockArt.boundedRangeFixN(
+                new Uint8Array(binCompF64(-0).buffer),
+                new Uint8Array(binCompF64(150).buffer),
+                9,
+                LOWER_BOUND_INCLUSIVE,
+                UPPER_BOUND_INCLUSIVE,
+                FORWARD,
+                Infinity,
+                j
+              )) yield k
+            }
+          }
+        }
+      )()
+    ].join("|"),
+    "15|25", 
+    "3x boundedRangeFixN #1"
+  ) 
+  expect(
+    [
+      ...(
+        function*(){
+          for(let i of fockArt.boundedRangeFixN(
+            new Uint8Array(binCompF64(-2095.55).buffer),
+            new Uint8Array(binCompF64(-2000).buffer),
+            9,
+            LOWER_BOUND_INCLUSIVE,
+            UPPER_BOUND_INCLUSIVE,
+            FORWARD
+          )){
+            for(let j of fockArt.boundedRangeFixN(
+              new Uint8Array(binCompF64(600).buffer),
+              new Uint8Array(binCompF64(713.1).buffer),
+              9,
+              LOWER_BOUND_INCLUSIVE,
+              UPPER_BOUND_INCLUSIVE,
+              FORWARD,
+              Infinity,
+              i
+            )){
+              for(let k of fockArt.boundedRangeFixN(
+                new Uint8Array(binCompF64(-0).buffer),
+                new Uint8Array(binCompF64(150).buffer),
+                9,
+                LOWER_BOUND_INCLUSIVE,
+                UPPER_BOUND_INCLUSIVE,
+                FORWARD,
+                Infinity,
+                j
+              )) yield k
+            }
+          }
+        }
+      )()
+    ].join("|"),
+    "15|25", 
+    "3x boundedRangeFixN #2"
+  ) 
+  console.log("\nCase 3\n")
+  expect(
+    [
+      ...(
+        function*(){
+          for(let i of fockArt.boundedRangeFixN(
+            new Uint8Array(binCompF64(-2095.55).buffer),
+            new Uint8Array(binCompF64(-1000).buffer),
+            9,
+            LOWER_BOUND_INCLUSIVE,
+            UPPER_BOUND_INCLUSIVE,
+            FORWARD
+          )){
+            for(let j of fockArt.boundedRangeFixN(
+              new Uint8Array(binCompF64(-1).buffer),
+              new Uint8Array(binCompF64(713.1).buffer),
+              9,
+              LOWER_BOUND_INCLUSIVE,
+              UPPER_BOUND_INCLUSIVE,
+              FORWARD,
+              Infinity,
+              i
+            )){
+              for(let k of fockArt.boundedRangeFixN(
+                new Uint8Array(binCompF64(-15).buffer),
+                new Uint8Array(binCompF64(150).buffer),
+                9,
+                LOWER_BOUND_INCLUSIVE,
+                UPPER_BOUND_INCLUSIVE,
+                FORWARD,
+                Infinity,
+                j
+              )) yield k
+            }
+          }
+        }
+      )()
+    ].join("|"),
+    "15|25|55|65|75", 
+    "3x boundedRangeFixN #3"
+  ) 
+  expect(
+    [
+      ...(
+        function*(){
+          let q = []
+          for(let i of fockArt.boundedRangeFixN(
+            new Uint8Array(binCompF64(-2095.55).buffer),
+            new Uint8Array(binCompF64(-1000).buffer),
+            9,
+            LOWER_BOUND_INCLUSIVE,
+            UPPER_BOUND_INCLUSIVE,
+            FORWARD
+          )) q.push(i)
+          q.reverse()
+          for(let qi of q){
+            for(let j of fockArt.boundedRangeFixN(
+              new Uint8Array(binCompF64(-1).buffer),
+              new Uint8Array(binCompF64(713.1).buffer),
+              9,
+              LOWER_BOUND_INCLUSIVE,
+              UPPER_BOUND_INCLUSIVE,
+              REVERSE,
+              Infinity,
+              qi
+            )){ 
+              for(let k of fockArt.boundedRangeFixN(
+                new Uint8Array(binCompF64(-15).buffer),
+                new Uint8Array(binCompF64(150).buffer),
+                9,
+                LOWER_BOUND_INCLUSIVE,
+                UPPER_BOUND_INCLUSIVE,
+                FORWARD,
+                Infinity,
+                j
+              )) yield k
+            }
+          }
+        }
+      )()
+    ].join("|"),
+    "75|55|65|25|15", 
+    "3x boundedRangeFixN #4 fwd-rev-fwd"
+  )
+  console.log( 
+    [
+      ...(
+        function*(){
+          let q = []
+          for(let i of fockArt.boundedRangeFixN(
+            new Uint8Array(binCompF64(-2095.55).buffer),
+            new Uint8Array(binCompF64(-1000).buffer),
+            9,
+            LOWER_BOUND_INCLUSIVE,
+            UPPER_BOUND_INCLUSIVE,
+            FORWARD
+          )) q.push(i)
+          q.reverse()
+          for(let qi of q){
+            for(let j of fockArt.boundedRangeFixN(
+              new Uint8Array(binCompF64(-1).buffer),
+              new Uint8Array(binCompF64(713.1).buffer),
+              9,
+              LOWER_BOUND_INCLUSIVE,
+              UPPER_BOUND_INCLUSIVE,
+              REVERSE,
+              Infinity,
+              qi
+            )){ 
+              for(let k of fockArt.boundedRangeFixN(
+                new Uint8Array(binCompF64(-15).buffer),
+                new Uint8Array(binCompF64(150).buffer),
+                9,
+                LOWER_BOUND_INCLUSIVE,
+                UPPER_BOUND_INCLUSIVE,
+                FORWARD,
+                Infinity,
+                j
+              )) yield k
+            }
+          }
+        }
+      )()
+    ].join("|"),
+    "75|55|65|25|15"
+  )
 
   dump(true);
 })()
