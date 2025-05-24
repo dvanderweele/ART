@@ -665,17 +665,99 @@ This is by far the most challenging part of the journey. Debugging my test cases
 
 Part of the complexity was that I tried to implement a single monolithic `query` method. I wanted a query method you could give an array of bound definitions, one for each subcomponent of the compound keys stored in the tree. Each definition could specify the inclusiveness of the bounds as well as whether that subcomponent has a fixed or variable length. I maintain that it's not impossible, but if you plan the composability of your methods optimally then you may be able break things up into more bite-sized pieces.
 
-There is an invariant in the context of the bounded traversal that at any time, the key path to any node within the traversal must be lexicographically greater than the lower bound and less than the upper bound. Of course, inclusive versions of this invariant also exist. Almost wildly fewer lines of code (and lesser cyclomatic complexity) is attainable in the so-called naïve pursuit of this invariant whereby a full-length comparison of the current key prefix is permissible at each inner node of the trie. Evocative of this is the arrangement of full key comparisons performed at every node in logarithmic runtime algorithms for trees such the self-balancing binary search species, and so I could not stomach this design choice.
+There is an invariant in the context of the bounded traversal that at any time, the key path to any node within the traversal must be lexicographically greater than the lower bound and less than the upper bound. Of course, inclusive versions of this invariant also exist. Almost wildly fewer lines of code (and lesser cyclomatic complexity) is attainable in the so-called naïve pursuit of this invariant whereby a full-length comparison of the current key prefix is permissible at each inner node of the trie. Evocative of this is the arrangement of full key comparisons performed at every node in logarithmic runtime algorithms for trees such as the self-balancing binary search species, and so I could not stomach this design choice.
 
-The way forward then is ensuring that the traversal is accurately stateful. This is not a small task. There is naturally the question of recursion versus an iterative, stack-based approach. I chose the latter because this problem is not fundamentally recursive and I have more experience with stack-based tree-traversal solutions. This is emphatically not the sort of problem where you should start swinging outside your wheelhouse.
+Unmistakably, the stakes are higher than ever before in this project. The task at hand feels daunting, insurmountable even. If we walk away now, we lose critical features needed to approach our programs from a relational/tabular perspective, scalable by way of compound-key indices that span multiple columns. Realy, we lose a core range query feature, exactly the kind of feature that drew us to tree data structures to begin with.
 
-### boundedRangeFixN
+The way forward then is ensuring that the traversal is accurately stateful. This is not a small task. There is naturally the question of recursion versus an iterative, stack-based approach. I believe there is a more productive starting point, however, from which to commence our search for a solution. Ironically, my breakthrough came when I decided to try to reason about the state of my traversal routine by way of a table.
 
-### boundedRangeFixPN
+### Bounded Traversals Over Ranges of Fixed-Length Keys
+
+For fixed-length key traversals, I sketched out the following state table:
+
+```
+FIXED TRAVERSAL STATE TABLE:
+
+KInc.  Depth  Align.  LBnd.  UBnd.  NInc. 
+=====  =====  ======  =====  =====  ===== 
+    Y    < $      N       0    255      Y
+    Y    < $      Y    <=UB   >=LB      Y
+    Y      $      N       0    255      Y
+    Y      $      Y    <=UB   >=LB      Y
+    N    < $      N       0    255      Y
+    N    < $      Y    <=UB   >=LB      Y
+    N      $      N       0    255      Y
+    N      $      Y    <=UB   >=LB      N
+
+LEGEND:
+- KInc. = whether the bound key in question is an inclusive bound
+- Depth = depth of traversal from origin/root of traversal, where $ is the max depth
+- Align. = whether the traversal is currently still aligned with bound key in question
+- LBnd. = possible value of lower bound key byte
+- UBnd. = possible value of upper bound key byte
+- NInc. = regardless of the bound key's inclusivity, whether the the current node being traversed should have this bound (upper or lower) configured as inclusive
+```
+
+Note that there is only one scenario where we would want a node's traversal bound to be configured as exclusive. That is when a bound key is exclusive *and* we are yet aligned and at the depth of the last byte in that key. A drastically simplified version of the above table can then be produced for the purpose of planning program logic.
+
+Here are a few traversal scenarios primitively diagrammed to give a sense of these ideas. This diagram also demonstrates that a node's capacity to align with a particular bound key is inherited (or not) from its parent node.
+
+```
+ *   ALIGNMENT SCENARIOS
+ *   ===================
+ *   alphabet 0-9
+ *   LBI Key: 333
+ *   UBI Key: 666
+ *            3   LA    3 to 6
+ *             4        3 to 9
+ *              9       0 to 9
+ *            6      UA 3 to 6
+ *             0        0 to 6
+ *              9       0 to 9
+ *             6     UA 0 to 6
+ *              0       0 to 6
+ *              6    UA 0 to 6
+ *   LBI Key: 123
+ *   UBI Key: 876
+ *            1   LA    1 to 8
+ *             2  LA    2 to 9
+ *              3 LA    3 to 9
+ *              9       3 to 9
+ *             9        2 to 9
+ *              9       0 to 9
+ *            8      UA 1 to 8
+ *             1        0 to 7
+ *              0       0 to 9
+ *             7     UA 0 to 7
+ *              3       0 to 6
+ *              6    UA 0 to 6
+ *   LBX Key: 333 (min 334)
+ *   UBX Key: 666 (max 665)
+ *            3   LA    3 to 6
+ *             3  LA    3 to 9
+ *              4 LA    4 to 9
+ *             5        3 to 9
+ *              9       0 to 9
+ *             9        3 to 9
+ *              9       0 to 9
+ *            6      UA 3 to 6
+ *             0        0 to 6
+ *              0       0 to 9
+ *              9       0 to 9
+ *             6     UA 0 to 6
+ *              0       0 to 5
+ *              5    UA 0 to 5
+```
+
+The solution became clear. To compactly and correctly manage traversal state going up and down the tree, we need a stack where each entry encapsulates both the iterator of the node at that position as well as the auxiliary info required to continue descent (or not) from that place in the tree. This means this stack entry ought to yield not only pairs of key bytes and their child nodes, but the depth of the traversal at that point (so we can avoid pushing and popping Node1 instances from the stack) as well as whether the child being yielded can possibly align with lower and upper bounds.
+
+This significantly reduced complexity of the loop for this traversal function, and was the first time this function passed tests involving automatically-generated sets of fixed-length numerical keys and random bounds. 
+
+**Victory is sweet!**
+
+For variable-length keys, we elect to demarcate end of the key's byte sequencw with a sentinel, or reserved, byte value. Traditionally, this is the null byte, although we ought to support any reserved byte the user desires to configure. We have to tackle the same state problem we had for fixed-length keys, always being aware of when we are or are not aligned with either of the bounds and act accordingly.
 
 ### boundedRangeVarN
-
-### boundedRangeVarPN
 
 ## The Suffix Tree Use Case
 

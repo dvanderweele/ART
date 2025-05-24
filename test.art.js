@@ -1369,7 +1369,6 @@ function getRandomInt(min, max) {
     ])
   ) console.log(pk)*/
   for(let v of vkt.fullFwdRangeV()) console.log(varkeys[v[0]])
-  console.log("###")
   for(let v of vkt.allWithPrefixFwdV(Latin1.getL1SortKey("And").slice(0,3))) console.log(varkeys[v[0]])
   expect(
     [...(fockArt.query([
@@ -1424,7 +1423,17 @@ function getRandomInt(min, max) {
    * order
    * limit
    * root
-   */
+   */ 
+      /*
+       * boundedRangeFixN_new sig
+       * - lb buffer
+       * - ub buffer
+       * - key length
+       * - low inclusivity
+       * - hi inclusivity
+       * - order
+       * - root node ref
+       */
   expect(
     [
       ...(
@@ -1435,7 +1444,8 @@ function getRandomInt(min, max) {
             9,
             LOWER_BOUND_INCLUSIVE,
             UPPER_BOUND_INCLUSIVE,
-            FORWARD
+            FORWARD, 
+            fockArt.root
           )){
             for(let j of fockArt.boundedRangeFixN(
               new Uint8Array(binCompF64(600).buffer),
@@ -1444,7 +1454,6 @@ function getRandomInt(min, max) {
               LOWER_BOUND_INCLUSIVE,
               UPPER_BOUND_INCLUSIVE,
               FORWARD,
-              Infinity,
               i
             )){
               for(let k of fockArt.boundedRangeFixN(
@@ -1454,7 +1463,6 @@ function getRandomInt(min, max) {
                 LOWER_BOUND_INCLUSIVE,
                 UPPER_BOUND_INCLUSIVE,
                 FORWARD,
-                Infinity,
                 j
               )) yield k
             }
@@ -1464,7 +1472,17 @@ function getRandomInt(min, max) {
     ].join("|"),
     "15|25", 
     "3x boundedRangeFixN #1"
-  ) 
+  )  
+      /*
+       * boundedRangeFixN_new sig
+       * - lb buffer
+       * - ub buffer
+       * - key length
+       * - low inclusivity
+       * - hi inclusivity
+       * - order
+       * - root node ref
+       */
   expect(
     [
       ...(
@@ -1475,7 +1493,8 @@ function getRandomInt(min, max) {
             9,
             LOWER_BOUND_INCLUSIVE,
             UPPER_BOUND_INCLUSIVE,
-            FORWARD
+            FORWARD,
+            fockArt.root
           )){
             for(let j of fockArt.boundedRangeFixN(
               new Uint8Array(binCompF64(600).buffer),
@@ -1484,7 +1503,6 @@ function getRandomInt(min, max) {
               LOWER_BOUND_INCLUSIVE,
               UPPER_BOUND_INCLUSIVE,
               FORWARD,
-              Infinity,
               i
             )){
               for(let k of fockArt.boundedRangeFixN(
@@ -1494,7 +1512,6 @@ function getRandomInt(min, max) {
                 LOWER_BOUND_INCLUSIVE,
                 UPPER_BOUND_INCLUSIVE,
                 FORWARD,
-                Infinity,
                 j
               )) yield k
             }
@@ -1504,8 +1521,17 @@ function getRandomInt(min, max) {
     ].join("|"),
     "15|25", 
     "3x boundedRangeFixN #2"
-  ) 
-  console.log("\nCase 3\n")
+  )  
+      /*
+       * boundedRangeFixN_new sig
+       * - lb buffer
+       * - ub buffer
+       * - key length
+       * - low inclusivity
+       * - hi inclusivity
+       * - order
+       * - root node ref
+       */
   expect(
     [
       ...(
@@ -1516,7 +1542,8 @@ function getRandomInt(min, max) {
             9,
             LOWER_BOUND_INCLUSIVE,
             UPPER_BOUND_INCLUSIVE,
-            FORWARD
+            FORWARD,
+            fockArt.root
           )){
             for(let j of fockArt.boundedRangeFixN(
               new Uint8Array(binCompF64(-1).buffer),
@@ -1525,7 +1552,6 @@ function getRandomInt(min, max) {
               LOWER_BOUND_INCLUSIVE,
               UPPER_BOUND_INCLUSIVE,
               FORWARD,
-              Infinity,
               i
             )){
               for(let k of fockArt.boundedRangeFixN(
@@ -1535,7 +1561,6 @@ function getRandomInt(min, max) {
                 LOWER_BOUND_INCLUSIVE,
                 UPPER_BOUND_INCLUSIVE,
                 FORWARD,
-                Infinity,
                 j
               )) yield k
             }
@@ -1545,7 +1570,17 @@ function getRandomInt(min, max) {
     ].join("|"),
     "15|25|55|65|75", 
     "3x boundedRangeFixN #3"
-  ) 
+  )  
+      /*
+       * boundedRangeFixN_new sig
+       * - lb buffer
+       * - ub buffer
+       * - key length
+       * - low inclusivity
+       * - hi inclusivity
+       * - order
+       * - root node ref
+       */
   expect(
     [
       ...(
@@ -1557,7 +1592,8 @@ function getRandomInt(min, max) {
             9,
             LOWER_BOUND_INCLUSIVE,
             UPPER_BOUND_INCLUSIVE,
-            FORWARD
+            FORWARD,
+            fockArt.root
           )) q.push(i)
           q.reverse()
           for(let qi of q){
@@ -1568,7 +1604,6 @@ function getRandomInt(min, max) {
               LOWER_BOUND_INCLUSIVE,
               UPPER_BOUND_INCLUSIVE,
               REVERSE,
-              Infinity,
               qi
             )){ 
               for(let k of fockArt.boundedRangeFixN(
@@ -1578,7 +1613,6 @@ function getRandomInt(min, max) {
                 LOWER_BOUND_INCLUSIVE,
                 UPPER_BOUND_INCLUSIVE,
                 FORWARD,
-                Infinity,
                 j
               )) yield k
             }
@@ -1589,48 +1623,150 @@ function getRandomInt(min, max) {
     "75|55|65|25|15", 
     "3x boundedRangeFixN #4 fwd-rev-fwd"
   )
-  console.log( 
+  expect(
     [
       ...(
         function*(){
-          let q = []
-          for(let i of fockArt.boundedRangeFixN(
-            new Uint8Array(binCompF64(-2095.55).buffer),
-            new Uint8Array(binCompF64(-1000).buffer),
-            9,
+          for(let i of vkt.boundedRangeVarN(
+            Latin1.getL1SortKey("And"),
+            Latin1.getL1SortKey("He"),
+            0,
             LOWER_BOUND_INCLUSIVE,
             UPPER_BOUND_INCLUSIVE,
             FORWARD
-          )) q.push(i)
-          q.reverse()
-          for(let qi of q){
-            for(let j of fockArt.boundedRangeFixN(
-              new Uint8Array(binCompF64(-1).buffer),
-              new Uint8Array(binCompF64(713.1).buffer),
-              9,
+          )){
+            for(let j of vkt.boundedRangeFixN(
+              new Uint8Array([0]),
+              new Uint8Array([255]),
+              1,
               LOWER_BOUND_INCLUSIVE,
               UPPER_BOUND_INCLUSIVE,
-              REVERSE,
-              Infinity,
-              qi
-            )){ 
-              for(let k of fockArt.boundedRangeFixN(
-                new Uint8Array(binCompF64(-15).buffer),
-                new Uint8Array(binCompF64(150).buffer),
-                9,
-                LOWER_BOUND_INCLUSIVE,
-                UPPER_BOUND_INCLUSIVE,
-                FORWARD,
-                Infinity,
-                j
-              )) yield k
-            }
+              FORWARD,
+              i
+            )) yield j
           }
         }
       )()
-    ].join("|"),
-    "75|55|65|25|15"
+    ].map(v=>v[0]).join("|"),
+    "15|11|3|27|12|6|14|21|1|25|23|18|8|19",
+    "bounded L1 jabberwocky range"
   )
+  for(let boundCombo of [
+    "LIRE",
+    "LERI",
+    "LIRI",
+    "LERE"
+  ]){
+    for(let i = 0; i < 6; i++){
+      const T = new ART()
+      const orderedUniqueDoubles = [...(new Set(
+        Array.from({
+          length: 660
+        }, ()=>Math.random()*1000).map(
+          n=>Math.random()>.5?n:-n
+        )
+      ))].sort((a, b) => a - b)
+      for(let j = 0; j < orderedUniqueDoubles.length; j++) T.insert(
+        new Uint8Array(binCompF64(
+          orderedUniqueDoubles[j]
+        ).buffer),
+        j
+      )
+      //console.log(T.root,T.size)
+      const lowerIndex = Math.floor(orderedUniqueDoubles.length / 3)
+      const upperIndex = lowerIndex * 2
+      let target
+      let rtarget
+      let LB
+      let UB
+      let LI
+      let UI
+      switch(boundCombo){
+        case "LIRE": { 
+          target = orderedUniqueDoubles.map((_,i)=>i).slice(lowerIndex, upperIndex).join("~")
+          rtarget = orderedUniqueDoubles.map((_,i)=>i).slice(lowerIndex, upperIndex).reverse().join("~")
+          LB = orderedUniqueDoubles[lowerIndex]
+          UB = orderedUniqueDoubles[upperIndex] 
+          LI = lowerIndex
+          UI = upperIndex
+          break
+        }
+        case "LERI": { 
+          target = orderedUniqueDoubles.map((_,i)=>i).slice(lowerIndex+1, upperIndex+2).join("~")
+          rtarget = orderedUniqueDoubles.map((_,i)=>i).slice(lowerIndex+1, upperIndex+2).reverse().join("~")
+          LB = orderedUniqueDoubles[lowerIndex]
+          UB = orderedUniqueDoubles[upperIndex+1] 
+          LI = lowerIndex
+          UI = upperIndex+1
+          break
+        }
+        case "LIRI": { 
+          target = orderedUniqueDoubles.map((_,i)=>i).slice(lowerIndex, upperIndex+2).join("~")
+          rtarget = orderedUniqueDoubles.map((_,i)=>i).slice(lowerIndex, upperIndex+2).  reverse().join("~")
+          LB = orderedUniqueDoubles[lowerIndex]
+          UB = orderedUniqueDoubles[upperIndex+1] 
+          LI = lowerIndex
+          UI = upperIndex+1
+          break
+        }
+        default: { 
+          target = orderedUniqueDoubles.map((_,i)=>i).slice(lowerIndex+1, upperIndex).join("~")
+          rtarget = orderedUniqueDoubles.map((_,i)=>i).slice(lowerIndex+1, upperIndex).reverse().join("~")
+          LB = orderedUniqueDoubles[lowerIndex]
+          UB = orderedUniqueDoubles[upperIndex] 
+          LI = lowerIndex
+          UI = upperIndex
+
+          break
+        }
+      } 
+      /*
+       * boundedRangeFixN_new sig
+       * - lb buffer
+       * - ub buffer
+       * - key length
+       * - low inclusivity
+       * - hi inclusivity
+       * - order
+       * - root node ref
+       */
+      expect(
+        //"test log, LB", LB,"LI",LI, "UB",UB, "UI",UI,
+        target,
+        [...(
+          T.boundedRangeFixN(
+            new Uint8Array(binCompF64(LB).buffer),
+            new Uint8Array(binCompF64(UB).buffer),
+            9,
+            boundCombo.startsWith("LI") ? LOWER_BOUND_INCLUSIVE : EXCLUSIVE,
+            boundCombo.endsWith("RI") ?  UPPER_BOUND_INCLUSIVE : EXCLUSIVE,
+            FORWARD,
+            T.root
+          )
+        )].map(v=>v[0]).join("~"),
+        boundCombo + " " + i,
+        "bounded fixed fwd ranges autogen #"+i
+      ) 
+      expect(
+        //"test log, LB", LB,"LI",LI, "UB",UB, "UI",UI,
+        rtarget,
+        [...(
+          T.boundedRangeFixN(
+            new Uint8Array(binCompF64(LB).buffer),
+            new Uint8Array(binCompF64(UB).buffer),
+            9,
+            boundCombo.startsWith("LI") ? LOWER_BOUND_INCLUSIVE : EXCLUSIVE,
+            boundCombo.endsWith("RI") ?  UPPER_BOUND_INCLUSIVE : EXCLUSIVE,
+            REVERSE,
+            T.root
+          )
+        )].map(v=>v[0]).join("~"),
+        boundCombo + " " + i,
+        "bounded fixed rev ranges autogen #"+i
+      )
+
+    }
+  }
 
   dump(true);
 })()

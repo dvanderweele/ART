@@ -106,6 +106,322 @@ export class ByteStack {
   }
 }
 
+/**
+ * FIXED TRAVERSAL STATE TABLE
+ *
+ * KInc.  Depth  Align.  LBnd.  UBnd.  NInc.
+ * =====  =====  ======  =====  =====  =====
+ *     Y    < $      N       0    255      Y
+ *     Y    < $      Y    <=UB   >=LB      Y
+ *     Y      $      N       0    255      Y
+ *     Y      $      Y    <=UB   >=LB      Y
+ *     N    < $      N       0    255      Y
+ *     N    < $      Y    <=UB   >=LB      Y
+ *     N      $      N       0    255      Y
+ *     N      $      Y    <=UB   >=LB      N
+ *
+ * SIMPLIFIED
+ *
+ * KInc.  Depth  Align.  NInc.
+ * =====  =====  ======  =====
+ *     N      $      Y       N
+ *     *      *      *       Y     
+ *
+ *   ALIGNMENT SCENARIOS
+ *   ===================
+ *   alphabet 0-9
+ *   LBI Key: 333
+ *   UBI Key: 666
+ *            3   LA    3 to 6
+ *             4        3 to 9
+ *              9       0 to 9
+ *            6      UA 3 to 6
+ *             0        0 to 6
+ *              9       0 to 9
+ *             6     UA 0 to 6
+ *              0       0 to 6
+ *              6    UA 0 to 6
+ *   LBI Key: 123
+ *   UBI Key: 876
+ *            1   LA    1 to 8
+ *             2  LA    2 to 9
+ *              3 LA    3 to 9
+ *              9       3 to 9
+ *             9        2 to 9
+ *              9       0 to 9
+ *            8      UA 1 to 8
+ *             1        0 to 7
+ *              0       0 to 9
+ *             7     UA 0 to 7
+ *              3       0 to 6
+ *              6    UA 0 to 6 
+ *   LBX Key: 333 (min 334)
+ *   UBX Key: 666 (max 665)
+ *            3   LA    3 to 6
+ *             3  LA    3 to 9
+ *              4 LA    4 to 9
+ *             5        3 to 9
+ *              9       0 to 9
+ *             9        3 to 9
+ *              9       0 to 9
+ *            6      UA 3 to 6
+ *             0        0 to 6
+ *              0       0 to 9
+ *              9       0 to 9
+ *             6     UA 0 to 6
+ *              0       0 to 5
+ *              5    UA 0 to 5
+ *   
+ *   ALIGNMENT INHERITANCE TABLE
+ *   ===========================
+ *   Legend:
+ *   - CLA  = Can Lower Align
+ *   - CUA  = Can Upper Align
+ *   - KLI  = Key Low Bound Inclusive
+ *   - KUI  = Key High Bound Inclusive
+ *   - NLI  = Node Low Bound Inclusive
+ *   - NUI  = Node High Bound Inclusive
+ *   - KLB  = Key Low Bound Byte
+ *   - KHB  = Key High Bound Byte
+ *   - NLB  = Node Low Bound Byte
+ *   - NUB  = Node High Bound Byte
+ *   - DEP  = Depth
+ *
+ *   DEP CLA CUA
+ *   === === ===
+ *     0   Y   Y
+ *
+ *
+ */
+export class FixStackEntry {
+  #stateView
+  #generator
+  #yieldCache
+  constructor(
+    node,
+    keyLowInclusive,
+    keyHighInclusive,
+    depth,
+    maxDepth,
+    order,
+    canLowerAlign,
+    canUpperAlign,
+    lowerBound,
+    upperBound
+  ){
+    /**
+     *  Byte  Bit   Desc
+     *  ====  ====  ====
+     *     0    0   NdLX
+     *     0    1   NdUX
+     *     0    2   Fwd
+     *     0    3   CLA
+     *     0    4   CUA
+     *     0    5   Done
+     *     1    *   KLB
+     *     2    *   KHB
+     *  3-10    *   Dep.
+     *
+     */
+    const sv = new DataView(
+      new ArrayBuffer(11)
+    )
+    this.#stateView = sv
+    let nodeLowInclusive = true 
+    let nodeHiInclusive = true 
+    sv.setFloat64(3,depth)
+    sv.setUint8(1,lowerBound)
+    sv.setUint8(2,upperBound)
+    let stateByte = 0
+    if(order == FORWARD) stateByte |= (0b100>>>0) 
+    if(canLowerAlign){
+      stateByte |= (0b1000>>>0)
+      if(
+        depth == maxDepth 
+        && !(keyLowInclusive == LOWER_BOUND_INCLUSIVE)
+      ){
+        stateByte |= (0b1>>>0)
+        nodeLowInclusive = false
+      }
+    }  
+    if(canUpperAlign){
+      stateByte |= (0b10000>>>0)
+      if(
+        depth == maxDepth 
+        && !(keyHighInclusive == UPPER_BOUND_INCLUSIVE)
+      ){
+        stateByte |= (0b10>>>0)
+        nodeHiInclusive = false
+      }
+    } 
+    sv.setUint8(0,(stateByte>>>0))
+    /*FORWARD = 0,
+      EXCLUSIVE = 0,
+      LOWER_BOUND_INCLUSIVE = 1,
+      UPPER_BOUND_INCLUSIVE = 2,
+      REVERSE = 4,
+    */
+    const iterFuncNames = [// F + LX + UX
+      "ITER_FWD_GT_TO_LT", // 0 + 0  + 0
+      "ITER_FWD_GE_TO_LT", // 0 + 1  + 0
+      "ITER_FWD_GT_TO_LE", // 0 + 0  + 2
+      "ITER_FWD_GE_TO_LE", // 0 + 1  + 2
+      "ITER_REV_LT_TO_GT", // 4 + 0  + 0
+      "ITER_REV_LT_TO_GE", // 4 + 1  + 0
+      "ITER_REV_LE_TO_GT", // 4 + 0  + 2
+      "ITER_REV_LE_TO_GE"  // 4 + 1  + 2
+    ]
+    const iterFuncName = iterFuncNames[order + (nodeLowInclusive ? LOWER_BOUND_INCLUSIVE: EXCLUSIVE)+ (nodeHiInclusive ? UPPER_BOUND_INCLUSIVE : EXCLUSIVE)];
+    //console.log("DBG275",iterFuncName,node.constructor,node)
+    node[Symbol.iterator] = node.constructor[iterFuncName]
+    node.ITER_LB = canLowerAlign ? lowerBound : 0
+    node.ITER_UB = canUpperAlign ? upperBound : 255
+    const g = node[Symbol.iterator]()
+    this.#generator = g
+    const fyield = g.next()
+    if(fyield.done){
+      stateByte |= (0b100000 >>> 0)
+      this.#yieldCache = null
+    } else {
+      this.#yieldCache = [
+        canLowerAlign && fyield.value[0] == lowerBound, // canLowerAlign?
+        canUpperAlign && fyield.value[0] == upperBound,// canUpperAlign?
+        fyield.value
+      ]
+    }
+  }
+  get depth(){
+    return this.#stateView.getFloat64(3)
+  }
+  next(){
+    let sb = this.#stateView.getUint8(0)
+    if(((sb & 0b100000)>>>0) == 0b100000) return ({
+      done: true,
+      value: null
+    })
+    const c = {
+      done: false,
+      value: this.#yieldCache
+    }
+    const n = this.#generator.next()
+    if(n.done){
+      sb |= (0b100000>>>0)
+      this.#yieldCache = null
+      this.#stateView.setUint8(0,sb)
+    } else {
+      this.#yieldCache = [
+        (((sb & 0b1000)>>>0) == 0b1000) && (n.value[0] == this.#stateView.getUint8(1)),
+        (((sb & 0b10000)>>>0) == 0b10000) && (n.value[0] == this.#stateView.getUint8(2)),
+        n.value
+      ]
+    }
+    return c
+  }
+}
+
+export function evalFixN1(
+  node,
+  keyLowInclusive,
+  keyHighInclusive,
+  depth,
+  maxDepth,
+  canLowerAlign,
+  canUpperAlign,
+  lowerBound,
+  upperBound
+){
+  const kb = node[0].charCodeAt(0)
+  const child = node[1]
+  let nodeLowInclusive = true 
+  let nodeHiInclusive = true 
+  if(canLowerAlign){
+    if(
+      depth == maxDepth 
+      && !(keyLowInclusive == LOWER_BOUND_INCLUSIVE)
+    ) nodeLowInclusive = false
+  }  
+  if(canUpperAlign){
+    if(
+      depth == maxDepth 
+      && !(keyHighInclusive == UPPER_BOUND_INCLUSIVE)
+    ) nodeHiInclusive = false
+  }
+  const LB = canLowerAlign ? lowerBound : 0
+  const UB = canUpperAlign ? upperBound : 255
+  let outOfLowerBound = false
+  let outOfUpperBound = false
+  if( 
+    (
+      nodeLowInclusive && kb < LB
+    ) || (
+      !nodeLowInclusive && kb <=LB
+    )
+  ) outOfLowerBound = true
+  if( 
+    (
+      nodeHiInclusive && kb > UB
+    ) || (
+      !nodeHiInclusive && kb >=UB
+    )
+  ) outOfUpperBound = true
+  if(outOfUpperBound || outOfLowerBound) return null
+  return [
+    canLowerAlign && kb == lowerBound, 
+    canUpperAlign && kb == upperBound,
+    [kb, child]
+  ]
+}
+
+/**
+ * VARIABLE TRAVERSAL STATE TABLE
+ *
+ * WHY ARBITRARY SENTINEL SUPPORT IS TROUBLESOME:
+ *
+ * Alphabet: A B C D E
+ *
+ * D RESERVED
+ *
+ * 1 2 3 4 5 6
+ * = = = = = =
+ * A B C C E E
+ * E A A A A E
+ * D D B D B D
+ *     D   D
+ *
+ * LB = CAB(D)
+ * UB = EAB(D)
+ * 
+ * CA(D) < CAB(D) !
+ *
+ * LOWEST LETTER:
+ *
+ * ALPHABET: A B C D E
+ *
+ * A RESERVED
+ *
+ * 1 2 3 4 5 6
+ * = = = = = =
+ * B B C C E E
+ * D E D D D E
+ * A A A B B A
+ *       A A
+ *
+ * VARIABLE TRAVERSAL STATE TABLE
+ *
+ * KInc.  YSent  Align.  LBnd.  Ubnd.  NInc.
+ * =====  =====  ======  =====  =====  =====
+ *     Y             N       0    255      Y
+ *     Y             Y    <=UB   >=LB      Y
+ *     Y             N       0    255      Y
+ *     Y             Y    <=UB   >=LB      Y
+ *     N             N       0    255      Y
+ *     N             Y    <=UB   >=LB      Y
+ *     N             N       0    255      Y
+ *     N             Y    <=UB   >=LB      N
+
+ * 
+ */
+
 export class Node1 extends Array {
   constructor(){
     super()
@@ -264,7 +580,7 @@ export class Node16 extends Array {
       0, this[2]
     )
     const ub = this.ITER_UB
-    for(let i = start; this[0][i] <= ub; i++) yield [this[0][i], this[1][i]]
+    for(let i = start; i < this[2] && this[0][i] <= ub; i++) yield [this[0][i], this[1][i]] 
   } 
   static ITER_FWD_GE_TO_LT = function*(){
     const start = this.#binarySearch_for_LB(
@@ -272,7 +588,7 @@ export class Node16 extends Array {
       0, this[2]
     )
     const ub = this.ITER_UB
-    for(let i = start; this[0][i] < ub; i++) yield [this[0][i], this[1][i]]
+    for(let i = start; i < this[2] && this[0][i] < ub; i++) yield [this[0][i], this[1][i]]
   } 
   static ITER_FWD_GT_TO_LE = function*(){
     const start = this.#binarySearch_for_LB(
@@ -281,7 +597,7 @@ export class Node16 extends Array {
     ) + 1
     if(start >= this[2]) return
     const ub = this.ITER_UB
-    for(let i = start; this[0][i] <= ub; i++) yield [this[0][i], this[1][i]]
+    for(let i = start; i < this[2] && this[0][i] <= ub; i++) yield [this[0][i], this[1][i]]
   }  
   static ITER_FWD_GT_TO_LT = function*(){
     const start = this.#binarySearch_for_LB(
@@ -290,7 +606,7 @@ export class Node16 extends Array {
     ) + 1
     if(start >= this[2]) return
     const ub = this.ITER_UB
-    for(let i = start; this[0][i] < ub; i++) yield [this[0][i], this[1][i]]
+    for(let i = start; i < this[2] && this[0][i] < ub; i++) yield [this[0][i], this[1][i]]
   }  
   static ITER_REV_LE_TO_GE = function*(){
     const start = this.#binarySearch_for_UB(
@@ -298,7 +614,7 @@ export class Node16 extends Array {
       0, this[2]
     ) - 1
     const lb = this.ITER_LB
-    for(let i = start; this[0][i] >= lb; i--) yield [this[0][i], this[1][i]] 
+    for(let i = start; i>=0 && this[0][i] >= lb; i--) yield [this[0][i], this[1][i]] 
   } 
   static ITER_REV_LE_TO_GT = function*(){
     const start = this.#binarySearch_for_UB(
@@ -306,7 +622,7 @@ export class Node16 extends Array {
       0, this[2]
     ) - 1
     const lb = this.ITER_LB
-    for(let i = start; this[0][i] > lb; i--) yield [this[0][i], this[1][i]]
+    for(let i = start; i>=0 && this[0][i] > lb; i--) yield [this[0][i], this[1][i]]
   } 
   static ITER_REV_LT_TO_GE = function*(){
     const start = this.#binarySearch_for_UB(
@@ -315,7 +631,7 @@ export class Node16 extends Array {
     ) - 2
     if(start >= this[2] || start < 0) return
     const lb = this.ITER_LB
-    for(let i = start; this[0][i] >= lb; i--) yield [this[0][i], this[1][i]]
+    for(let i = start; i>=0 && this[0][i] >= lb; i--) yield [this[0][i], this[1][i]]
   }  
   static ITER_REV_LT_TO_GT = function*(){
     const start = this.#binarySearch_for_UB(
@@ -324,7 +640,7 @@ export class Node16 extends Array {
     ) - 2
     if(start >= this[2] || start < 0) return
     const lb = this.ITER_LB
-    for(let i = start; this[0][i] > lb; i--) yield [this[0][i], this[1][i]]
+    for(let i = start; i>=0 && this[0][i] > lb; i--) yield [this[0][i], this[1][i]]
   } 
   constructor(){
     super()
@@ -828,6 +1144,9 @@ export class ART {
     }
     if(value != null) cnode[0] = value 
     this.size++
+  }
+  bulkLoad(sortedKeys){
+    ;
   }
   search(key){
     /**
@@ -1402,7 +1721,123 @@ export class ART {
       }
     }
   }
-  boundedRangeFixN( 
+  boundedRangeFixN(
+    lowerBoundKey, 
+    upperBoundKey,
+    length,
+    lowerInclusivity,
+    upperInclusivity,
+    order,
+    root = this.root
+  ){
+    return {
+      [Symbol.iterator]: function*(){
+        if(root == null) return
+        const stack = [null]
+        let canLoAlign = true
+        let canHiAlign = true
+        let descent = true
+        let depth = 0
+        const maxDepth = length - 1
+        do {
+          if(descent){ 
+            if(depth > maxDepth){
+              yield root
+              root = stack[stack.length-1]
+              descent = false
+              continue 
+            }
+            switch(root.constructor.name){
+              case "Node1": {
+                const result = evalFixN1(
+                  root,
+                  lowerInclusivity,
+                  upperInclusivity,
+                  depth,
+                  maxDepth,
+                  canLoAlign,
+                  canHiAlign,
+                  lowerBoundKey[depth],
+                  upperBoundKey[depth]
+                )
+                if(result == null){
+                  //console.log("N1D res null")
+                  root = stack[stack.length-1]
+                  descent = false
+                  continue
+                }
+                //console.log("N1D res not null", result)
+                depth++
+                root = result[2][1]
+                canLoAlign = result[0]
+                canHiAlign = result[1]
+                break
+              }
+              case "NodeLeaf": {
+                /**
+                 * KL = 3
+                 * 0 I D0 M2
+                 * 1 I D1 M2
+                 * 2 I D2 M2
+                 * 3 L D3 M2
+                 */
+                //console.log("NLD, premature? ",depth<=maxDepth) 
+                root = stack[stack.length-1]
+                descent = false
+                continue 
+              }
+              default: { // N4+
+                const e = new FixStackEntry(
+                  root,
+                  lowerInclusivity,
+                  upperInclusivity,
+                  depth,
+                  maxDepth,
+                  order,
+                  canLoAlign,
+                  canHiAlign,
+                  lowerBoundKey[depth],
+                  upperBoundKey[depth]
+                )
+                const result = e.next()
+                if(result.done){
+                  //console.log("N4+D done, type", root.constructor.name)
+                  root = stack[stack.length-1]
+                  descent = false
+                  continue
+                }
+                //console.log("N4+D undone, type", root.constructor.name)
+
+                canLoAlign = result.value[0]
+                canHiAlign = result.value[1]
+                root = result.value[2][1]
+                stack.push(e)
+                depth++
+                break
+              }
+            }
+          } else { // ascent
+            const result = root.next()
+            depth = root.depth
+            if(result.done){
+              //console.log("Ascent, res done")
+              stack.pop()
+              root = stack[stack.length-1]
+              continue
+            }
+            //console.log("Ascent, res undone")
+            descent = true
+            canLoAlign = result.value[0]
+            canHiAlign = result.value[1]
+            root = result.value[2] instanceof Array ? result.value[2][1] : result.value[2]
+            depth++
+            continue
+          }
+        } while(root != null)
+      }
+    }
+  }
+  boundedRangeFixN_old( 
     lowerBoundKey, 
     upperBoundKey,
     length,
@@ -1410,11 +1845,13 @@ export class ART {
     upperInclusivity,
     order,
     limit = Infinity,
-    root = this.root
+    root = this.root,
+    dbg = false
   ){
     const art = this
     return {
       [Symbol.iterator]: function*(){
+        if(dbg) console.log("DEBUG lbk",lowerBoundKey,"ubk",upperBoundKey,"len",length,"LI",lowerInclusivity,"UI",upperInclusivity,"order",order,"limit",limit)
         const iters = [
           "ITER_FWD_GT_TO_LT", // EXC + EXC + FWD = 0 + 0 + 0
           "ITER_FWD_GE_TO_LT", // LBI + EXC + FWD = 1 + 0 + 0
@@ -1544,9 +1981,10 @@ export class ART {
         }
         let stack = []
         let yieldedCount = 0
-        do { 
+        do {
           if(yieldedCount >= limit) break
           if((state & DESCENT) == DESCENT){ 
+            if(dbg && stack.length > 7)
             switch(current.constructor.name){
               case "Node1": {
                 const boundIndex = stack.length 
@@ -1889,6 +2327,7 @@ export class ART {
                   if(done){
                     state &= (~(DESCENT)>>>0)
                     stack.pop()
+                      console.log("\tSETC",1904)
                     current = stack[stack.length-1]
                   } else {
                     stack.push(iterator)
@@ -2104,28 +2543,6 @@ export class ART {
               else lastRightAlignedDepth-- 
             }
           }
-          /**
-           * ASCENT is mandated to manage the ALIGNMENT STATE values thusly:
-           * 
-           *  WHEN ALIGNMENT STATE VALUES INDICATE WE ARE ALIGNED:
-           *    IF CHOOSING A CHILD PATH:
-           *      IF CHOSEN CHILD PATH IS FULLY WITHIN ALIGNMENT BOUND (NOT ON IT):
-           *        THEN DECREMENT THE LAST ALIGNED DEPTH VALUE BY ONE
-           *        AND UNSET THE ALIGNMENT STATE
-           *      ELSE IF CHOSEN CHILD PATH IS DIRECTLY ON ALIGNMENT BOUND:
-           *        THEN INCREMENT THE LAST ALIGNED DEPTH VALUE
-           *    ELSE IF CONTINUING ASCENT:
-           *      THEN DECREMENT LAST ALIGNED DEPTH VALUE
-           * 
-           *  WHEN ALIGNMENT STATE VALUES INDICATE WE ARE NOT ALIGNED:
-           *    IF DEPTH MATCHES LAST ALIGNED DEPTH:
-           *      IF CHOSEN CHILD PATH IS DIRECTLY ON ALIGNMENT BOUND:
-           *        THEN SET STATE AS ALIGNED 
-           *      ELSE IF CHOSEN CHILD PATH IS FULLY WITHIN ALIGNMENT BOUND (NOT ON IT):
-           *        THEN DECREMENT THE LAST ALIGNED DEPTH VALUE BY ONE
-           *    ELSE IF DEPTH IS GREATER THAN LAST ALIGNED DEPTH:
-           *      THEN DO NOT MODIFY ALIGNMENT STATE
-           */
         }
         let stack = []
         let yieldedCount = 0
@@ -2133,23 +2550,32 @@ export class ART {
           if(yieldedCount >= limit) break
             if((state & DESCENT) == DESCENT){ 
               switch(current.constructor.name){
-                case "Node1": {
+                case "Node1": { // descent node1
                   const boundIndex = stack.length 
                   const LA = (state & LEFT_ALIGNED) == LEFT_ALIGNED
                   const RA = (state & RIGHT_ALIGNED) == RIGHT_ALIGNED
-                  const LI = constraint.lowerInclusivity == LOWER_BOUND_INCLUSIVE
-                  const RI = constraint.upperInclusivity == UPPER_BOUND_INCLUSIVE
-                  const lbb = LA ? constraint.lowerBoundKey[boundIndex] : 0
-                  const ubb = RA ? constraint.upperBoundKey[boundIndex] : 255
+                  const LI = lowerInclusivity == LOWER_BOUND_INCLUSIVE
+                  const RI = upperInclusivity == UPPER_BOUND_INCLUSIVE
+                  const lbb = LA ? lowerBoundKey[boundIndex] : 0
+                  const ubb = RA ? upperBoundKey[boundIndex] : 255
                   const tb = current[0].charCodeAt(0)
                   if( 
                     tb == sentinel
                   ){ 
+                    /*
+                    yield current[1]
+                    yieldedCount++
+                    state &= (~(DESCENT)>>>0)
+                    stack.pop()
+                    current = stack[stack.length-1]
+                    continue
+                    */
+                    
                     let x = 0
                     if(RA) x++
                     if(LA) x+=2
                     switch(x){
-                      case 0: {
+                      case 0: { // descent node1 not aligned
                         yield current[1]
                         yieldedCount++
                         state &= (~(DESCENT)>>>0)
@@ -2157,7 +2583,7 @@ export class ART {
                         current = stack[stack.length-1]
                         break
                       }
-                      case 1: {
+                      case 1: { // descent node1 only right aligned
                         if(
                           (RI && tb <= ubb)
                           || tb < ubb
@@ -2174,7 +2600,7 @@ export class ART {
                         }
                         break
                       }
-                      case 2: {
+                      case 2: { // descent node1 only left aligned
                         if(
                           (LI && tb >= lbb)
                           || tb > lbb
@@ -2191,7 +2617,7 @@ export class ART {
                         }
                         break
                       }
-                      case 3: {
+                      case 3: { // descent node1 both aligned
                         if(
                           (
                             (RI && tb <= ubb)
@@ -2214,6 +2640,7 @@ export class ART {
                         break
                       }
                     }
+                    
                   } else {
                     if(tb >= lbb && tb <= ubb){
                       stack.push(current)
@@ -2427,7 +2854,7 @@ export class ART {
                     if(
                       value[0] == sentinel
                     ){  
-                      yield current[1]
+                      yield value[1]
                       yieldedCount++
                       const {
                         done,
@@ -2491,9 +2918,6 @@ export class ART {
                   continue
                 }
                 default:{
-                  // carry on
-                  // OLD
-                  //console.log(1141,current.constructor.name)
                   const result = current.next()
                   if(result.done){
                     const depth = stack.length 
@@ -2503,19 +2927,15 @@ export class ART {
                       false,
                       false
                     )
-                    //if(depth <= lastLeftAlignedDepth) lastLeftAlignedDepth = depth - 1
-                    //if(depth <= lastRightAlignedDepth) lastRightAlignedDepth = depth - 1
                     stack.pop()
                     current = stack[stack.length -1]
                   } else {
                     const k = result.value[0]
-                    console.log("ALIGNA.DBG, len-stck",stack.length, "k == lbb", k == lbb, "k == ubb", k == ubb,"k",k,"lbb",lbb,"ubb",ubb)
                     if(
-                      k == constraint.sentinel
+                      k == sentinel
                     ){
-                      newLevel.push(
-                        result.value[1]
-                      )
+                      yield result.value[1]
+                      yieldedCount++
                       const {
                         done,
                         value
@@ -2527,23 +2947,16 @@ export class ART {
                       } else {
                         alignA(
                           stack.length-1,
-                          /**
-                           * following LA/RA && conditions may prevent the TLAP/TRAP conditions from being rightfully fulfilled in cases where we reach the final byte in a yielded sequence and it is properly aligned once again. this causes decrementation rather than incrementation of tge lastAlignedDepth value
-                           */
                           value[0] == lbb,
                           value[0] == ubb,
                           true
                         )
                         state |= ((DESCENT)>>>0)
                         current = value[1]
-
                       }
                     } else {
                       alignA(
                         stack.length-1,
-                        /**
-                         * following LA/RA && conditions may prevent the TLAP/TRAP conditions from being rightfully fulfilled in cases where we reach the final byte in a yielded sequence and it is properly aligned once again. this causes decrementation rather than incrementation of tge lastAlignedDepth value
-                         */
                         k == lbb,
                         k == ubb,
                         true
@@ -2551,32 +2964,7 @@ export class ART {
                       state |= ((DESCENT)>>>0)
                       const v = result.value
                       current = v[1]
-                      console.log("undepleted n4+ caught on ascent LA", LA,"RA",RA,"LI",LI,"RI",RI,"byte",v[0], (state & DESCENT) == DESCENT)
                     }
-                    /*const boundIndex = stack.length 
-                    const depth = boundIndex
-                    const LA = (state & LEFT_ALIGNED) == LEFT_ALIGNED
-                    const RA = (state & RIGHT_ALIGNED) == RIGHT_ALIGNED
-                    const LI = constraint.lowerInclusivity == LOWER_BOUND_INCLUSIVE
-                    const RI = constraint.upperInclusivity == UPPER_BOUND_INCLUSIVE
-                    console.log("undepleted n4+ caught on ascent LA", LA,"RA",RA,"LI",LI,"RI",RI,"byte",v[0])
-                    if(
-                      LA 
-                      && LI
-                      && v[0] == constraint.lowerBoundKey[boundIndex]
-                    ){
-                      lastLeftAlignedDepth++
-                      state |= ((LEFT_ALIGNED)>>>0)
-                    }
-                    if(
-                      RA
-                      && RI
-                      && v[0] == constraint.upperBoundKey[boundIndex]
-                    ){
-                      lastRightAlignedDepth++
-                      state |= ((RIGHT_ALIGNED)>>>0)
-                    }
-                    state |= ((DESCENT)>>>0)*/
                   }
                   continue
                 }
