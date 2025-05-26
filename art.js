@@ -382,21 +382,123 @@ export class VarStackEntry {
     keyLowInclusive,
     keyHighInclusive,
     depth,
+    keyLowPrefixLen,
+    keyHighPrefixLen,
     order,
     canLowerAlign,
     canUpperAlign,
     lowerBound,
     upperBound
   ){
-
+    /**
+     *  Byte  Bit   Desc
+     *  ====  ====  ====
+     *     0    0   NdLX
+     *     0    1   NdUX
+     *     0    2   Fwd
+     *     0    3   CLA
+     *     0    4   CUA
+     *     0    5   Done
+     *     1    *   KLB
+     *     2    *   KHB
+     *  3-10    *   Dep.
+     *
+     */
+    const sv = new DataView(
+      new ArrayBuffer(11)
+    )
+    this.#stateView = sv
+    let nodeLowInclusive = true 
+    let nodeHiInclusive = true 
+    sv.setFloat64(3,depth)
+    sv.setUint8(1,lowerBound)
+    sv.setUint8(2,upperBound)
+    let stateByte = 0
+    if(order == FORWARD) stateByte |= (0b100>>>0) 
+    if(canLowerAlign){
+      stateByte |= (0b1000>>>0)
+      if(
+        depth == maxDepth 
+        && !(keyLowInclusive == LOWER_BOUND_INCLUSIVE)
+      ){
+        stateByte |= (0b1>>>0)
+        nodeLowInclusive = false
+      }
+    }  
+    if(canUpperAlign){
+      stateByte |= (0b10000>>>0)
+      if(
+        depth == maxDepth 
+        && !(keyHighInclusive == UPPER_BOUND_INCLUSIVE)
+      ){
+        stateByte |= (0b10>>>0)
+        nodeHiInclusive = false
+      }
+    } 
+    sv.setUint8(0,(stateByte>>>0))
+    /*FORWARD = 0,
+      EXCLUSIVE = 0,
+      LOWER_BOUND_INCLUSIVE = 1,
+      UPPER_BOUND_INCLUSIVE = 2,
+      REVERSE = 4,
+    */
+    const iterFuncNames = [// F + LX + UX
+      "ITER_FWD_GT_TO_LT", // 0 + 0  + 0
+      "ITER_FWD_GE_TO_LT", // 0 + 1  + 0
+      "ITER_FWD_GT_TO_LE", // 0 + 0  + 2
+      "ITER_FWD_GE_TO_LE", // 0 + 1  + 2
+      "ITER_REV_LT_TO_GT", // 4 + 0  + 0
+      "ITER_REV_LT_TO_GE", // 4 + 1  + 0
+      "ITER_REV_LE_TO_GT", // 4 + 0  + 2
+      "ITER_REV_LE_TO_GE"  // 4 + 1  + 2
+    ]
+    const iterFuncName = iterFuncNames[order + (nodeLowInclusive ? LOWER_BOUND_INCLUSIVE: EXCLUSIVE)+ (nodeHiInclusive ? UPPER_BOUND_INCLUSIVE : EXCLUSIVE)];
+    //console.log("DBG275",iterFuncName,node.constructor,node)
+    node[Symbol.iterator] = node.constructor[iterFuncName]
+    node.ITER_LB = canLowerAlign ? lowerBound : 0
+    node.ITER_UB = canUpperAlign ? upperBound : 255
+    const g = node[Symbol.iterator]()
+    this.#generator = g
+    const fyield = g.next()
+    if(fyield.done){
+      stateByte |= (0b100000 >>> 0)
+      this.#yieldCache = null
+    } else {
+      this.#yieldCache = [
+        , // canYield?
+        , // canDescend?
+        canLowerAlign && fyield.value[0] == lowerBound, // canLowerAlign?
+        canUpperAlign && fyield.value[0] == upperBound,// canUpperAlign?
+        fyield.value
+      ]
+    }
+  }
+  get depth(){
+    return this.#stateView.getFloat64(3)
   }
   next(){
-    /**
-     * RETURN VALUE
-     * 0 - canLowerAlign
-     * 1 - canUpperAlign
-     * 2 - [ kb, ch ]
-     */
+    let sb = this.#stateView.getUint8(0)
+    if(((sb & 0b100000)>>>0) == 0b100000) return ({
+      done: true,
+      value: null
+    })
+    const c = {
+      done: false,
+      value: this.#yieldCache
+    }
+    const n = this.#generator.next()
+    if(n.done){
+      sb |= (0b100000>>>0)
+      this.#yieldCache = null
+      this.#stateView.setUint8(0,sb)
+    } else {
+      this.#yieldCache = [
+        (((sb & 0b1000)>>>0) == 0b1000) && (n.value[0] == this.#stateView.getUint8(1)),
+        (((sb & 0b10000)>>>0) == 0b10000) && (n.value[0] == this.#stateView.getUint8(2)),
+        n.value
+      ]
+    }
+    return c
   }
 }
 

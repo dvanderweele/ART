@@ -98,7 +98,7 @@ Because of my requirement to optimize for bounded range queries, I could not acc
 
 Singly linked lists seemed like a fair compromise to me. The links are more similar in nature to the larger node sizes. Sure, they use more memory than an array-backed vector would (by a largish constant factor), but that has always been true of linked lists versus vectors. Most of all, it makes doing what we need to do in the tree phenomenally easier to reason about.
 
-Since numbers all doubles in JS, I considered if it was possible to compress them somehow since we only need 256 values of precision. I believe JS strings are based on UTF-16 code units, and so for the key byte value with this node type I create a one-character long string based on the code point whose value is the key byte being store. Based on some brief benchmarking I think this does save memory.
+Since numbers are all doubles in JS, I considered if it was possible to compress them somehow since we only need 256 values of precision. I believe JS strings are based on UTF-16 code units, and so for the key byte value with this node type I create a one-character long string based on the code point whose value is the key byte being stored. Based on some brief benchmarking, this does appear to save memory.
 
 ### Bitmapping the Larger Node Sizes
 
