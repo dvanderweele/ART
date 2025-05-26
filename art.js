@@ -372,7 +372,54 @@ export function evalFixN1(
   ]
 }
 
+export class VarStackEntry {
+  #stateView
+  #generator
+  #yieldCache
+  constructor(
+    node,
+    sentinel,
+    keyLowInclusive,
+    keyHighInclusive,
+    depth,
+    order,
+    canLowerAlign,
+    canUpperAlign,
+    lowerBound,
+    upperBound
+  ){
+
+  }
+  next(){
+    /**
+     * RETURN VALUE
+     * 0 - canLowerAlign
+     * 1 - canUpperAlign
+     * 2 - [ kb, ch ]
+     */
+  }
+}
+
 /**
+ *
+ * SCENARIO 
+ * ALPHA ABCDEF
+ * SENTINEL C
+ * UBI = FFFC
+ * LBI = ADBC    CAln  IAln  LBB  UBB  OOB  CanY  CanD
+ *       A          Y     Y    A    F    N     N     Y
+ *        D         Y     Y    D    F    N     N     Y
+ *         C        Y     N    B    F    Y     N     N
+ *         B        Y     Y    B    F    N     N     Y
+ *          A       Y     N    A    F    N     N     Y
+ *           A      N     N    A    F    N     N     Y
+ *           C      N     N    A    F    N     Y     N
+ *           F      N     N
+ *          C       Y     Y    A    F    N     Y     N
+ *
+ *
+ *
+ * OLD OLD OLD
  * VARIABLE TRAVERSAL STATE TABLE
  *
  * WHY ARBITRARY SENTINEL SUPPORT IS TROUBLESOME:
