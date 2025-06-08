@@ -402,15 +402,19 @@ export class VarStackEntry {
      *     1    *   KLB
      *     2    *   KHB
      *  3-10    *   Dep.
+     * 11-18    *   LBSD
+     * 19-26    *   UBSD
      *
      */
     const sv = new DataView(
-      new ArrayBuffer(11)
+      new ArrayBuffer(27)
     )
     this.#stateView = sv
     let nodeLowInclusive = true 
     let nodeHiInclusive = true 
     sv.setFloat64(3,depth)
+    sv.setFloat64(11,keyLowPrefixLen-1)
+    sv.setFloat64(19,keyHighPrefixLen-1)
     sv.setUint8(1,lowerBound)
     sv.setUint8(2,upperBound)
     let stateByte = 0
@@ -418,7 +422,7 @@ export class VarStackEntry {
     if(canLowerAlign){
       stateByte |= (0b1000>>>0)
       if(
-        depth == maxDepth 
+        depth == keyLowPrefixLen-1 
         && !(keyLowInclusive == LOWER_BOUND_INCLUSIVE)
       ){
         stateByte |= (0b1>>>0)
@@ -428,7 +432,7 @@ export class VarStackEntry {
     if(canUpperAlign){
       stateByte |= (0b10000>>>0)
       if(
-        depth == maxDepth 
+        depth == keyHighPrefixLen-1
         && !(keyHighInclusive == UPPER_BOUND_INCLUSIVE)
       ){
         stateByte |= (0b10>>>0)
@@ -453,7 +457,6 @@ export class VarStackEntry {
       "ITER_REV_LE_TO_GE"  // 4 + 1  + 2
     ]
     const iterFuncName = iterFuncNames[order + (nodeLowInclusive ? LOWER_BOUND_INCLUSIVE: EXCLUSIVE)+ (nodeHiInclusive ? UPPER_BOUND_INCLUSIVE : EXCLUSIVE)];
-    //console.log("DBG275",iterFuncName,node.constructor,node)
     node[Symbol.iterator] = node.constructor[iterFuncName]
     node.ITER_LB = canLowerAlign ? lowerBound : 0
     node.ITER_UB = canUpperAlign ? upperBound : 255
@@ -464,6 +467,7 @@ export class VarStackEntry {
       stateByte |= (0b100000 >>> 0)
       this.#yieldCache = null
     } else {
+      const canYield = false
       this.#yieldCache = [
         , // canYield?
         , // canDescend?
@@ -473,9 +477,60 @@ export class VarStackEntry {
       ]
     }
   }
-  get depth(){
+  static combos = [
+    [false, false],
+    [false, true],
+    [true, false],
+    [true, true]
+  ]
+  static decisions = [
+
+  ].map(v=>VarStackEntry.combos[v])
+  get depth(){ 
     return this.#stateView.getFloat64(3)
   }
+  get lowerBoundSentinelDepth(){} 
+    return this.#stateView.getFloat64(11)
+  
+  get upperBoundSentinelDepth(){ 
+    return this.#stateView.getFloat64(19)
+  }
+  #LB_CanD( 
+    sentinel,
+    currentByte,
+    canLoAlign
+  ){
+    if(sentinel != currentByte) return true
+    else return false
+  }
+  #UB_CanD( 
+    sentinel,
+    currentByte,
+    canHiAlign,
+    isHiAligned
+  ){
+    const UBSD = this.upperBoundSentinelDepth
+    const CD = this.depth
+    if(CD = UBSD-1){
+      if(sentinel != currentByte){
+        if(canHiAlign){
+          if(isHiAligned){
+            if()
+          }
+        }
+      }
+    } else {
+      ;
+    }
+  }
+  #LB_CanY( 
+    sentinel,
+    currentByte,
+    canLoAlign
+  ){
+
+  }
+  #UB_CanY(){}
   next(){
     let sb = this.#stateView.getUint8(0)
     if(((sb & 0b100000)>>>0) == 0b100000) return ({

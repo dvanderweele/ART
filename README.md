@@ -1,4 +1,4 @@
-# Discussing An Adaptive Radix Tree in JavaScript Optimized for Range Queries over Compound Keys
+# How I Built An Index Faster Than Binary Search Trees and B-Trees: An Adaptive Radix Tree in JavaScript Optimized for Range Queries over Compound Keys
 
 Years ago in undergraduate, on a whim I read the essential piece on adaptive radix trees by Viktor Leis and friends (*The Adaptive Radix Tree:
 ARTful Indexing for Main-Memory Databases*). It was the first serious discussion on practical approaches to implementing a trie data structure that I'd ever encountered, and it launched a years' long obsession.
@@ -27,7 +27,7 @@ The trie suggests itself as a potential suitor. As a category, tries are still t
 
 Most obvious perhaps is the boon to those who need to work with variable-length data like strings or compound keys comprised of a sequence of concatenated keys. It becomes very easy to retrieve a subset of strings sharing a particular prefix. You can also enumerate a bounded range of strings. In fact, even point queries like membership or search for a particular string or key can be even faster than hashing! And this is because hash computation typically requires a reading of the entire string, but in searching a trie it is reasonable to abandon the search entirely as soon as you realize that not even a prefix of the search term is contained within the data structure. For the daring, it is possible to extend the trie's prefix-searching expertise into a contains-based search capacity, a technique made possible by the old trick known as the suffix tree.
 
-And perhaps most excitingly, this kind of data structure allows you to start to reason about the design of your own programs in terms of Codd's *relational algebra*, a privilege more commonly limited to the realm of database software. Your designs can take on a tabular nature, where you enable performant, multi-column indexing. 
+And perhaps most excitingly, this kind of data structure allows you to start to reason about the design of your own programs in terms of Codd's *relational algebra*, a privilege more commonly limited to the realm of database software. Your designs can take on a tabular nature, where you enable performant, multi-column, **multi-dimensional** indexing. 
 
 This is all possible, if we can manage to overcome a venerable challenge associated with tries — their notorious hunger for memory. That is where the Adaptive Radix Tree suggests a pragmatic solution.
 
@@ -126,7 +126,7 @@ For a time I considered implementing a sort of doubly-linked allocation list for
 
 Of course, this means a new data supporting data structure, and because we're in JavaScript-world, it's sure to get weird :-).
 
-Complications arise because Javascript numbers are always 64-bit floats — except when they aren't. If you use TypedArrays, the numbers are stored according to the type you expect (e.g., unsigned 32-bit integer), but when you read it into a variable or try to do maths with that value then suddenly you're teleported to the realm of floating point wickedness. And if you then attempt bitwise operations on those numbers, it gets even more BANANAS.
+Complications arise because Javascript numbers are always 64-bit floats — except when they aren't. If you use TypedArrays, the numbers are stored according to the format you expect (e.g., unsigned 32-bit integer), but when you read it into a variable or try to do maths with that value then suddenly you're teleported to the realm of floating point wickedness. And if you then attempt bitwise operations on those numbers, it gets even more BANANAS.
 
 By default the bitwise operators appear to treat your doubles as 32-bit *signed* integers. That means you have only 31 bits to flip, and another that's there for signing. You can reclaim the 32nd bit for flipping if you are willing to lace your bitwise operational code with these suffixes: `>>> 0`
 
@@ -217,7 +217,7 @@ Alas we can't use it directly. It's only for locale-aware string sorting and com
 
 But in a sense, we will use it. After a brief consultation with YAGNI, I came to the conclusion I don't really need a full unicode string collation engine. Have a read through the official documents pertaining to the Unicode Collation Algorithm (UCA), and try not to shudder! If I can restrict myself to a limited range of characters which can be encoded in a single byte quite easily (for example, Latin1), we should be able to script out a kind of compilation routine to "rip off" the collation orders present in the JavaScript `Collator` without much trouble.
 
-The first step is to somehow enumerate and cache in a JSON file the list of language Identifiers l we want to support. We don't need all languages, just those that have some interest in the Latin1 character set. For this I interrogated ChatGPT and came up with this list:
+The first step is to somehow enumerate and cache in a JSON file the list of language Identifiers we want to support. We don't need all languages, just those that have some interest in the Latin1 character set. For this I interrogated ChatGPT and came up with this list:
 
 ```json
 [
@@ -595,7 +595,7 @@ The lowest layer is for when you just need to enumerate all the leaf nodes which
 
 * **fullFwdRangeV** — an iterator for enumerating all descendent leaf nodes only in ascending order of their keys (but without yielding their keys). Requires as an argument only the node from which to commence the traversal.
 * **fullRevRangeV** — same as the last one but in descending order of the keys.
-* **fullFwdRangeKV** — an iterator for enumerating all descendent leaf nodes and theit keys in ascending order of their keys. Requires as an argument the node from which to commence the traversal as well as the key prefix of the same node (so that the full key can be reconstructed and yielded for each leaf).
+* **fullFwdRangeKV** — an iterator for enumerating all descendent leaf nodes and their keys in ascending order of their keys. Requires as an argument the node from which to commence the traversal as well as the key prefix of the same node (so that the full key can be reconstructed and yielded for each leaf).
 * **fullRevRangeKV** same as the last one but in descending order of the keys.
 
 First, the pseudocode algorithm for the version which yields leaves but not their keys:
@@ -661,7 +661,7 @@ return root
 
 ## Compound Range Queries and Composable Query Methods
 
-This is by far the most challenging part of the journey. Debugging my test cases was so intense that, at one point, I resorted to hand-sketching out my test-case trie with compound keys on a large sheet of paper in multiple colors. I fixed it to my dining room wall aside some print outs of test-case debug logging, surely etching a permanent memory in the minds of my wife and children.
+This is by far the most challenging part of the journey. Debugging my test cases was so intense that, at one point, I resorted to hand-sketching out my first test-case trie with compound keys on a large sheet of paper in multiple colors. I fixed it to my dining room wall aside some print outs of test-case debug logging, surely etching a permanent memory in the minds of my wife and children.
 
 Part of the complexity was that I tried to implement a single monolithic `query` method. I wanted a query method you could give an array of bound definitions, one for each subcomponent of the compound keys stored in the tree. Each definition could specify the inclusiveness of the bounds as well as whether that subcomponent has a fixed or variable length. I maintain that it's not impossible, but if you plan the composability of your methods optimally then you may be able break things up into more bite-sized pieces.
 
@@ -693,8 +693,8 @@ LEGEND:
 - KInc. = whether the bound key in question is an inclusive bound
 - Depth = depth of traversal from origin/root of traversal, where $ is the max depth
 - Align. = whether the traversal is currently still aligned with bound key in question
-- LBnd. = possible value of lower bound key byte
-- UBnd. = possible value of upper bound key byte
+- LBnd. = possible value of lower bound byte
+- UBnd. = possible value of upper bound byte
 - NInc. = regardless of the bound key's inclusivity, whether the the current node being traversed should have this bound (upper or lower) configured as inclusive
 ```
 
@@ -705,7 +705,7 @@ Here are a few traversal scenarios primitively diagrammed to give a sense of the
 ```
  *   ALIGNMENT SCENARIOS
  *   ===================
- *   alphabet 0-9
+ *   Alphabet 0-9
  *   LBI Key: 333
  *   UBI Key: 666
  *            3   LA    3 to 6
@@ -755,7 +755,129 @@ This significantly reduced complexity of the loop for this traversal function, a
 
 **Victory is sweet!**
 
-For variable-length keys, we elect to demarcate end of the key's byte sequencw with a sentinel, or reserved, byte value. Traditionally, this is the null byte, although we ought to support any reserved byte the user desires to configure. We have to tackle the same state problem we had for fixed-length keys, always being aware of when we are or are not aligned with either of the bounds and act accordingly.
+For variable-length keys, we elect to demarcate end of the key's byte sequence with a sentinel, or reserved, byte value. Traditionally, this is the null byte, although we ought to support any reserved byte the user desires to configure. We have to tackle the same state problem we had for fixed-length keys, always being aware of when we are or are not aligned with either of the bounds and act accordingly.
+
+The logic behind the customary null-valued reserve byte does become evident when you approach this problem attempting to support an arbtrary choice for the reserved byte value. 
+
+Here is a small demonstration of why arbitrary sentinel support is troublesome (or at least counterintuitive): 
+
+```
+Alphabet: A B C D E
+
+D RESERVED
+
+1 2 3 4 5 6
+= = = = = =
+A B C C E E
+E A A A A E 
+D D B D B D 
+    D   D
+
+LB = CAB(D) 
+UB = EAB(D)
+
+CA(D) < CAB(D) !
+```
+
+And so, to avoid this scenario where our traversal could yield out-of-bound keys due to the location of the sentinel in the overall alphabet, it becomes an easier implementation if we instead always choose the first symbol in the alphabet (A in the above example) as our reserved byte.
+
+This is dissatisfying to me though because it imposes almost too strict of requirements upon the kind of strings we can index in the tree. Imagine a more arcane file format with a sequence of records separated by a record separator or other control byte besides the null byte.
+
+What we need to do is consider a possible state table for each combination of bound (lower vs upper) and inclusivity.
+
+First, lower bound:
+
+```
+LEGEND
+======
+CanY = Can Yield
+CanD = Can Descend
+CLAn = Can Lower Align
+ILAn = Is Lower Aligned
+CBIS = Current Byte is Sentinel
+Dept = Depth
+   $ = At depth of Lower Bound's Sentinel
+ $-1 = At depth of Last Byte of Lower Bound before Sentinel
+<$-1 = At depth before $-1
+  $+ = At depth greater than that of Lower Bound's Sentinel
+
+STATES:
+0-3      4     8    16
+Dept  CBIS  CLAn  ILAn  CanY  CanD SUM
+====  ====  ====  ====  ====  ==== ===
+<$-1     N     N     N     N     Y   0
+<$-1     N     Y     N     N     Y   8
+<$-1     N     Y     Y     N     Y  24
+<$-1     Y     N     N     Y     N   4
+<$-1     Y     Y     N     N     N  12
+ $-1     N     N     N     N     Y   1
+ $-1     N     Y     N     N     Y   9
+ $-1     N     Y     Y     N     Y  25
+ $-1     Y     N     N     Y     N   5
+ $-1     Y     Y     N     N     N  13
+   $     N     N     N     N     Y   2
+   $     N     Y     N     N     Y  10
+   $     Y     N     N     Y     N   6
+   $     Y     Y     Y     Y     N  30
+  $+     N     N     N     N     Y   3
+  $+     Y     N     N     Y     N   7
+```
+
+Second, upper bound:
+
+```
+LEGEND
+======
+CanY = Can Yield
+CanD = Can Descend
+CUAn = Can Upper Align
+IUAn = Is Upper Aligned
+KBEx = Key Bound is Exclusive
+CBIS = Current Byte is Sentinel
+Dept = Depth
+   $ = At depth of Upper Bound's Sentinel
+ $-1 = At depth of Last Byte of Upper Bound before Sentinel
+<$-1 = At depth before $-1
+  $+ = At depth greater than that of Upper Bound's Sentinel
+
+OFFSET 32
+STATES:
+0-3      4     8    16    32
+Dept  CBIS  CUAn  IUAn  KBEx  CanY  CanD SUM
+====  ====  ====  ====  ====  ====  ==== ===
+<$-1     N     N     N     N     N     Y  32
+<$-1     N     N     N     Y     N     Y  64
+<$-1     N     Y     N     N     N     Y  40
+<$-1     N     Y     N     Y     N     Y  72
+<$-1     N     Y     Y     N     N     Y  56
+<$-1     N     Y     Y     Y     N     Y  88
+<$-1     Y     N     N     N     Y     N  36
+<$-1     Y     N     N     Y     Y     N  68
+<$-1     Y     Y     N     N     Y     N  44
+<$-1     Y     Y     N     Y     Y     N  76
+ $-1     N     N     N     N     N     Y  33
+ $-1     N     N     N     Y     N     Y  65
+ $-1     N     Y     N     N     N     Y - 9
+ $-1     N     Y     N     Y     N     Y -41
+ $-1     N     Y     Y     N     N     Y -25
+ $-1     N     Y     Y     Y     N     Y -57
+ $-1     Y     N     N     N     Y     N - 5
+ $-1     Y     N     N     Y     Y     N -37
+ $-1     Y     Y     N     N     Y     N -13
+ $-1     Y     Y     N     Y     Y     N -45
+   $     N     N     N     N     N     Y - 2
+   $     N     N     N     Y     N     Y -34
+   $     N     Y     N     N     N     N -10
+   $     N     Y     N     Y     N     Y -42
+   $     Y     N     N     N     Y     N - 6
+   $     Y     N     N     Y     Y     N -38
+   $     Y     Y     Y     N     Y     N -30
+   $     Y     Y     Y     Y     Y     N -62
+  $+     N     N     N     N     N     Y - 3
+  $+     N     N     N     Y     N     Y -35
+  $+     Y     N     N     N     Y     N - 7
+  $+     Y     N     N     Y     Y     N -39
+```
 
 ### boundedRangeVarN
 
