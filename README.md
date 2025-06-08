@@ -857,26 +857,26 @@ Dept  CBIS  CUAn  IUAn  KBEx  CanY  CanD SUM
 <$-1     Y     Y     N     Y     Y     N  76
  $-1     N     N     N     N     N     Y  33
  $-1     N     N     N     Y     N     Y  65
- $-1     N     Y     N     N     N     Y - 9
- $-1     N     Y     N     Y     N     Y -41
- $-1     N     Y     Y     N     N     Y -25
- $-1     N     Y     Y     Y     N     Y -57
- $-1     Y     N     N     N     Y     N - 5
- $-1     Y     N     N     Y     Y     N -37
- $-1     Y     Y     N     N     Y     N -13
- $-1     Y     Y     N     Y     Y     N -45
-   $     N     N     N     N     N     Y - 2
-   $     N     N     N     Y     N     Y -34
-   $     N     Y     N     N     N     N -10
-   $     N     Y     N     Y     N     Y -42
-   $     Y     N     N     N     Y     N - 6
-   $     Y     N     N     Y     Y     N -38
-   $     Y     Y     Y     N     Y     N -30
-   $     Y     Y     Y     Y     Y     N -62
-  $+     N     N     N     N     N     Y - 3
-  $+     N     N     N     Y     N     Y -35
-  $+     Y     N     N     N     Y     N - 7
-  $+     Y     N     N     Y     Y     N -39
+ $-1     N     Y     N     N     N     Y  41
+ $-1     N     Y     N     Y     N     Y  73
+ $-1     N     Y     Y     N     N     Y  57
+ $-1     N     Y     Y     Y     N     Y  89
+ $-1     Y     N     N     N     Y     N  37
+ $-1     Y     N     N     Y     Y     N  69
+ $-1     Y     Y     N     N     Y     N  45
+ $-1     Y     Y     N     Y     Y     N  77
+   $     N     N     N     N     N     Y  34
+   $     N     N     N     Y     N     Y  66
+   $     N     Y     N     N     N     N  42
+   $     N     Y     N     Y     N     Y  74
+   $     Y     N     N     N     Y     N  38
+   $     Y     N     N     Y     Y     N  70
+   $     Y     Y     Y     N     Y     N  62
+   $     Y     Y     Y     Y     Y     N  94
+  $+     N     N     N     N     N     Y  35
+  $+     N     N     N     Y     N     Y  67
+  $+     Y     N     N     N     Y     N  39
+  $+     Y     N     N     Y     Y     N  71
 ```
 
 ### boundedRangeVarN

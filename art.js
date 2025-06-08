@@ -399,11 +399,13 @@ export class VarStackEntry {
      *     0    3   CLA
      *     0    4   CUA
      *     0    5   Done
+     *     0    6   KeyHighExclusive
      *     1    *   KLB
      *     2    *   KHB
      *  3-10    *   Dep.
      * 11-18    *   LBSD
      * 19-26    *   UBSD
+     *    27    *   SNTL
      *
      */
     const sv = new DataView(
@@ -417,6 +419,7 @@ export class VarStackEntry {
     sv.setFloat64(19,keyHighPrefixLen-1)
     sv.setUint8(1,lowerBound)
     sv.setUint8(2,upperBound)
+    sv.setUint9(27,sentinel)
     let stateByte = 0
     if(order == FORWARD) stateByte |= (0b100>>>0) 
     if(canLowerAlign){
@@ -439,6 +442,7 @@ export class VarStackEntry {
         nodeHiInclusive = false
       }
     } 
+    if(!keyHighInclusive) stateByte |= (0b1000000>>>0)
     sv.setUint8(0,(stateByte>>>0))
     /*FORWARD = 0,
       EXCLUSIVE = 0,
@@ -478,23 +482,44 @@ export class VarStackEntry {
     }
   }
   static combos = [
+    /* CanY, CanD */
     [false, false],
     [false, true],
     [true, false],
     [true, true]
   ]
   static decisions = [
-
+    /* 0   1   2   3   4   5   6   7   8   9  */
+       1,  1,  1,  1,  2,  2,  2,  2,  1,  1, //  0
+       1,  0,  0,  0,  0,  0,  0,  0,  0,  0, // 10
+       0,  0,  0,  0,  1,  1,  0,  0,  0,  0, // 20
+       2,  0,  1,  1,  1,  1,  2,  2,  2,  2, // 30
+       1,  1,  0,  0,  2,  2,  0,  0,  0,  0, // 40
+       0,  0,  0,  0,  0,  0,  1,  1,  0,  0, // 50
+       0,  0,  2,  0,  1,  1,  1,  1,  2,  2, // 60
+       2,  2,  1,  1,  1,  0,  2,  2,  0,  0, // 70
+       0,  0,  0,  0,  0,  0,  0,  0,  1,  1, // 80
+       0,  0,  0,  0,  2,  0,  0,  0,  0,  0  // 90
   ].map(v=>VarStackEntry.combos[v])
   get depth(){ 
     return this.#stateView.getFloat64(3)
   }
-  get lowerBoundSentinelDepth(){} 
+  get lowerBoundSentinelDepth(){
     return this.#stateView.getFloat64(11)
+  } 
   
   get upperBoundSentinelDepth(){ 
     return this.#stateView.getFloat64(19)
   }
+  get sentinel(){
+    return this.#stateView.getUint8(27)
+  }
+  #LB_Decide(
+    currentByte,
+    canLowerAlign,
+    isLowerAligned
+  ){}
+  #UB_Decide(){}
   #LB_CanD( 
     sentinel,
     currentByte,
