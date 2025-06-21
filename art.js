@@ -400,12 +400,13 @@ export class VarStackEntry {
      *     0    4   CUA
      *     0    5   Done
      *     0    6   KeyHighExclusive
+     *     0    7   KeyLowExclusive
      *     1    *   KLB
      *     2    *   KHB
      *  3-10    *   Dep.
-     * 11-18    *   LBSD
-     * 19-26    *   UBSD
-     *    27    *   SNTL
+     *    11    *   LowDepthSegment
+     *    12    *   HighDepthSegment
+     *    13    *   SNTL
      *
      */
     const sv = new DataView(
@@ -414,12 +415,22 @@ export class VarStackEntry {
     this.#stateView = sv
     let nodeLowInclusive = true 
     let nodeHiInclusive = true 
-    sv.setFloat64(3,depth)
-    sv.setFloat64(11,keyLowPrefixLen-1)
-    sv.setFloat64(19,keyHighPrefixLen-1)
+    sv.setFloat64(3,depth) 
+    let lowDepthSegment = 0
+    const lbsd = keyLowPrefixLen-1
+    if(depth==lbsd) lowDepthSegment+= 2
+    if(depth > lbsd) lowDepthSegment+=3
+    if(depth == lbsd-1) lowDepthSegment++ 
+    let hiDepthSegment = 0
+    const hbsd = keyHiPrefixLen-1
+    if(depth==hbsd) hiDepthSegment+= 2
+    if(depth > hbsd) hiDepthSegment+=3
+    if(depth == hbsd-1) hiDepthSegment++
+    sv.setUint8(11,lowDepthSegment)
+    sv.setUint8(12,hiDepthSegment)
     sv.setUint8(1,lowerBound)
     sv.setUint8(2,upperBound)
-    sv.setUint9(27,sentinel)
+    sv.setUint8(13,sentinel)
     let stateByte = 0
     if(order == FORWARD) stateByte |= (0b100>>>0) 
     if(canLowerAlign){
@@ -443,6 +454,7 @@ export class VarStackEntry {
       }
     } 
     if(!keyHighInclusive) stateByte |= (0b1000000>>>0)
+    if(!keyLowInclusive) stateByte |= (0b10000000>>>0)
     sv.setUint8(0,(stateByte>>>0))
     /*FORWARD = 0,
       EXCLUSIVE = 0,
@@ -467,16 +479,56 @@ export class VarStackEntry {
     const g = node[Symbol.iterator]()
     this.#generator = g
     const fyield = g.next()
-    if(fyield.done){
+    if(fyield.done){ 
       stateByte |= (0b100000 >>> 0)
       this.#yieldCache = null
     } else {
+      const lbd = this.LB_Decide(
+        fyield.value[0],
+        canLowerAlign,
+      )
+      const ubd = this.UB_Decide(
+        fyield.value[0],
+        canUpperAlign
+      )
       const canYield = false
-      this.#yieldCache = [
-        , // canYield?
-        , // canDescend?
-        canLowerAlign && fyield.value[0] == lowerBound, // canLowerAlign?
-        canUpperAlign && fyield.value[0] == upperBound,// canUpperAlign?
+      const lbdo = lbd[0]
+      const ubdo = ubd[0]
+      const canYieldRes =lbdo[0] && ubdo[0]
+      const canDescendRes = lbdo[1] && ubdo[1]
+      if(!canYieldRes && !canDescendRes){
+        const fyield2 = g.next()
+        if(fyield2.done){ 
+          stateByte |= (0b100000 >>> 0)
+          this.#yieldCache = null
+        } else {
+          const lbd2 = this.LB_Decide(
+            fyield2.value[0],
+            canLowerAlign,
+          )
+          const ubd = this.UB_Decide(
+            fyield2.value[0],
+            canUpperAlign
+          )
+          const canYield2 = false
+          const lbdo2 = lbd2[0]
+          const ubdo2 = ubd2[0]
+          const canYieldRes2 =lbdo2[0] && ubdo2[0]
+          const canDescendRes2 = lbdo2[1] && ubdo2[1]
+          this.#yieldCache = [
+            canYieldRes2, // canYield?
+            canDescendRes2, // canDescend?
+            lbd2[1], // canLowerAlign?
+            ubd2[1],// canUpperAlign?
+            fyield2.value
+          ]
+        }
+      }
+      else this.#yieldCache = [
+        canYieldRes, // canYield?
+        canDescendRes, // canDescend?
+        lbd[1], // canLowerAlign?
+        ubd[1],// canUpperAlign?
         fyield.value
       ]
     }
@@ -501,61 +553,83 @@ export class VarStackEntry {
        0,  0,  0,  0,  0,  0,  0,  0,  1,  1, // 80
        0,  0,  0,  0,  2,  0,  0,  0,  0,  0  // 90
   ].map(v=>VarStackEntry.combos[v])
+  get canLowerAlign(){ 
+    return ((this.#stateView.getUint8(0) >>> 0) & (0b1000 >>> 0)) == (0b1000 >>> 0)
+  }
+  get canUpperAlign(){ 
+    return ((this.#stateView.getUint8(0) >>> 0) & (0b10000 >>> 0)) == (0b10000 >>> 0)
+  }
   get depth(){ 
     return this.#stateView.getFloat64(3)
   }
-  get lowerBoundSentinelDepth(){
-    return this.#stateView.getFloat64(11)
-  } 
-  
-  get upperBoundSentinelDepth(){ 
-    return this.#stateView.getFloat64(19)
-  }
   get sentinel(){
-    return this.#stateView.getUint8(27)
+    return this.#stateView.getUint8(13)
+  } 
+  get lowDepthSegment(){
+    return this.#stateView.getUint8(11)
+  } 
+  get hiDepthSegment(){
+    return this.#stateView.getUint8(12)
   }
-  #LB_Decide(
-    currentByte,
-    canLowerAlign,
-    isLowerAligned
-  ){}
-  #UB_Decide(){}
-  #LB_CanD( 
-    sentinel,
-    currentByte,
-    canLoAlign
-  ){
-    if(sentinel != currentByte) return true
-    else return false
+  get keyHighExclusive(){
+    return ((this.#stateView.getUint8(0) >>> 0) & (0b1000000 >>> 0)) == (0b1000000 >>> 0)
   }
-  #UB_CanD( 
-    sentinel,
-    currentByte,
-    canHiAlign,
-    isHiAligned
-  ){
-    const UBSD = this.upperBoundSentinelDepth
-    const CD = this.depth
-    if(CD = UBSD-1){
-      if(sentinel != currentByte){
-        if(canHiAlign){
-          if(isHiAligned){
-            if()
-          }
-        }
-      }
+  get keyLowExclusive(){
+    return ((this.#stateView.getUint8(0) >>> 0) & (0b10000000 >>> 0)) == (0b10000000 >>> 0)
+  }
+  get lowerBoundByte(){ 
+    return this.#stateView.getUint8(1)
+  }
+  get upperBoundByte(){ 
+    return this.#stateView.getUint8(2)
+  }
+  isLowerAligned(
+    currentByte
+  ){ 
+    if(keyLowExclusive){
+      ;if(currentByte == this.lowerBoundByte+1) return true
+      else return false
     } else {
-      ;
+      if(currentByte == this.lowerBoundByte) return true
+      else return false
     }
   }
-  #LB_CanY( 
-    sentinel,
-    currentByte,
-    canLoAlign
-  ){
-
+  isUpperAligned(
+    currentByte
+  ){ 
+    if(keyHighExclusive){
+      ;if(currentByte == this.lowerBoundByte-1) return true
+      else return false
+    } else {
+      if(currentByte == this.lowerBoundByte) return true
+      else return false
+    }
   }
-  #UB_CanY(){}
+  LB_Decide( 
+    currentByte,
+    canLowerAlign
+  ){ 
+    let s = 0
+    const ILA = this.isLowerAligned(currentByte)
+    if(currentByte == this.sentinel) s+=4
+    if(canLowerAlign) s+=8
+    if(canLowerAlign && ILA) s+=16
+    s+=this.lowDepthSegment
+    return [VarStackEntry.decisions[s],ILA]
+  }
+  UB_Decide( 
+    currentByte,
+    canUpperAlign
+  ){ 
+    let s = 32
+    const IUA = this.isUpperAligned(currentByte)
+    if(currentByte == this.sentinel) s+=4
+    if(canUpperAlign) s+=8
+    if(canUpperAlign && IUA) s+=16
+    s+=this.hiDepthSegment
+    if(this.keyHighExclusive) s+= 32
+    return [VarStackEntry.decisions[s],IUA]
+  } 
   next(){
     let sb = this.#stateView.getUint8(0)
     if(((sb & 0b100000)>>>0) == 0b100000) return ({
