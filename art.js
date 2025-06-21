@@ -422,7 +422,7 @@ export class VarStackEntry {
     if(depth > lbsd) lowDepthSegment+=3
     if(depth == lbsd-1) lowDepthSegment++ 
     let hiDepthSegment = 0
-    const hbsd = keyHiPrefixLen-1
+    const hbsd = keyHighPrefixLen-1
     if(depth==hbsd) hiDepthSegment+= 2
     if(depth > hbsd) hiDepthSegment+=3
     if(depth == hbsd-1) hiDepthSegment++
@@ -485,13 +485,12 @@ export class VarStackEntry {
     } else {
       const lbd = this.LB_Decide(
         fyield.value[0],
-        canLowerAlign,
+        canLowerAlign
       )
       const ubd = this.UB_Decide(
         fyield.value[0],
         canUpperAlign
       )
-      const canYield = false
       const lbdo = lbd[0]
       const ubdo = ubd[0]
       const canYieldRes =lbdo[0] && ubdo[0]
@@ -504,13 +503,12 @@ export class VarStackEntry {
         } else {
           const lbd2 = this.LB_Decide(
             fyield2.value[0],
-            canLowerAlign,
+            canLowerAlign
           )
-          const ubd = this.UB_Decide(
+          const ubd2 = this.UB_Decide(
             fyield2.value[0],
             canUpperAlign
           )
-          const canYield2 = false
           const lbdo2 = lbd2[0]
           const ubdo2 = ubd2[0]
           const canYieldRes2 =lbdo2[0] && ubdo2[0]
@@ -532,6 +530,61 @@ export class VarStackEntry {
         fyield.value
       ]
     }
+    this.#stateView.setUint8(0,stateByte)
+  }
+  static evalVarN1(
+    node,
+    depth,
+    keyLowInclusive,
+    keyHighInclusive,
+    keyLowPrefixLen,
+    keyHighPrefixLen,
+    sentinel,
+    canLowerAlign,
+    canUpperAlign,
+    lowerBound,
+    upperBound
+  ){
+    const currentByte = node[0].charCodeAt(0)
+    const child = node[1] 
+    let ILA = false
+    if(canLowerAlign){
+      if(!keyLowInclusive){
+        if(currentByte == lowerBound+1) ILA = true
+        else ILA = false
+      } else {
+        if(currentByte == lowerBound) ILA = true
+        else ILA = false
+      }
+    }
+    let IUA = false
+    if(canUpperAlign){
+      if(!keyHighInclusive){
+        if(currentByte == upperBound-1) IUA = true
+        else IUA = false
+      } else {
+        if(currentByte == upperBound) IUA = true
+        else IUA = false
+      }
+    }
+    let s = 0
+    if(currentByte == sentinel) s+=4
+    if(canLowerAlign) s+=8
+    if(canLowerAlign && ILA) s+=16
+    let lowDepthSegment = 0
+    const lbsd = keyLowPrefixLen-1
+    if(depth==lbsd) lowDepthSegment+= 2
+    if(depth > lbsd) lowDepthSegment+=3
+    if(depth == lbsd-1) lowDepthSegment++ 
+    let hiDepthSegment = 0
+    const hbsd = keyHighPrefixLen-1
+    if(depth==hbsd) hiDepthSegment+= 2
+    if(depth > hbsd) hiDepthSegment+=3
+    if(depth == hbsd-1) hiDepthSegment++
+    s+=lowDepthSegment
+    s+=hiDepthSegment
+    if(!keyHighInclusive) s+= 32
+    return [VarStackEntry.decisions[s],ILA]
   }
   static combos = [
     /* CanY, CanD */
@@ -587,7 +640,7 @@ export class VarStackEntry {
     currentByte
   ){ 
     if(keyLowExclusive){
-      ;if(currentByte == this.lowerBoundByte+1) return true
+      if(currentByte == this.lowerBoundByte+1) return true
       else return false
     } else {
       if(currentByte == this.lowerBoundByte) return true
@@ -598,10 +651,10 @@ export class VarStackEntry {
     currentByte
   ){ 
     if(keyHighExclusive){
-      ;if(currentByte == this.lowerBoundByte-1) return true
+      if(currentByte == this.upperBoundByte-1) return true
       else return false
     } else {
-      if(currentByte == this.lowerBoundByte) return true
+      if(currentByte == this.upperBoundByte) return true
       else return false
     }
   }
@@ -640,18 +693,60 @@ export class VarStackEntry {
       done: false,
       value: this.#yieldCache
     }
-    const n = this.#generator.next()
-    if(n.done){
-      sb |= (0b100000>>>0)
+    const g = this.#generator
+    const n = g.next()
+    if(n.done){ 
+      sb |= (0b100000 >>> 0)
       this.#yieldCache = null
-      this.#stateView.setUint8(0,sb)
     } else {
-      this.#yieldCache = [
-        (((sb & 0b1000)>>>0) == 0b1000) && (n.value[0] == this.#stateView.getUint8(1)),
-        (((sb & 0b10000)>>>0) == 0b10000) && (n.value[0] == this.#stateView.getUint8(2)),
-        n.value
+      const lbd = this.LB_Decide(
+        n.value[0],
+        this.canLowerAlign
+      )
+      const ubd = this.UB_Decide(
+        n.value[0],
+        this.canUpperAlign
+      )
+      const lbdo = lbd[0]
+      const ubdo = ubd[0]
+      const canYieldRes =lbdo[0] && ubdo[0]
+      const canDescendRes = lbdo[1] && ubdo[1]
+      if(!canYieldRes && !canDescendRes){
+        const fyield2 = g.next()
+        if(fyield2.done){ 
+          sb |= (0b100000 >>> 0)
+          this.#yieldCache = null
+        } else {
+          const lbd2 = this.LB_Decide(
+            fyield2.value[0],
+            this.canLowerAlign
+          )
+          const ubd2 = this.UB_Decide(
+            fyield2.value[0],
+            this.canUpperAlign
+          )
+          const lbdo2 = lbd2[0]
+          const ubdo2 = ubd2[0]
+          const canYieldRes2 =lbdo2[0] && ubdo2[0]
+          const canDescendRes2 = lbdo2[1] && ubdo2[1]
+          this.#yieldCache = [
+            canYieldRes2, // canYield?
+            canDescendRes2, // canDescend?
+            lbd2[1], // canLowerAlign?
+            ubd2[1],// canUpperAlign?
+            fyield2.value
+          ]
+        }
+      }
+      else this.#yieldCache = [
+        canYieldRes, // canYield?
+        canDescendRes, // canDescend?
+        lbd[1], // canLowerAlign?
+        ubd[1],// canUpperAlign?
+        fyield.value
       ]
     }
+    this.#stateView.setUint8(0,sb)
     return c
   }
 }
@@ -2140,6 +2235,33 @@ export class ART {
       }
     }
   }
+  boundedRangeVarN(
+    lowerBoundKey, 
+    upperBoundKey,
+    sentinel,
+    lowerInclusivity,
+    upperInclusivity,
+    order,
+    root = this.root
+  ){
+    return {
+      [Symbol.iterator]: function*(){
+        if(root == null) return
+        const stack = [null]
+        let canLoAlign = true
+        let canHiAlign = true
+        let descent = true
+        let depth = 0
+        do {
+          if(descent){
+
+          } else { // ascent
+
+          }
+        } while(root != null)
+      }
+    }
+  }
   boundedRangeFixN_old( 
     lowerBoundKey, 
     upperBoundKey,
@@ -2730,7 +2852,7 @@ export class ART {
       }
     }
   }
-  boundedRangeVarN( 
+  boundedRangeVarN_OLD( 
     lowerBoundKey, 
     upperBoundKey,
     sentinel,
