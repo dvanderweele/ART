@@ -584,7 +584,15 @@ export class VarStackEntry {
     s+=lowDepthSegment
     s+=hiDepthSegment
     if(!keyHighInclusive) s+= 32
-    return [VarStackEntry.decisions[s],ILA]
+    return [
+      ...VarStackEntry.decisions[s],
+      ILA,
+      IUA,
+      [
+        node[0].charCodeAt(0),
+        node[1]
+      ]
+    ]
   }
   static combos = [
     /* CanY, CanD */
@@ -2250,11 +2258,79 @@ export class ART {
         const stack = [null]
         let canLoAlign = true
         let canHiAlign = true
+        let canDescend = true
+        let canYield = false
         let descent = true
         let depth = 0
         do {
           if(descent){
+            switch(root.constructor.name){
+              case "Node1": {
+                const ev = VarStackEntry.evalVarN1(
+                  root,
+                  depth,
+                  lowerBoundInclusive == LOWER_BOUND_INCLUSIVE,
+                  upperBoundInclusive == UPPER_BOUND_INCLUSIVE,
+                  lowerBoundKey.length,
+                  upperBoundKey.length,
+                  sentinel,
+                  canLoAlign,
+                  canHiAlign,
+                  lowerBoundKey[depth],
+                  upperBoundKey[depth]
+                )
+                if(ev[0]){
+                  yield ev[4]
+                  root = stack[stack.length-1]
+                  descent = false
+                } else if(ev[1]){ 
+                  root = root[1]
+                  depth++
+                  canLoAlign = ev[2]
+                  canHiAlign = ev[3]
+                } else {
+                  root = stack[stack.length-1]
+                  descent = false
+                }
+                break
+              }
+              case "NodeLeaf": {
+                // premature leaf, DNY
+                root = stack[stack.length-1]
+                descent = false
+                break 
+              }
+              default: { // N4+
+                const nse = new VarStackEntry(
+                  root,
+                  sentinel,
+                  lowerBoundInclusive == LOWER_BOUND_INCLUSIVE,
+                  upperBoundInclusive == UPPER_BOUND_INCLUSIVE,
+                  depth,
+                  lowerBoundKey.length,
+                  upperBoundKey.length,
+                  order,
+                  canLoAlign,
+                  canHiAlign,
+                  lowerBoundKey[depth],
+                  upperBoundKey[depth]
+                )
+                const res1 = nse.next()
+                if(res1.done){
+                  root = stack[stack.length-1]
+                  descent = false
+                }else{
+                  const r1v = res1.value
+                  if(r1v[0]){ // canY
+                    yield r1v[4]
+                  } else if(r1v[1]){ // canD
+                    ;
+                  } else { // try next
 
+                  }
+                }
+              }
+            }
           } else { // ascent
 
           }
