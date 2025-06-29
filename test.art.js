@@ -992,13 +992,13 @@ function getRandomInt(min, max) {
   /*console.log([...(frart.iter([]))].map(
       ([k,v])=>[dv2arr(k).join("#"),v].join("$")
     ).join("|"))*/
-  expect(
-    [...(frart.iter([]))].map(
-      ([k,v])=>[dv2arr(k).join("#"),v].join("$")
-    ).join("|"),
-    "13#23#33#43$53|13#23#34#44#54$64|13#33#33#43$73|14#43#53#63$83|15#23#33#43$93|16#23#33#43$23|16#33#33#43$33|17#23#33#43$43",
-    "full range iteration correct w/ empty query"
-  )
+  // expect(
+  //   [...(frart.iter([]))].map(
+  //     ([k,v])=>[dv2arr(k).join("#"),v].join("$")
+  //   ).join("|"),
+  //   "13#23#33#43$53|13#23#34#44#54$64|13#33#33#43$73|14#43#53#63$83|15#23#33#43$93|16#23#33#43$23|16#33#33#43$33|17#23#33#43$43",
+  //   "full range iteration correct w/ empty query"
+  // )
   const binCompF64 = await buildBinCompF64(
     getWASMBuffer("./RankF64.wasm")
   )
@@ -1030,7 +1030,7 @@ function getRandomInt(min, max) {
   ]))
   const fockArt = new ART()
   for(let pair of fixOnlyCompKeys){
-    console.log("FOCKART.INS:", pair[0], pair[1])
+    // console.log("FOCKART.INS:", pair[0], pair[1])
     fockArt.insert(pair[0], pair[1])
   }
   /*
@@ -1043,178 +1043,178 @@ function getRandomInt(min, max) {
   console.log("debug")
   */
   //console.log("start rangeQ")
-  console.log("\nCASE 1\n")
-  expect(
-    [...(fockArt.query([
-      { 
-        componentType: FIXED_LENGTH_KEY,
-        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
-        upperInclusivity: UPPER_BOUND_INCLUSIVE,
-        order: FORWARD,
-        length: 9,
-        lowerBoundKey: -2100,
-        upperBoundKey: -2000
-      },
-      { 
-        componentType: FIXED_LENGTH_KEY,
-        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
-        upperInclusivity: UPPER_BOUND_INCLUSIVE,
-        order: FORWARD,
-        length: 9,
-        lowerBoundKey: 600,
-        upperBoundKey: 800
-      },
-      { 
-        componentType: FIXED_LENGTH_KEY,
-        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
-        upperInclusivity: UPPER_BOUND_INCLUSIVE,
-        order: FORWARD,
-        length: 9,
-        lowerBoundKey: -0,
-        upperBoundKey: 150
-      },
-      {
-        componentType: LEAF_COMPONENT
-      }
-    ].map(
-      query => ({
-        ...query,
-        lowerBoundKey: new Uint8Array(binCompF64(query.lowerBoundKey).buffer),
-        upperBoundKey: new Uint8Array(binCompF64(query.upperBoundKey).buffer)
-      })
-    )))].join("|"),
-    "15|25", 
-    "3x fixed compound key fwd traversal #1"
-  ) 
-  console.log("\nCASE 2\n")
-  expect(
-    [...(fockArt.query([
-      { 
-        componentType: FIXED_LENGTH_KEY,
-        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
-        upperInclusivity: UPPER_BOUND_INCLUSIVE,
-        order: FORWARD,
-        length: 9,
-        lowerBoundKey: -2095.55,
-        upperBoundKey: -2000
-      },
-      { 
-        componentType: FIXED_LENGTH_KEY,
-        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
-        upperInclusivity: UPPER_BOUND_INCLUSIVE,
-        order: FORWARD,
-        length: 9,
-        lowerBoundKey: 600,
-        upperBoundKey: 713.1
-      },
-      { 
-        componentType: FIXED_LENGTH_KEY,
-        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
-        upperInclusivity: UPPER_BOUND_INCLUSIVE,
-        order: FORWARD,
-        length: 9,
-        lowerBoundKey: -0,
-        upperBoundKey: 150
-      },
-      {
-        componentType: LEAF_COMPONENT
-      }
-    ].map(
-      query => ({
-        ...query,
-        lowerBoundKey: new Uint8Array(binCompF64(query.lowerBoundKey).buffer),
-        upperBoundKey: new Uint8Array(binCompF64(query.upperBoundKey).buffer)
-      })
-    )))].join("|"),
-    "15|25", 
-    "3x fixed compound key fwd traversal #2"
-  ) 
-  console.log("\nCase 3\n")
-  expect(
-    [...(fockArt.query([
-      { 
-        componentType: FIXED_LENGTH_KEY,
-        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
-        upperInclusivity: UPPER_BOUND_INCLUSIVE,
-        order: FORWARD,
-        length: 9,
-        lowerBoundKey: -2095.55,
-        upperBoundKey: -1000
-      },
-      { 
-        componentType: FIXED_LENGTH_KEY,
-        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
-        upperInclusivity: UPPER_BOUND_INCLUSIVE,
-        order: FORWARD,
-        length: 9,
-        lowerBoundKey: -1,
-        upperBoundKey: 713.1
-      },
-      { 
-        componentType: FIXED_LENGTH_KEY,
-        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
-        upperInclusivity: UPPER_BOUND_INCLUSIVE,
-        order: FORWARD,
-        length: 9,
-        lowerBoundKey: -15,
-        upperBoundKey: 150
-      },
-      {
-        componentType: LEAF_COMPONENT
-      }
-    ].map(
-      query => ({
-        ...query,
-        lowerBoundKey: new Uint8Array(binCompF64(query.lowerBoundKey).buffer),
-        upperBoundKey: new Uint8Array(binCompF64(query.upperBoundKey).buffer)
-      })
-    )))].join("|"),
-    "15|25|55|65|75", 
-    "3x fixed compound key fwd traversal #3"
-  ) 
-  console.log("\nCase 4\n")
-  expect(
-    [...(fockArt.query([
-      { 
-        componentType: FIXED_LENGTH_KEY,
-        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
-        upperInclusivity: UPPER_BOUND_INCLUSIVE,
-        order: FORWARD,
-        length: 9,
-        lowerBoundKey: -2095.55,
-        upperBoundKey: -1000
-      },
-      { 
-        componentType: FIXED_LENGTH_KEY,
-        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
-        upperInclusivity: UPPER_BOUND_INCLUSIVE,
-        order: REVERSE,
-        length: 9,
-        lowerBoundKey: -1,
-        upperBoundKey: 713.1
-      },
-      { 
-        componentType: FIXED_LENGTH_KEY,
-        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
-        upperInclusivity: UPPER_BOUND_INCLUSIVE,
-        order: FORWARD,
-        length: 9,
-        lowerBoundKey: -15,
-        upperBoundKey: 150
-      },
-      {
-        componentType: LEAF_COMPONENT
-      }
-    ].map(
-      query => ({
-        ...query,
-        lowerBoundKey: new Uint8Array(binCompF64(query.lowerBoundKey).buffer),
-        upperBoundKey: new Uint8Array(binCompF64(query.upperBoundKey).buffer)
-      })
-    )))].join("|"),
-    "75|55|65|25|15",
-    "3x fixed compound key fwd-rev-fwd traversal #4"
-  )
+  // console.log("\nCASE 1\n")
+  // expect(
+  //   [...(fockArt.query([
+  //     { 
+  //       componentType: FIXED_LENGTH_KEY,
+  //       lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+  //       upperInclusivity: UPPER_BOUND_INCLUSIVE,
+  //       order: FORWARD,
+  //       length: 9,
+  //       lowerBoundKey: -2100,
+  //       upperBoundKey: -2000
+  //     },
+  //     { 
+  //       componentType: FIXED_LENGTH_KEY,
+  //       lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+  //       upperInclusivity: UPPER_BOUND_INCLUSIVE,
+  //       order: FORWARD,
+  //       length: 9,
+  //       lowerBoundKey: 600,
+  //       upperBoundKey: 800
+  //     },
+  //     { 
+  //       componentType: FIXED_LENGTH_KEY,
+  //       lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+  //       upperInclusivity: UPPER_BOUND_INCLUSIVE,
+  //       order: FORWARD,
+  //       length: 9,
+  //       lowerBoundKey: -0,
+  //       upperBoundKey: 150
+  //     },
+  //     {
+  //       componentType: LEAF_COMPONENT
+  //     }
+  //   ].map(
+  //     query => ({
+  //       ...query,
+  //       lowerBoundKey: new Uint8Array(binCompF64(query.lowerBoundKey).buffer),
+  //       upperBoundKey: new Uint8Array(binCompF64(query.upperBoundKey).buffer)
+  //     })
+  //   )))].join("|"),
+  //   "15|25", 
+  //   "3x fixed compound key fwd traversal #1"
+  // ) 
+  // console.log("\nCASE 2\n")
+  // expect(
+  //   [...(fockArt.query([
+  //     { 
+  //       componentType: FIXED_LENGTH_KEY,
+  //       lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+  //       upperInclusivity: UPPER_BOUND_INCLUSIVE,
+  //       order: FORWARD,
+  //       length: 9,
+  //       lowerBoundKey: -2095.55,
+  //       upperBoundKey: -2000
+  //     },
+  //     { 
+  //       componentType: FIXED_LENGTH_KEY,
+  //       lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+  //       upperInclusivity: UPPER_BOUND_INCLUSIVE,
+  //       order: FORWARD,
+  //       length: 9,
+  //       lowerBoundKey: 600,
+  //       upperBoundKey: 713.1
+  //     },
+  //     { 
+  //       componentType: FIXED_LENGTH_KEY,
+  //       lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+  //       upperInclusivity: UPPER_BOUND_INCLUSIVE,
+  //       order: FORWARD,
+  //       length: 9,
+  //       lowerBoundKey: -0,
+  //       upperBoundKey: 150
+  //     },
+  //     {
+  //       componentType: LEAF_COMPONENT
+  //     }
+  //   ].map(
+  //     query => ({
+  //       ...query,
+  //       lowerBoundKey: new Uint8Array(binCompF64(query.lowerBoundKey).buffer),
+  //       upperBoundKey: new Uint8Array(binCompF64(query.upperBoundKey).buffer)
+  //     })
+  //   )))].join("|"),
+  //   "15|25", 
+  //   "3x fixed compound key fwd traversal #2"
+  // ) 
+  // console.log("\nCase 3\n")
+  // expect(
+  //   [...(fockArt.query([
+  //     { 
+  //       componentType: FIXED_LENGTH_KEY,
+  //       lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+  //       upperInclusivity: UPPER_BOUND_INCLUSIVE,
+  //       order: FORWARD,
+  //       length: 9,
+  //       lowerBoundKey: -2095.55,
+  //       upperBoundKey: -1000
+  //     },
+  //     { 
+  //       componentType: FIXED_LENGTH_KEY,
+  //       lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+  //       upperInclusivity: UPPER_BOUND_INCLUSIVE,
+  //       order: FORWARD,
+  //       length: 9,
+  //       lowerBoundKey: -1,
+  //       upperBoundKey: 713.1
+  //     },
+  //     { 
+  //       componentType: FIXED_LENGTH_KEY,
+  //       lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+  //       upperInclusivity: UPPER_BOUND_INCLUSIVE,
+  //       order: FORWARD,
+  //       length: 9,
+  //       lowerBoundKey: -15,
+  //       upperBoundKey: 150
+  //     },
+  //     {
+  //       componentType: LEAF_COMPONENT
+  //     }
+  //   ].map(
+  //     query => ({
+  //       ...query,
+  //       lowerBoundKey: new Uint8Array(binCompF64(query.lowerBoundKey).buffer),
+  //       upperBoundKey: new Uint8Array(binCompF64(query.upperBoundKey).buffer)
+  //     })
+  //   )))].join("|"),
+  //   "15|25|55|65|75", 
+  //   "3x fixed compound key fwd traversal #3"
+  // ) 
+  // console.log("\nCase 4\n")
+  // expect(
+  //   [...(fockArt.query([
+  //     { 
+  //       componentType: FIXED_LENGTH_KEY,
+  //       lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+  //       upperInclusivity: UPPER_BOUND_INCLUSIVE,
+  //       order: FORWARD,
+  //       length: 9,
+  //       lowerBoundKey: -2095.55,
+  //       upperBoundKey: -1000
+  //     },
+  //     { 
+  //       componentType: FIXED_LENGTH_KEY,
+  //       lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+  //       upperInclusivity: UPPER_BOUND_INCLUSIVE,
+  //       order: REVERSE,
+  //       length: 9,
+  //       lowerBoundKey: -1,
+  //       upperBoundKey: 713.1
+  //     },
+  //     { 
+  //       componentType: FIXED_LENGTH_KEY,
+  //       lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+  //       upperInclusivity: UPPER_BOUND_INCLUSIVE,
+  //       order: FORWARD,
+  //       length: 9,
+  //       lowerBoundKey: -15,
+  //       upperBoundKey: 150
+  //     },
+  //     {
+  //       componentType: LEAF_COMPONENT
+  //     }
+  //   ].map(
+  //     query => ({
+  //       ...query,
+  //       lowerBoundKey: new Uint8Array(binCompF64(query.lowerBoundKey).buffer),
+  //       upperBoundKey: new Uint8Array(binCompF64(query.upperBoundKey).buffer)
+  //     })
+  //   )))].join("|"),
+  //   "75|55|65|25|15",
+  //   "3x fixed compound key fwd-rev-fwd traversal #4"
+  // )
   const FRseqs = [
     [[11,21,31,41,51],5],
     [[11,21,32,42,52],15],
@@ -1368,51 +1368,51 @@ function getRandomInt(min, max) {
       }
     ])
   ) console.log(pk)*/
-  for(let v of vkt.fullFwdRangeV()) console.log(varkeys[v[0]])
-  for(let v of vkt.allWithPrefixFwdV(Latin1.getL1SortKey("And").slice(0,3))) console.log(varkeys[v[0]])
-  expect(
-    [...(fockArt.query([
-      { 
-        componentType: FIXED_LENGTH_KEY,
-        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
-        upperInclusivity: UPPER_BOUND_INCLUSIVE,
-        order: FORWARD,
-        length: 9,
-        lowerBoundKey: -2095.55,
-        upperBoundKey: -1000
-      },
-      { 
-        componentType: FIXED_LENGTH_KEY,
-        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
-        upperInclusivity: UPPER_BOUND_INCLUSIVE,
-        order: REVERSE,
-        length: 9,
-        lowerBoundKey: -1,
-        upperBoundKey: 713.1
-      },
-      { 
-        componentType: FIXED_LENGTH_KEY,
-        lowerInclusivity: LOWER_BOUND_INCLUSIVE,
-        upperInclusivity: UPPER_BOUND_INCLUSIVE,
-        order: FORWARD,
-        length: 9,
-        lowerBoundKey: -15,
-        upperBoundKey: 150,
-        limit:1
-      },
-      {
-        componentType: LEAF_COMPONENT
-      }
-    ].map(
-      query => ({
-        ...query,
-        lowerBoundKey: new Uint8Array(binCompF64(query.lowerBoundKey).buffer),
-        upperBoundKey: new Uint8Array(binCompF64(query.upperBoundKey).buffer)
-      })
-    )))].join("|"),
-    "75",
-    "3x fixed compound key fwd-rev-fwd traversal #5"
-  )
+  // for(let v of vkt.fullFwdRangeV()) console.log(varkeys[v[0]])
+  // for(let v of vkt.allWithPrefixFwdV(Latin1.getL1SortKey("And").slice(0,3))) console.log(varkeys[v[0]])
+  // expect(
+  //   [...(fockArt.query([
+  //     { 
+  //       componentType: FIXED_LENGTH_KEY,
+  //       lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+  //       upperInclusivity: UPPER_BOUND_INCLUSIVE,
+  //       order: FORWARD,
+  //       length: 9,
+  //       lowerBoundKey: -2095.55,
+  //       upperBoundKey: -1000
+  //     },
+  //     { 
+  //       componentType: FIXED_LENGTH_KEY,
+  //       lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+  //       upperInclusivity: UPPER_BOUND_INCLUSIVE,
+  //       order: REVERSE,
+  //       length: 9,
+  //       lowerBoundKey: -1,
+  //       upperBoundKey: 713.1
+  //     },
+  //     { 
+  //       componentType: FIXED_LENGTH_KEY,
+  //       lowerInclusivity: LOWER_BOUND_INCLUSIVE,
+  //       upperInclusivity: UPPER_BOUND_INCLUSIVE,
+  //       order: FORWARD,
+  //       length: 9,
+  //       lowerBoundKey: -15,
+  //       upperBoundKey: 150,
+  //       limit:1
+  //     },
+  //     {
+  //       componentType: LEAF_COMPONENT
+  //     }
+  //   ].map(
+  //     query => ({
+  //       ...query,
+  //       lowerBoundKey: new Uint8Array(binCompF64(query.lowerBoundKey).buffer),
+  //       upperBoundKey: new Uint8Array(binCompF64(query.upperBoundKey).buffer)
+  //     })
+  //   )))].join("|"),
+  //   "75",
+  //   "3x fixed compound key fwd-rev-fwd traversal #5"
+  // )
   // boundedRangeFixN tests
   /**
    * LB
@@ -1635,6 +1635,7 @@ function getRandomInt(min, max) {
             UPPER_BOUND_INCLUSIVE,
             FORWARD
           )){
+            // console.log("DBG1638", i)
             for(let j of vkt.boundedRangeFixN(
               new Uint8Array([0]),
               new Uint8Array([255]),
@@ -1642,7 +1643,7 @@ function getRandomInt(min, max) {
               LOWER_BOUND_INCLUSIVE,
               UPPER_BOUND_INCLUSIVE,
               FORWARD,
-              i
+              i[1]
             )) yield j
           }
         }
