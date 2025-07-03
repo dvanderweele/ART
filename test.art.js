@@ -1768,6 +1768,120 @@ function getRandomInt(min, max) {
 
     }
   }
-
+  let twoD = []
+  for(let i = 0; i < 10000; i++){
+    const a = Math.random() * 10000
+    const b = Math.random() * 10000
+    twoD.push({
+      a,
+      b,
+      k: a + "|" + b,
+      bca: binCompF64(a,new DataView(new ArrayBuffer(18)))
+    })
+  }
+  for(let e of twoD){ 
+    e.ck = new Uint8Array(
+      binCompF64(e.b,e.bca,9).buffer
+    )
+  }
+  twoD = new Map(
+    twoD.map(o=>[o.k,({a: o.a,b: o.b,ck: o.ck})])
+  )
+  twoD = [...twoD.entries()].map(
+    ([k,{a,b,ck}]) => ({k,a,b,ck})
+  )
+  const twoDart = new ART()
+  for(let i = 0; i < twoD.length; i++) twoDart.insert(twoD[i].ck,i)
+  const twoDTestRanges = []
+  for(let i = 0; i < 1000; i++){
+    twoDTestRanges.push({ 
+      lb1: Math.random() *5000,
+      ub1: Math.random() *5000+5000,
+      l1inc: Math.random()>.5,
+      u1inc: Math.random()>.5, 
+      lb2: Math.random() *5000,
+      ub2: Math.random() *5000+5000,
+      l2inc: Math.random()>.5,
+      u2inc: Math.random()>.5
+    })
+  }
+  for(let testRange of twoDTestRanges){
+    //console.log("DEBUG, TESTRANGE START")
+    let target = []
+    for(let i = 0; i < twoD.length; i++){
+      const tuple = twoD[i]
+      // k, a, b, ck
+      const {
+        lb1, ub1,
+        l1inc, u1inc,
+        lb2, ub2,
+        l2inc, u2inc
+      } = testRange
+      let omatch = false 
+      let imatch = false 
+      if(
+        (
+          (
+            l1inc && lb1 >= tuple.a
+          ) || lb1 > tuple.a
+        ) && (
+          (
+            u1inc && ub1 <= tuple.a
+          ) || ub1 < tuple.a
+        )
+      ) omatch = true 
+      if(
+        (
+          (
+            l2inc && lb2 >= tuple.b
+          ) || lb2 > tuple.b
+        ) && (
+          (
+            u2inc && ub2 <= tuple.b
+          ) || ub2 < tuple.b
+        )
+      ) imatch = true
+      if(omatch && imatch) target.push(i)
+    }
+    target.sort(
+      (x,y) => {
+        const tx = twoD[x]
+        const ty = twoD[y]
+        if(tx.a == ty.a){
+          return tx.b - ty.b
+        } else {
+          return tx.a - ty.a
+        }
+      }
+    )
+    expect(
+      [
+        ...(
+          function*(){
+            for(let i of twoDart.boundedRangeFixN( 
+              new Uint8Array(binCompF64(testRange.lb1).buffer),
+              new Uint8Array(binCompF64(testRange.ub1).buffer),
+              9,
+              testRange.l1inc ? LOWER_BOUND_INCLUSIVE : EXCLUSIVE,
+              testRange.u1inc ?  UPPER_BOUND_INCLUSIVE : EXCLUSIVE,
+              FORWARD
+            )){
+              for(let j of twoDart.boundedRangeFixN( 
+                new Uint8Array(binCompF64(testRange.lb2).buffer),
+                new Uint8Array(binCompF64(testRange.ub2).buffer),
+                9,
+                testRange.l2inc ? LOWER_BOUND_INCLUSIVE : EXCLUSIVE,
+                testRange.u12nc ?  UPPER_BOUND_INCLUSIVE : EXCLUSIVE,
+                FORWARD,
+                i[1]
+              )) yield j
+            }
+          }
+        )()
+      ].map(v=>v[0]).join("|"),
+      target.join("|"),
+      "boundedRangeFixN 2D - autogen iteration" 
+    )
+  }
   dump(true);
 })()

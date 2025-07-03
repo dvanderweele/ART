@@ -289,6 +289,7 @@ export class FixStackEntry {
         fyield.value
       ]
     }
+    this.#stateView.setUint8(0,stateByte)
   }
   get depth(){
     return this.#stateView.getFloat64(3)
@@ -2213,7 +2214,7 @@ export class ART {
                   descent = false
                   continue
                 }
-                //console.log("N4+D undone, type", root.constructor.name)
+                //console.log("N4+D undone, type", root.constructor.name, "result",result,"e",e)
 
                 canLoAlign = result.value[0]
                 canHiAlign = result.value[1]
