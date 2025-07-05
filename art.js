@@ -835,7 +835,7 @@ export class Node1 extends Array {
     this[0] = String.fromCharCode(0)
     this[1] = null
   }
-  insert(keyByte,){
+  insert(keyByte){
     if(!this[1]){ 
       this[0] = String.fromCharCode(keyByte)
       return 0
@@ -1552,8 +1552,66 @@ export class ART {
     if(value != null) cnode[0] = value 
     this.size++
   }
-  bulkLoad(sortedKeys){
-    ;
+  bulkLoad(sorted){
+    this.root = sorted.length < 1 ? null : (function r(
+      plbi,
+      pubi,
+      depth
+    ){
+      const partitions = [[-1]]
+      for(let i = plbi; i <= pubi; i++){
+        const kb = sorted[i][0][depth]
+        const lp = partitions[partitions.length-1]
+        if(
+          lp[0] == kb
+        ) lp[1][1] = i
+        else partitions.push([kb,[i,i]])
+      }
+      const partitionCount = partitions.length-1
+      let newNode
+      if(partitionCount < 2) newNode = new Node1()
+      else if(partitionCount < 5) newNode = new Node4()
+      else if(partitionCount < 17) newNode = new Node16()
+      else if(partitionCount < 49) newNode = new Node48()
+      else newNode = new Node256()
+      for(let p = 1; p < partitions.length; p++){
+        const [kb,[lbi,ubi]] = partitions[p]
+        if(newNode instanceof Node1){
+          newNode.insert(kb) 
+          if(
+            lbi == ubi 
+            && sorted[lbi][0].length - 1 == depth
+          ){
+            let nl
+            const vl = sorted[lbi][1]
+            if(vl instanceof Array){
+              nl = new NodeLeaf(...vl)
+            } else {
+              nl = new NodeLeaf()
+              nl[0] = vl
+            }
+            newNode[1] = nl
+          } else newNode[1] = r(lbi,ubi,depth+1)
+        } else {
+          const idx = newNode.insert(kb) 
+          if(
+            lbi == ubi 
+            && sorted[lbi][0].length - 1 == depth
+          ){
+            let nl
+            const vl = sorted[lbi][1]
+            if(vl instanceof Array){
+              nl = new NodeLeaf(...vl)
+            } else {
+              nl = new NodeLeaf()
+              nl[0] = vl
+            }
+            newNode[1][idx] = nl
+          } else newNode[1][idx] = r(lbi,ubi,depth+1)
+        }
+      }
+      return newNode
+    })(0,sorted.length-1,0)
   }
   search(key){
     /**

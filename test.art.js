@@ -1805,8 +1805,9 @@ function getRandomInt(min, max) {
       u2inc: Math.random()>.5
     })
   }
-  for(let testRange of twoDTestRanges){
-    //console.log("DEBUG, TESTRANGE START")
+  for(let d = 0; d<twoDTestRanges.length; d++){
+    const testRange = twoDTestRanges[d]
+    console.log(d,"DEBUG, TESTRANGE START")
     let target = []
     for(let i = 0; i < twoD.length; i++){
       const tuple = twoD[i]
@@ -1881,6 +1882,35 @@ function getRandomInt(min, max) {
       ].map(v=>v[0]).join("|"),
       target.join("|"),
       "boundedRangeFixN 2D - autogen iteration" 
+    )
+    const blart = new ART()
+    blart.bulkLoad([
+      [
+        new Uint8Array([1,2,3]),
+        42
+      ],[
+        new Uint8Array([1,3,5,7,9]),
+        24
+      ],[
+        new Uint8Array([2,4,6,56]),
+        31
+      ],[
+        new Uint8Array([3,5,7]),
+        13
+      ],[
+        new Uint8Array([4,6,8,8,8]),
+        64
+      ],[
+        new Uint8Array([4,7,1]),
+        2
+      ]
+    ])
+    expect(
+      [
+        ...(blart.fullFwdRangeV()),
+      ].map(nl=>nl[0]).join("~"),
+      "42~24~31~13~64~2",
+      "range after bulk load"
     )
   }
   dump(true);
