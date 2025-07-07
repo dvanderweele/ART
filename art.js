@@ -2439,4 +2439,31 @@ export class ART {
       }
     }
   }
+  static union(a,b){ 
+    const c = new ART()
+    c.bulkLoad(
+      [
+        ...(
+          (function*d(
+            aRoot,
+            bRoot,
+            keyStack
+          ){
+            ;
+          })(
+            a.root,
+            b.root,
+            new ByteStack()
+          )
+        )
+      ]
+    )
+    return c
+  }
+  static intersect(a,b){
+    ;
+  }
+  static difference(a,b){
+    ;
+  }
 }
