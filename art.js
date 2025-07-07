@@ -2449,7 +2449,20 @@ export class ART {
             bRoot,
             keyStack
           ){
-            ;
+            let aSingle = aRoot instanceof Node1
+            let bSingle = bRoot instanceof Node1
+            let aIterator, bIterator
+            if(!aSingle){
+              aRoot.ITER_LB = 0
+              aRoot.ITER_UB = 255
+              aRoot[Symbol.iterator] = a.constructor.ITER_FWD_GE_TO_LE
+            }
+            if(!bSingle){
+              bRoot.ITER_LB1
+            }
+            for(;;){
+              ;
+            }
           })(
             a.root,
             b.root,
