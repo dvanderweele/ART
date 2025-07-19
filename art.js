@@ -1553,6 +1553,7 @@ export class ART {
     this.size++
   }
   bulkLoad(sorted){
+    this.size = sorted.length
     this.root = sorted.length < 1 ? null : (function r(
       plbi,
       pubi,
@@ -1585,7 +1586,12 @@ export class ART {
             let nl
             const vl = sorted[lbi][1]
             if(vl instanceof Array){
-              nl = new NodeLeaf(...vl)
+              if(vl instanceof NodeLeaf){
+                nl = new NodeLeaf()
+                for(let e of vl) nl.push(e)
+              } else {
+                nl = new NodeLeaf(...(vl.flat()))
+              }
             } else {
               nl = new NodeLeaf()
               nl[0] = vl
@@ -1601,7 +1607,12 @@ export class ART {
             let nl
             const vl = sorted[lbi][1]
             if(vl instanceof Array){
-              nl = new NodeLeaf(...vl)
+              if(vl instanceof NodeLeaf){
+                nl = new NodeLeaf()
+                for(let e of vl) nl.push(e)
+              } else {
+                nl = new NodeLeaf(...(vl.flat()))
+              }
             } else {
               nl = new NodeLeaf()
               nl[0] = vl
@@ -2449,19 +2460,146 @@ export class ART {
             bRoot,
             keyStack
           ){
-            let aSingle = aRoot instanceof Node1
-            let bSingle = bRoot instanceof Node1
-            let aIterator, bIterator
-            if(!aSingle){
-              aRoot.ITER_LB = 0
-              aRoot.ITER_UB = 255
-              aRoot[Symbol.iterator] = a.constructor.ITER_FWD_GE_TO_LE
-            }
-            if(!bSingle){
-              bRoot.ITER_LB1
-            }
-            for(;;){
-              ;
+            const aLeaf = aRoot instanceof NodeLeaf
+            const bLeaf = bRoot instanceof NodeLeaf
+            if(aLeaf && bLeaf){
+              yield [keyStack.pull(),[aRoot,bRoot]]
+            } else {
+              let aSingle = aRoot instanceof Node1
+              let bSingle = bRoot instanceof Node1
+              let aIterator, bIterator
+              let a1Done = false
+              let b1Done = false
+              if(!aSingle){
+                aRoot.ITER_LB = 0
+                aRoot.ITER_UB = 255
+                aRoot[Symbol.iterator] = aRoot.constructor.ITER_FWD_GE_TO_LE
+                aRoot = aRoot[Symbol.iterator]()
+              }
+              if(!bSingle){
+                bRoot.ITER_LB = 0
+                bRoot.ITER_UB = 255
+                bRoot[Symbol.iterator] = bRoot.constructor.ITER_FWD_GE_TO_LE
+                bRoot = bRoot[Symbol.iterator]()
+              }
+              let aResult, bResult
+              const getResult = (
+                isSingle,
+                n1Done,
+                root
+              ) =>{ 
+                if(isSingle) return [
+                  false,
+                  n1Done,
+                  root[0].charCodeAt(0),
+                  root[1]
+                ] 
+                else {
+                  const nx = root.next()
+                  return [
+                    false,
+                    ...(
+                      nx.done ? [
+                        true,
+                        null,
+                        null
+                      ] : [
+                        false,
+                        nx.value[0],
+                        nx.value[1]
+                      ]
+                    )
+                  ]
+                }
+              }
+              aResult = getResult(
+                aSingle,
+                a1Done,
+                aRoot
+              )
+              bResult = getResult(
+                bSingle,
+                b1Done,
+                bRoot
+              )
+              for(;;){ 
+                if(aResult[0]) aResult = getResult(
+                  aSingle,
+                  a1Done,
+                  aRoot
+                )
+                if(bResult[0]) bResult = getResult(
+                  bSingle,
+                  b1Done,
+                  bRoot
+                )
+                const aRDone = aResult[1]
+                const bRDone = bResult[1]
+                if(aRDone && bRDone){
+                  keyStack.pop()
+                  break
+                }
+                if(aRDone){
+                  keyStack.push(bResult[2])
+                  yield * b.fullFwdRangeKV(
+                    bResult[3],
+                    keyStack
+                  )
+                  keyStack.pop()
+                  bResult[0] = true
+                  if(bSingle) break
+                  else continue
+                }
+                if(bRDone){
+                  keyStack.push(aResult[2])
+                  yield * a.fullFwdRangeKV(
+                    aResult[3],
+                    keyStack
+                  )
+                  keyStack.pop()
+                  aResult[0] = true
+                  if(aSingle) break
+                  else continue
+                }
+                else {
+                  const aKV = aResult[2]
+                  const bKV = bResult[2]
+                  if(aKV == bKV){
+                    keyStack.push(aKV)
+                    yield * d(
+                      aResult[3],
+                      bResult[3],
+                      keyStack
+                    )
+                    keyStack.pop()
+                    aResult[0] = true
+                    bResult[0] = true
+                    if(aSingle) aResult[1] = true
+                    if(bSingle) bResult[1] = true
+                    continue
+                  } else if(aKV < bKV){ 
+                    keyStack.push(aKV)
+                    yield * a.fullFwdRangeKV(
+                      aResult[3],
+                      keyStack
+                    )
+                    keyStack.pop()
+                    aResult[0] = true
+                    if(aSingle) aResult[1] = true
+                    continue
+                  } else {
+                    keyStack.push(bKV)
+                    yield * b.fullFwdRangeKV(
+                      bResult[3],
+                      keyStack
+                    )
+                    keyStack.pop()
+                    bResult[0] = true
+                    if(bSingle) bResult[1] = true
+                    continue
+                  }
+                }
+              }
             }
           })(
             a.root,
@@ -2469,7 +2607,7 @@ export class ART {
             new ByteStack()
           )
         )
-      ]
+      ].map(v=>[new Uint8Array(v[0].buffer), v[1]])
     )
     return c
   }

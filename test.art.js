@@ -30,6 +30,7 @@ import {
 } from "./BinCompF64.js"
 import Latin1 from "./collations/Latin1/Latin1.js"
 import BinComp2sComplement from "./BinComp2sComplements.js"
+import {AVL} from "./avl.js"
 
 const L = x => console.log(x);
 function getRandomInt(min, max) {
@@ -1911,6 +1912,74 @@ function getRandomInt(min, max) {
       ].map(nl=>nl[0]).join("~"),
       "42~24~31~13~64~2",
       "range after bulk load"
+    )
+    function generateTestLists({
+      sizeA = 100,
+      sizeB = 100,
+      overlap = 0.3, // 30% overlap
+      min = 1,
+      max = 1000
+    } = {}){
+      const totalUnique = Math.floor(sizeA + sizeB - (overlap * Math.min(sizeA, sizeB)))
+
+      const pool = new Set()
+      while(pool.size < totalUnique){
+        pool.add(Math.floor(Math.random() * (max - min + 1)) + min)
+      }
+
+      const poolArray = Array.from(pool)
+      const overlapSize = Math.floor(overlap * Math.min(sizeA, sizeB))
+      const shared = poolArray.splice(0, overlapSize)
+      const remaining = poolArray
+      const uniqueA = remaining.splice(0, sizeA - overlapSize)
+      const uniqueB = remaining.splice(0, sizeB - overlapSize)
+      const listA = [...shared, ...uniqueA].sort((a, b) => a - b)
+      const listB = [...shared, ...uniqueB].sort((a, b) => a - b)
+
+      return { 
+        listA, 
+        listB 
+      }
+    }
+    const { 
+      listA, 
+      listB 
+    } = generateTestLists()
+    const artA = new ART() 
+    const avlA = new AVL(listA.map((v,i)=>[v,i])) 
+    artA.bulkLoad( 
+      listA.map(
+        (v,i)=>{
+          const d = new DataView(
+            new ArrayBuffer(2)
+          )
+          d.setUint16(0,v,false)
+          return [new Uint8Array(d.buffer),i]
+        }
+      )
+    )
+    const artB = new ART() 
+    const avlB = new AVL(listB.map((v,i)=>[v,i]))
+    artB.bulkLoad(
+      listB.map(
+        (v,i)=>{
+          const d = new DataView(
+            new ArrayBuffer(2)
+          )
+          d.setUint16(0,v,false)
+          return [new Uint8Array(d.buffer),i]
+        }
+      )
+    )
+    const artC = ART.union(artA,artB)
+    expect(
+      [
+        ...(AVL.union(avlA,avlB))
+      ].map(v=>v[5] instanceof Array ? v[5].join("~") : v[5]).join("|"),
+      [
+        ...(artC.fullFwdRangeV())
+      ].map(v=>v.length>1 ? v.join("~") : v[0]).join("|"),
+      "union avl == union art"
     )
   }
   dump(true);
