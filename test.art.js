@@ -1940,7 +1940,7 @@ function getRandomInt(min, max) {
         listA, 
         listB 
       }
-    }
+    } 
     const { 
       listA, 
       listB 
@@ -1980,7 +1980,58 @@ function getRandomInt(min, max) {
         ...(artC.fullFwdRangeV())
       ].map(v=>v.length>1 ? v.join("~") : v[0]).join("|"),
       "union avl == union art"
+    ) 
+    // large union
+    const { 
+      listA: listD, 
+      listB: listE 
+    } = generateTestLists(
+      500,
+      600,
+      0.3,
+      1,
+      75000
     )
+    console.log("lg union")//, listD, listE)
+    const artD = new ART() 
+    const avlD = new AVL(listD.map((v,i)=>[v,i])) 
+    console.log("avlD loaded")
+    artD.bulkLoad( 
+      listD.map(
+        (v,i)=>{
+          const k = new Uint8Array(binCompF64(
+            v
+          ).buffer)
+          return [k,i]
+        }
+      )
+    )
+    console.log("artD loaded")
+    const artE = new ART() 
+    const avlE = new AVL(listE.map((v,i)=>[v,i]))
+    console.log("avlE loaded")
+    artE.bulkLoad(
+      listE.map(
+        (v,i)=>{
+          const k = new Uint8Array(binCompF64(
+            v
+          ).buffer)
+          return [k,i]
+        }
+      )
+    )
+    console.log("artE loaded")
+    const artF = ART.union(artD,artE,false)
+    expect(
+      [
+        ...(AVL.union(avlD,avlE))
+      ].map(v=>v[5] instanceof Array ? v[5].join("~") : v[5]).join("|"),
+      [
+        ...(artF.fullFwdRangeV())
+      ].map(v=>v.length>1 ? v.join("~") : v[0]).join("|"),
+      "union avl == union art 2"
+    )
+    console.log("finished large union")
   }
   dump(true);
 })()

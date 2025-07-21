@@ -1553,6 +1553,7 @@ export class ART {
     this.size++
   }
   bulkLoad(sorted){
+    //console.log("bulkLoad dbg\n",sorted,"\n/bulkLoad dbg")
     this.size = sorted.length
     this.root = sorted.length < 1 ? null : (function r(
       plbi,
@@ -2450,7 +2451,7 @@ export class ART {
       }
     }
   }
-  static union(a,b){ 
+  static union(a,b,f=false){ 
     const c = new ART()
     c.bulkLoad(
       [
@@ -2460,11 +2461,14 @@ export class ART {
             bRoot,
             keyStack
           ){
+            if(f) console.log("*d.init")
             const aLeaf = aRoot instanceof NodeLeaf
             const bLeaf = bRoot instanceof NodeLeaf
             if(aLeaf && bLeaf){
+              if(f) console.log("*d, alf && blf")
               yield [keyStack.pull(),[aRoot,bRoot]]
             } else {
+              if(f) console.log("*d, ! alf && blf")
               let aSingle = aRoot instanceof Node1
               let bSingle = bRoot instanceof Node1
               let aIterator, bIterator
@@ -2535,12 +2539,15 @@ export class ART {
                 )
                 const aRDone = aResult[1]
                 const bRDone = bResult[1]
+                if(f)console.log("*d.for.init, aSingle", aSingle, "bSingle", bSingle,"aRDone", aRDone,"bRDone",bRDone,"aRoot.type",aRoot.constructor.name, 'bRoot.type', bRoot.constructor.name, "keyStack.size", keyStack.size)
                 if(aRDone && bRDone){
-                  keyStack.pop()
+                  if(f)console.log("*d.for -> aRDone && bRDone")
+                  //keyStack.pop()
                   break
                 }
-                if(aRDone){
+                else if(aRDone){
                   keyStack.push(bResult[2])
+                  if(f) console.log("*d, ardone, yield * b.fullfwdrangev")
                   yield * b.fullFwdRangeKV(
                     bResult[3],
                     keyStack
@@ -2550,8 +2557,9 @@ export class ART {
                   if(bSingle) break
                   else continue
                 }
-                if(bRDone){
+                else if(bRDone){
                   keyStack.push(aResult[2])
+                  if(f) console.log("*d, brdone, yield * a.fullfwdrangev")
                   yield * a.fullFwdRangeKV(
                     aResult[3],
                     keyStack
@@ -2566,40 +2574,45 @@ export class ART {
                   const bKV = bResult[2]
                   if(aKV == bKV){
                     keyStack.push(aKV)
+                    if(f) console.log("*d, akv=bkv, yield *d, keystack.size",keyStack.size,keyStack.dv.buffer)
                     yield * d(
                       aResult[3],
                       bResult[3],
                       keyStack
                     )
                     keyStack.pop()
+                    if(f)console.log("post yield*d",keyStack.size,keyStack.dv.buffer)
                     aResult[0] = true
                     bResult[0] = true
-                    if(aSingle) aResult[1] = true
-                    if(bSingle) bResult[1] = true
+                    if(aSingle) a1Done = true
+                    if(bSingle) b1Done = true
                     continue
                   } else if(aKV < bKV){ 
                     keyStack.push(aKV)
+                    if(f) console.log("*d, akv<bkv, yield *a.fullfwdrangev")
                     yield * a.fullFwdRangeKV(
                       aResult[3],
                       keyStack
                     )
                     keyStack.pop()
                     aResult[0] = true
-                    if(aSingle) aResult[1] = true
+                    if(aSingle) a1Done = true
                     continue
                   } else {
                     keyStack.push(bKV)
+                    if(f) console.log("*d, akv>bkv, yield *b.fullfwdrangev")
                     yield * b.fullFwdRangeKV(
                       bResult[3],
                       keyStack
                     )
                     keyStack.pop()
                     bResult[0] = true
-                    if(bSingle) bResult[1] = true
+                    if(bSingle) b1Done = true
                     continue
                   }
                 }
               }
+              if(f)console.log("*d.for::post")
             }
           })(
             a.root,
