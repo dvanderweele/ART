@@ -2624,8 +2624,143 @@ export class ART {
     )
     return c
   }
-  static intersect(a,b){
-    ;
+  static intersect(a,b,f=false){
+    const c = new ART()
+    c.bulkLoad(
+      [
+        ...(
+          (function*d(
+            aRoot,
+            bRoot,
+            keyStack
+          ){
+            if(f) console.log("*d.init")
+            const aLeaf = aRoot instanceof NodeLeaf
+            const bLeaf = bRoot instanceof NodeLeaf
+            if(aLeaf && bLeaf){
+              if(f) console.log("*d, alf && blf")
+              yield [keyStack.pull(),[aRoot,bRoot]]
+            } else {
+              if(f) console.log("*d, ! alf && blf")
+              let aSingle = aRoot instanceof Node1
+              let bSingle = bRoot instanceof Node1
+              let aIterator, bIterator
+              let a1Done = false
+              let b1Done = false
+              if(!aSingle){
+                aRoot.ITER_LB = 0
+                aRoot.ITER_UB = 255
+                aRoot[Symbol.iterator] = aRoot.constructor.ITER_FWD_GE_TO_LE
+                aRoot = aRoot[Symbol.iterator]()
+              }
+              if(!bSingle){
+                bRoot.ITER_LB = 0
+                bRoot.ITER_UB = 255
+                bRoot[Symbol.iterator] = bRoot.constructor.ITER_FWD_GE_TO_LE
+                bRoot = bRoot[Symbol.iterator]()
+              }
+              let aResult, bResult
+              const getResult = (
+                isSingle,
+                n1Done,
+                root
+              ) =>{ 
+                if(isSingle) return [
+                  false,
+                  n1Done,
+                  root[0].charCodeAt(0),
+                  root[1]
+                ] 
+                else {
+                  const nx = root.next()
+                  return [
+                    false,
+                    ...(
+                      nx.done ? [
+                        true,
+                        null,
+                        null
+                      ] : [
+                        false,
+                        nx.value[0],
+                        nx.value[1]
+                      ]
+                    )
+                  ]
+                }
+              }
+              aResult = getResult(
+                aSingle,
+                a1Done,
+                aRoot
+              )
+              bResult = getResult(
+                bSingle,
+                b1Done,
+                bRoot
+              )
+              for(;;){ 
+                if(aResult[0]) aResult = getResult(
+                  aSingle,
+                  a1Done,
+                  aRoot
+                )
+                if(bResult[0]) bResult = getResult(
+                  bSingle,
+                  b1Done,
+                  bRoot
+                )
+                const aRDone = aResult[1]
+                const bRDone = bResult[1]
+                if(f)console.log("*d.for.init, aSingle", aSingle, "bSingle", bSingle,"aRDone", aRDone,"bRDone",bRDone,"aRoot.type",aRoot.constructor.name, 'bRoot.type', bRoot.constructor.name, "keyStack.size", keyStack.size)
+                if(aRDone || bRDone){
+                  if(f)console.log("*d.for -> aRDone && bRDone")
+                  //keyStack.pop()
+                  break
+                }
+                else {
+                  const aKV = aResult[2]
+                  const bKV = bResult[2]
+                  if(aKV == bKV){
+                    keyStack.push(aKV)
+                    if(f) console.log("*d, akv=bkv, yield *d, keystack.size",keyStack.size,keyStack.dv.buffer)
+                    yield * d(
+                      aResult[3],
+                      bResult[3],
+                      keyStack
+                    )
+                    keyStack.pop()
+                    if(f)console.log("post yield*d",keyStack.size,keyStack.dv.buffer)
+                    aResult[0] = true
+                    bResult[0] = true
+                    if(aSingle) a1Done = true
+                    if(bSingle) b1Done = true
+                    continue
+                  } else if(aKV < bKV){ 
+                    if(f) console.log("*d, akv<bkv, yield *a.fullfwdrangev")
+                    aResult[0] = true
+                    if(aSingle) break
+                    continue
+                  } else {
+                    if(f) console.log("*d, akv>bkv, yield *b.fullfwdrangev")
+                    bResult[0] = true
+                    if(bSingle) break
+                    continue
+                  }
+                }
+              }
+              if(f)console.log("*d.for::post")
+            }
+          })(
+            a.root,
+            b.root,
+            new ByteStack()
+          )
+        )
+      ].map(v=>[new Uint8Array(v[0].buffer), v[1]])
+    )
+    return c
+
   }
   static difference(a,b){
     ;

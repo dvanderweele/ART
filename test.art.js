@@ -2031,7 +2031,99 @@ function getRandomInt(min, max) {
       ].map(v=>v.length>1 ? v.join("~") : v[0]).join("|"),
       "union avl == union art 2"
     )
-    console.log("finished large union")
+    console.log("finished large union") 
+    const { 
+      listA: listG, 
+      listB: listH 
+    } = generateTestLists()
+    const artG = new ART() 
+    const avlG = new AVL(listG.map((v,i)=>[v,i])) 
+    artG.bulkLoad( 
+      listG.map(
+        (v,i)=>{
+          const d = new DataView(
+            new ArrayBuffer(2)
+          )
+          d.setUint16(0,v,false)
+          return [new Uint8Array(d.buffer),i]
+        }
+      )
+    )
+    const artH = new ART() 
+    const avlH = new AVL(listH.map((v,i)=>[v,i]))
+    artH.bulkLoad(
+      listH.map(
+        (v,i)=>{
+          const d = new DataView(
+            new ArrayBuffer(2)
+          )
+          d.setUint16(0,v,false)
+          return [new Uint8Array(d.buffer),i]
+        }
+      )
+    )
+    const artI = ART.intersect(artG,artH)
+    expect(
+      [
+        ...(AVL.intersect(avlG,avlH))
+      ].map(v=>v[5] instanceof Array ? v[5].join("~") : v[5]).join("|"),
+      [
+        ...(artI.fullFwdRangeV())
+      ].map(v=>v.length>1 ? v.join("~") : v[0]).join("|"),
+      "intersect avl == intersect art"
+    ) 
+    // large intersect
+    const { 
+      listA: listJ, 
+      listB: listK 
+    } = generateTestLists(
+      500,
+      600,
+      0.3,
+      1,
+      75000
+    )
+    console.log("lg intersect")
+    const artJ = new ART() 
+    const avlJ = new AVL(listJ.map((v,i)=>[v,i])) 
+    console.log("avlJ loaded")
+    artJ.bulkLoad( 
+      listJ.map(
+        (v,i)=>{
+          const k = new Uint8Array(binCompF64(
+            v
+          ).buffer)
+          return [k,i]
+        }
+      )
+    )
+    console.log("artJ loaded")
+    const artK = new ART() 
+    const avlK = new AVL(listK.map((v,i)=>[v,i]))
+    console.log("avlK loaded")
+    artK.bulkLoad(
+      listK.map(
+        (v,i)=>{
+          const k = new Uint8Array(binCompF64(
+            v
+          ).buffer)
+          return [k,i]
+        }
+      )
+    )
+    console.log("artK loaded")
+    const artL = ART.intersect(artJ,artK,false)
+    expect(
+      [
+        ...(AVL.intersect(avlJ,avlK))
+      ].map(v=>v[5] instanceof Array ? v[5].join("~") : v[5]).join("|"),
+      [
+        ...(artL.fullFwdRangeV())
+      ].map(v=>v.length>1 ? v.join("~") : v[0]).join("|"),
+      "intersect avl == intersect art 2"
+    )
+    console.log("finished large intersect")
+
   }
   dump(true);
 })()
