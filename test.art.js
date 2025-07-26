@@ -1273,7 +1273,7 @@ function getRandomInt(min, max) {
     "reverse range with prefix"
   ) 
   expect(
-    [...(fullRangeART.fullFwdRangeKV())].map(
+    [...(fullRangeART.fullFwdRangeKV(fullRangeART.root,new ByteStack()))].map(
       p => [dv2arr(p[0]).join(","),p[1]].join("],")
     ).join("|"),
     "11,21,31,41,51],5|11,21,32,42,52],15|11,21,33,43,53],25|11,21,34,44,54],35|11,22,35,45,55],45|11,22,36,46,56],55|11,22,37,47,57],65",
@@ -2123,7 +2123,99 @@ function getRandomInt(min, max) {
       "intersect avl == intersect art 2"
     )
     console.log("finished large intersect")
-
+    // difference
+    const { 
+      listA: listM, 
+      listB: listN 
+    } = generateTestLists()
+    const artM = new ART() 
+    const avlM = new AVL(listM.map((v,i)=>[v,i])) 
+    artM.bulkLoad( 
+      listM.map(
+        (v,i)=>{
+          const d = new DataView(
+            new ArrayBuffer(2)
+          )
+          d.setUint16(0,v,false)
+          return [new Uint8Array(d.buffer),i]
+        }
+      )
+    )
+    const artN = new ART() 
+    const avlN = new AVL(listN.map((v,i)=>[v,i]))
+    artN.bulkLoad(
+      listN.map(
+        (v,i)=>{
+          const d = new DataView(
+            new ArrayBuffer(2)
+          )
+          d.setUint16(0,v,false)
+          return [new Uint8Array(d.buffer),i]
+        }
+      )
+    )
+    //console.log("listM.size",listM.length,"listN.size",listN.length,"artM.size",artM.size,"artN.size",artN.size,"artM leaf count v",[...(artM.fullFwdRangeV())].length,"artM leaf count kv",[...(artM.fullFwdRangeKV(artM.root,new ByteStack(),true))].length)
+    const artO = ART.difference(artM,artN,listM,listN)
+    expect(
+      [
+        ...(AVL.difference(avlM,avlN))
+      ].map(v=>v[5] instanceof Array ? v[5].join("~") : v[5]).join("|"),
+      [
+        ...(artO.fullFwdRangeV())
+      ].map(v=>v.length>1 ? v.join("~") : v[0]).join("|"),
+      "difference avl == difference art"
+    ) 
+    // large difference
+    const { 
+      listA: listP, 
+      listB: listQ 
+    } = generateTestLists(
+      500,
+      600,
+      0.3,
+      1,
+      75000
+    )
+    console.log("lg difference")
+    const artP = new ART() 
+    const avlP = new AVL(listP.map((v,i)=>[v,i])) 
+    console.log("avlP loaded")
+    artP.bulkLoad( 
+      listP.map(
+        (v,i)=>{
+          const k = new Uint8Array(binCompF64(
+            v
+          ).buffer)
+          return [k,i]
+        }
+      )
+    )
+    console.log("artP loaded")
+    const artQ = new ART() 
+    const avlQ = new AVL(listQ.map((v,i)=>[v,i]))
+    console.log("avlK loaded")
+    artQ.bulkLoad(
+      listQ.map(
+        (v,i)=>{
+          const k = new Uint8Array(binCompF64(
+            v
+          ).buffer)
+          return [k,i]
+        }
+      )
+    )
+    console.log("artQ loaded")
+    const artR = ART.difference(artP,artQ,false)
+    expect(
+      [
+        ...(AVL.difference(avlP,avlQ))
+      ].map(v=>v[5] instanceof Array ? v[5].join("~") : v[5]).join("|"),
+      [
+        ...(artR.fullFwdRangeV())
+      ].map(v=>v.length>1 ? v.join("~") : v[0]).join("|"),
+      "difference avl == difference art 2"
+    )
+    console.log("finished large difference")
   }
   dump(true);
 })()

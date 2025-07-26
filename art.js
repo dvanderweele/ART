@@ -1862,7 +1862,7 @@ export class ART {
       }
     }
   } 
-  fullFwdRangeKV(start = this.root, prefix = new ByteStack()){ 
+  fullFwdRangeKV(start = this.root, prefix = new ByteStack(), f=false){ 
     return {
       [Symbol.iterator]: function*(){
         let root = start
@@ -1874,6 +1874,7 @@ export class ART {
         }
         const nStack = []
         do {
+          if(f)console.log("fullFwdRangeKV.dbg::do, kstack",kStack.size, kStack.dv.buffer, "nStack", nStack.length)
           if(!root) break
           switch(root.constructor.name){
             case "Node1": {
@@ -1881,6 +1882,7 @@ export class ART {
                 kStack.push(root[0].charCodeAt(0))
                 nStack.push(root)
                 root = root[1]
+                if(f)console.log("fullFwdRangeKV.dbg::n1, kstack",kStack.size, kStack.dv.buffer, "nStack", nStack.length)
               } while(
                 root.constructor.name == "Node1"
               )
@@ -1888,27 +1890,32 @@ export class ART {
             }
             case "NodeLeaf": {
               yield [kStack.pull(), root]
+              if(f)console.log("fullFwdRangeKV.dbg::do.nl.post yield, kstack",kStack.size, kStack.dv.buffer, "nStack", nStack.length)
               let lla = true
               kStack.pop()
               root = nStack[nStack.length - 1]
               while(
                 kStack.size >= limit
-                && kStack.size > 0
+                && kStack.size >= 0
+                && nStack.length > 0
                 && lla
               ){
+               if(f)console.log("fullFwdRangeKV.dbg::do.nl.while, kstack",kStack.size, kStack.dv.buffer, "nStack", nStack.length)
                 if(root instanceof Node1){
+                  if(f)console.log("fullFwdRangeKV.dbg.fo.while.ifn1",kStack.size, kStack.dv.buffer, "nStack", nStack.length,"about to pop both stacks")
                   kStack.pop()
                   nStack.pop()
                   root = nStack[nStack.length - 1]
-
                 } else {
                   const {done, value} = root.next()
                   if(done){
+                    if(f)console.log("fullFwdRangeKV.dbg.fo.while.ifn+.done",kStack.size, kStack.dv.buffer, "nStack", nStack.length,"about to pop both stacks")
                     kStack.pop()
                     nStack.pop()
                     root = nStack[nStack.length - 1]
-
+                    if(f)console.log("fullFwdRangeKV special dbg",kStack.size, kStack.dv.buffer, "nStack",nStack.length, root)
                   } else {
+                    if(f)console.log("fullFwdRangeKV.dbg.fo.while.ifn+.undone",kStack.size, kStack.dv.buffer, "nStack", nStack.length,"about to push to kStack w/o pushing to nStack")
                     kStack.push(value[0])
                     root = value[1]
                     lla = false
@@ -1964,21 +1971,20 @@ export class ART {
               root = nStack[nStack.length - 1]
               while(
                 kStack.size >= limit
-                && kStack.size > 0
+                && kStack.size >= 0
+                && nStack.length > 0
                 && lla
               ){
                 if(root instanceof Node1){
                   kStack.pop()
                   nStack.pop()
                   root = nStack[nStack.length - 1]
-
                 } else {
                   const {done, value} = root.next()
                   if(done){
                     kStack.pop()
                     nStack.pop()
                     root = nStack[nStack.length - 1]
-
                   } else {
                     kStack.push(value[0])
                     root = value[1]
@@ -2451,7 +2457,7 @@ export class ART {
       }
     }
   }
-  static union(a,b,f=false){ 
+  static union(a,b){ 
     const c = new ART()
     c.bulkLoad(
       [
@@ -2461,14 +2467,11 @@ export class ART {
             bRoot,
             keyStack
           ){
-            if(f) console.log("*d.init")
             const aLeaf = aRoot instanceof NodeLeaf
             const bLeaf = bRoot instanceof NodeLeaf
             if(aLeaf && bLeaf){
-              if(f) console.log("*d, alf && blf")
               yield [keyStack.pull(),[aRoot,bRoot]]
             } else {
-              if(f) console.log("*d, ! alf && blf")
               let aSingle = aRoot instanceof Node1
               let bSingle = bRoot instanceof Node1
               let aIterator, bIterator
@@ -2539,15 +2542,12 @@ export class ART {
                 )
                 const aRDone = aResult[1]
                 const bRDone = bResult[1]
-                if(f)console.log("*d.for.init, aSingle", aSingle, "bSingle", bSingle,"aRDone", aRDone,"bRDone",bRDone,"aRoot.type",aRoot.constructor.name, 'bRoot.type', bRoot.constructor.name, "keyStack.size", keyStack.size)
                 if(aRDone && bRDone){
-                  if(f)console.log("*d.for -> aRDone && bRDone")
                   //keyStack.pop()
                   break
                 }
                 else if(aRDone){
                   keyStack.push(bResult[2])
-                  if(f) console.log("*d, ardone, yield * b.fullfwdrangev")
                   yield * b.fullFwdRangeKV(
                     bResult[3],
                     keyStack
@@ -2559,7 +2559,6 @@ export class ART {
                 }
                 else if(bRDone){
                   keyStack.push(aResult[2])
-                  if(f) console.log("*d, brdone, yield * a.fullfwdrangev")
                   yield * a.fullFwdRangeKV(
                     aResult[3],
                     keyStack
@@ -2574,14 +2573,12 @@ export class ART {
                   const bKV = bResult[2]
                   if(aKV == bKV){
                     keyStack.push(aKV)
-                    if(f) console.log("*d, akv=bkv, yield *d, keystack.size",keyStack.size,keyStack.dv.buffer)
                     yield * d(
                       aResult[3],
                       bResult[3],
                       keyStack
                     )
                     keyStack.pop()
-                    if(f)console.log("post yield*d",keyStack.size,keyStack.dv.buffer)
                     aResult[0] = true
                     bResult[0] = true
                     if(aSingle) a1Done = true
@@ -2589,7 +2586,6 @@ export class ART {
                     continue
                   } else if(aKV < bKV){ 
                     keyStack.push(aKV)
-                    if(f) console.log("*d, akv<bkv, yield *a.fullfwdrangev")
                     yield * a.fullFwdRangeKV(
                       aResult[3],
                       keyStack
@@ -2600,7 +2596,6 @@ export class ART {
                     continue
                   } else {
                     keyStack.push(bKV)
-                    if(f) console.log("*d, akv>bkv, yield *b.fullfwdrangev")
                     yield * b.fullFwdRangeKV(
                       bResult[3],
                       keyStack
@@ -2612,7 +2607,6 @@ export class ART {
                   }
                 }
               }
-              if(f)console.log("*d.for::post")
             }
           })(
             a.root,
@@ -2624,7 +2618,7 @@ export class ART {
     )
     return c
   }
-  static intersect(a,b,f=false){
+  static intersect(a,b){
     const c = new ART()
     c.bulkLoad(
       [
@@ -2634,14 +2628,11 @@ export class ART {
             bRoot,
             keyStack
           ){
-            if(f) console.log("*d.init")
             const aLeaf = aRoot instanceof NodeLeaf
             const bLeaf = bRoot instanceof NodeLeaf
             if(aLeaf && bLeaf){
-              if(f) console.log("*d, alf && blf")
               yield [keyStack.pull(),[aRoot,bRoot]]
             } else {
-              if(f) console.log("*d, ! alf && blf")
               let aSingle = aRoot instanceof Node1
               let bSingle = bRoot instanceof Node1
               let aIterator, bIterator
@@ -2712,9 +2703,7 @@ export class ART {
                 )
                 const aRDone = aResult[1]
                 const bRDone = bResult[1]
-                if(f)console.log("*d.for.init, aSingle", aSingle, "bSingle", bSingle,"aRDone", aRDone,"bRDone",bRDone,"aRoot.type",aRoot.constructor.name, 'bRoot.type', bRoot.constructor.name, "keyStack.size", keyStack.size)
                 if(aRDone || bRDone){
-                  if(f)console.log("*d.for -> aRDone && bRDone")
                   //keyStack.pop()
                   break
                 }
@@ -2723,33 +2712,28 @@ export class ART {
                   const bKV = bResult[2]
                   if(aKV == bKV){
                     keyStack.push(aKV)
-                    if(f) console.log("*d, akv=bkv, yield *d, keystack.size",keyStack.size,keyStack.dv.buffer)
                     yield * d(
                       aResult[3],
                       bResult[3],
                       keyStack
                     )
                     keyStack.pop()
-                    if(f)console.log("post yield*d",keyStack.size,keyStack.dv.buffer)
                     aResult[0] = true
                     bResult[0] = true
                     if(aSingle) a1Done = true
                     if(bSingle) b1Done = true
                     continue
                   } else if(aKV < bKV){ 
-                    if(f) console.log("*d, akv<bkv, yield *a.fullfwdrangev")
                     aResult[0] = true
                     if(aSingle) break
                     continue
                   } else {
-                    if(f) console.log("*d, akv>bkv, yield *b.fullfwdrangev")
                     bResult[0] = true
                     if(bSingle) break
                     continue
                   }
                 }
               }
-              if(f)console.log("*d.for::post")
             }
           })(
             a.root,
@@ -2763,6 +2747,34 @@ export class ART {
 
   }
   static difference(a,b){
-    ;
+    const c = new ART()
+    c.bulkLoad(
+      [
+        ...(
+          (function*(
+            aRoot,
+            bRoot,
+            keyStack
+          ){
+            for(let kvp of a.fullFwdRangeKV(
+              aRoot, keyStack
+            )){
+              if(
+              !(
+                b.search(
+                  new Uint8Array(kvp[0].buffer)
+                ) instanceof NodeLeaf
+              )
+            ) yield kvp
+            }
+          })(
+            a.root,
+            b.root,
+            new ByteStack()
+          )
+        )
+      ].map(v=>[new Uint8Array(v[0].buffer), v[1]])
+    )
+    return c
   }
 }
