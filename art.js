@@ -1420,6 +1420,7 @@ export class ART {
               pnode[1][selfidx] = rplc
           } else this.root = rplc
           const nip = rplc.insert(kb)
+          if(rplc[1][nip] instanceof NodeLeaf) return 0
           const next = isLast ? new NodeLeaf() : new Node1()
           rplc[1][nip] = next
           pnode = rplc
@@ -1431,6 +1432,7 @@ export class ART {
         case -2: {//dupe
           pnode = cnode
           cnode = cnode[1]
+          if(cnode instanceof NodeLeaf) return 0
           depth++
           break
         }
@@ -1449,6 +1451,7 @@ export class ART {
             else pnode[1][selfidx] = replacement
           }
           const idx = replacement.insert(kb,key)
+          if(replacement[1][idx] instanceof NodeLeaf) return 0
           const next = isLast ? new NodeLeaf() : new Node1()
           replacement[1][idx] = next
           cnode = next
@@ -1461,6 +1464,7 @@ export class ART {
           selfidx = cnode.indexOf(kb)
           pnode = cnode
           cnode = cnode[1][selfidx] 
+          if(cnode instanceof NodeLeaf) return 0
           depth++
           break
         }        
@@ -1479,6 +1483,7 @@ export class ART {
             else pnode[1][selfidx] = replacement
           }
           const idx = replacement.insert(kb)
+          if(replacement[1][idx] instanceof NodeLeaf) return 0
           const next = isLast ? new NodeLeaf() : new Node1()
           replacement[1][idx] = next
           cnode = next
@@ -1491,6 +1496,7 @@ export class ART {
           selfidx = cnode.indexOf(kb)
           pnode = cnode
           cnode = cnode[1][selfidx] 
+          if(cnode instanceof NodeLeaf) return 0
           depth++
           break
         }
@@ -1509,6 +1515,7 @@ export class ART {
             else pnode[1][selfidx] = replacement
           }
           const idx = replacement.insert(kb)
+          if(replacement[1][idx] instanceof NodeLeaf) return 0
           const next = isLast ? new NodeLeaf() : new Node1()
           replacement[1][idx] = next
           cnode = next
@@ -1521,6 +1528,7 @@ export class ART {
           selfidx = cnode.indexOf(kb)
           pnode = cnode
           cnode = cnode[1][selfidx] 
+          if(cnode instanceof NodeLeaf) return 0
           depth++
           break
         }
@@ -1528,17 +1536,20 @@ export class ART {
           selfidx = cnode.indexOf(kb)
           pnode = cnode
           cnode = cnode[1][selfidx] 
+          if(cnode instanceof NodeLeaf) return 0
           depth++
           break
         }
         default: { 
           if(cnode instanceof Node1){
+            if(cnode[1] instanceof NodeLeaf) return 0
             const next = isLast ? new NodeLeaf() : new Node1()
             pnode = cnode
             cnode[1] = next
             cnode = next
             depth++
           } else {
+            if(cnode[1][ip] instanceof NodeLeaf) return 0
             selfidx = ip
             pnode = cnode
             const next = isLast ? new NodeLeaf() : new Node1()
@@ -1551,6 +1562,7 @@ export class ART {
     }
     if(value != null) cnode[0] = value 
     this.size++
+    return 1
   }
   bulkLoad(sorted){
     //console.log("bulkLoad dbg\n",sorted,"\n/bulkLoad dbg")
