@@ -7,19 +7,23 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 ;(async ()=>{
-  const mdResultFiles = await fs.readdir(path.join(__dirname,"mobyDickResults"))
+  const mdResultFiles = await fs.readdir(path.join(__dirname,"shakespeareResults"))
   const results = []
   for(let fn of mdResultFiles){
     results.push(JSON.parse(await fs.readFile(
-      path.join(__dirname, "mobyDickResults",fn),
+      path.join(__dirname, "shakespeareResults",fn),
       {encoding:"utf8"}
     )))
   }
   const rmap = new Map()
+  const resultCategories = new Set()
   for(let r of results){
     const k = `${r.osType} | ${r.osPlatform} | ${r.osArch} | ${r.nodeVersion} | ${r.testType}`
+    const c = `${r.osType} | ${r.osPlatform} | ${r.osArch} | ${r.nodeVersion}`
+    if(!(resultCategories.has(c))) resultCategories.add(c)
     if(!(rmap.has(k))) rmap.set(k,{
       testCount: 1,
+      resultCategory: c,
       wordCount: { 
         max: r.wordCount,
         min: r.wordCount,
@@ -142,15 +146,17 @@ Plotly.newPlot('myDiv', data, layout);
    *
    */
   var ex = /^(.+?) [|][^|]+$/
-  const detailsPage = `<!DOCTYPE html>
+  for(let rc of resultCategories.values()){
+    const detailsPage = `<!DOCTYPE html>
 <html lang="en">
   <head>
-  <title>Details — Moby Dick Word Deduplication Benchmark | Adaptive Radix Tree</title>
+  <title>Details — Complete Works of Shakespeare Word Deduplication Benchmark | Adaptive Radix Tree | ${rc}</title>
   <script src="https://cdn.plot.ly/plotly-3.0.1.min.js" charset="utf-8"></script>
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
   </head>
   <body>
+    <h1>Details — <em>Complete Works of Shakespeare</em> Word Deduplication Benchmark | Adaptive Radix Tree</h1>
     ${
       [
         "dedupeDurationMS",
@@ -158,7 +164,7 @@ Plotly.newPlot('myDiv', data, layout);
         "orderedIterationDurationMS",
         "deltaMemoryHeapUsed"
       ].map(
-        stat => `<h2>${stat}</h2>${[...[...(rmap.keys())].reduce((a,c)=>a.has(ex.exec(c)[1])?a:(()=>{a.add(ex.exec(c)[1]);return a})(),new Set()).values()].sort().map(
+        stat => `<h2>${stat}</h2>${[...[...(rmap.keys())].filter(k=>k.startsWith(rc)).reduce((a,c)=>a.has(ex.exec(c)[1])?a:(()=>{a.add(ex.exec(c)[1]);return a})(),new Set()).values()].sort().map(
           ky => `<figure><div id="${
             ky.replaceAll(" | ","_").replaceAll(" ","-").replaceAll(".","-")
           }__${stat}__hist"></div><figcaption>${
@@ -177,7 +183,7 @@ Plotly.newPlot('myDiv', data, layout);
                 stat => `const traces_${
                   stat
                 } = [${
-                  [...(rmap.keys())].sort().map(
+                  [...(rmap.keys())].filter(k=>k.startsWith(rc)).sort().map(
                     ky => `{x:[${
                       results.filter(
                         r => ky.startsWith(`${r.osType} | ${r.osPlatform} | ${r.osArch} | ${r.nodeVersion} | ${r.testType}`)
@@ -191,7 +197,7 @@ Plotly.newPlot('myDiv', data, layout);
                     }"}}`
                   ).join(",")
                 }]; ${
-                  [...[...(rmap.keys())].reduce((a,c)=>a.has(ex.exec(c)[1])?a:(()=>{a.add(ex.exec(c)[1]);return a})(),new Set()).values()].sort().map(
+                  [...[...(rmap.keys())].filter(k=>k.startsWith(rc)).reduce((a,c)=>a.has(ex.exec(c)[1])?a:(()=>{a.add(ex.exec(c)[1]);return a})(),new Set()).values()].sort().map(
                     ky => `Plotly.newPlot("${
                       ky.replaceAll(" | ","_").replaceAll(" ","-").replaceAll(".","-")
                     }__${stat}__hist",traces_${stat},{barmode:"overlay"})`
@@ -203,7 +209,6 @@ Plotly.newPlot('myDiv', data, layout);
   </body>
 </html>
 `
-  console.log(detailsPage)
-/**/
-  // build Moby Dick Summary Page
+    await fs.writeFile(path.join(__dirname, `details.shakespeare.${rc.replaceAll(" | ","_").replaceAll(" ","-").replaceAll(".","-")}.html`), detailsPage, {encoding: "utf8"})
+  }
 })()

@@ -102,8 +102,8 @@ const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
     "deltaMemoryHeapTotal": memoryUsed.heapTotal-memoryBaseline.heapTotal,
     "deltaMemoryHeapUsed": memoryUsed.heapUsed-memoryBaseline.heapUsed
   }
-  console.log(result)
-  //await fs.writeFile(path.join(__dirname,"mobyDickResults",`set.result.${Date.now()}.json`),JSON.stringify(result),{encoding:"utf8"})
+  // console.log(result)
+  await fs.writeFile(path.join(__dirname,"mobyDickResults",`set.result.${Date.now()}.json`),JSON.stringify(result),{encoding:"utf8"})
   /**
    * - Parse words list
    * - Take memory baseline

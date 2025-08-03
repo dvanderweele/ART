@@ -9,4 +9,11 @@ for(let i=0;i<1000;i++){
   execSync("node --expose-gc benchmarks/mobyDick.bench.avl.js")
   console.log("\t-js art tree")
   execSync("node --expose-gc benchmarks/mobyDick.bench.art.js")
+  console.log("shakespeare bench:")
+  console.log("\t-native js set")
+  execSync("node --expose-gc benchmarks/shakespeare.bench.set.js")
+  console.log("\t-js avl tree")
+  execSync("node --expose-gc benchmarks/shakespeare.bench.avl.js")
+  console.log("\t-js art tree")
+  execSync("node --expose-gc benchmarks/shakespeare.bench.art.js")
 }

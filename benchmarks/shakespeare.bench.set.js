@@ -8,15 +8,15 @@ const __filename = fileURLToPath(import.meta.url)
 
 const __dirname = path.dirname(__filename)
 
-const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
+const shakespeare_file = path.join(__dirname,"shakespeare.txt")
 
 ;(async ()=>{
-  const mobydick_raw = await fs.readFile(
-    mobydick_file,
+  const shakespeare_raw = await fs.readFile(
+    shakespeare_file,
     {encoding: "utf8"}
   )
   const wordPattern = /(?:[\s"\/_—,.!;:*&()”“?]+)?([^\s"\/_—,.!;:*&()”“?]+)/g
-  const words = [...mobydick_raw.matchAll(wordPattern)].map(w=>w[1])
+  const words = [...shakespeare_raw.matchAll(wordPattern)].map(w=>w[1])
   const deduped = new Set()
   gc()
   const memoryBaseline = process.memoryUsage()
@@ -40,7 +40,7 @@ const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
   )){}
   performance.mark("end3")
   // iterate all words for each 6-letter prefix in the dataset
-  const prefixes = JSON.parse(await fs.readFile(path.join(__dirname,"prefixes.json"),{encoding:"utf8"}))
+  const prefixes = JSON.parse(await fs.readFile(path.join(__dirname,"prefixes.shakespeare.json"),{encoding:"utf8"}))
   performance.mark("prefix.iter.before")
   const sorted = [...deduped].sort(
     (a,b)=>a.localeCompare(
@@ -102,8 +102,8 @@ const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
     "deltaMemoryHeapTotal": memoryUsed.heapTotal-memoryBaseline.heapTotal,
     "deltaMemoryHeapUsed": memoryUsed.heapUsed-memoryBaseline.heapUsed
   }
-  console.log(result)
-  //await fs.writeFile(path.join(__dirname,"mobyDickResults",`set.result.${Date.now()}.json`),JSON.stringify(result),{encoding:"utf8"})
+  // console.log(result)
+  await fs.writeFile(path.join(__dirname,"shakespeareResults",`set.result.${Date.now()}.json`),JSON.stringify(result),{encoding:"utf8"})
   /**
    * - Parse words list
    * - Take memory baseline
