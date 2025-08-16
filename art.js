@@ -856,14 +856,11 @@ export class Node1 extends Array {
 }
 
 export class Node4 extends Array {
-  ITER_LB = 0
-  ITER_UB = 255
   constructor(){
     super()
     this[0] = new Uint8Array(4)
     this[1] = [null,null,null,null]
     this[2] = 0
-    this[Symbol.iterator] = Node4.ITER_FWD_GE_TO_LE
   }
   insert(keyByte){
     for(let i = 0; i < this[2]; i++){
@@ -913,152 +910,202 @@ export class Node4 extends Array {
     }
     return -1
   }
-  static ITER_FWD_GE_TO_LE = function*(){
-    const lb = this.ITER_LB
-    const ub = this.ITER_UB
-    for(let i = 0; i < this[2]; i++){
-      const kb = this[0][i]
-      if(kb >= lb && kb <= ub) yield [kb, this[1][i]]
+  ITER_FWD_GE_TO_LE(LB = 0, UB = 255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let i = 0; i < node[2]; i++){
+          const kb = node[0][i]
+          if(kb >= LB && kb <= UB) yield [kb, node[1][i]]
+        }
+      }
     }
   }
-  static ITER_FWD_GE_TO_LT = function*(){
-    const lb = this.ITER_LB
-    const ub = this.ITER_UB
-    for(let i = 0; i < this[2]; i++){
-      const kb = this[0][i]
-      if(kb >= lb && kb < ub) yield [kb, this[1][i]]
+  ITER_FWD_GE_TO_LT(LB = 0, UB = 255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let i = 0; i < node[2]; i++){
+          const kb = node[0][i]
+          if(kb >= LB && kb < UB) yield [kb, node[1][i]]
+        }
+      }
     }
   }
-  static ITER_FWD_GT_TO_LE = function*(){
-    const lb = this.ITER_LB
-    const ub = this.ITER_UB
-    for(let i = 0; i < this[2]; i++){
-      const kb = this[0][i]
-      if(kb > lb && kb <= ub) yield [kb, this[1][i]]
+  ITER_FWD_GT_TO_LE(LB = 0, UB = 255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let i = 0; i < node[2]; i++){
+          const kb = node[0][i]
+          if(kb > LB && kb <= UB) yield [kb, node[1][i]]
+        }
+      }
     }
   }
-  static ITER_FWD_GT_TO_LT = function*(){
-    const lb = this.ITER_LB
-    const ub = this.ITER_UB
-    for(let i = 0; i < this[2]; i++){
-      const kb = this[0][i]
-      if(kb > lb && kb < ub) yield [kb, this[1][i]]
+  ITER_FWD_GT_TO_LT(LB = 0, UB = 255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let i = 0; i < node[2]; i++){
+          const kb = node[0][i]
+          if(kb > LB && kb < UB) yield [kb, node[1][i]]
+        }
+      }
     }
   }
-  static ITER_REV_LE_TO_GE = function*(){
-    const lb = this.ITER_LB
-    const ub = this.ITER_UB
-    for(let i = this[2] - 1; i > -1; i--){
-      const kb = this[0][i]
-      if(kb >= lb && kb <= ub) yield [kb, this[1][i]]
+  ITER_REV_LE_TO_GE(LB = 0, UB = 255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let i = node[2] - 1; i > -1; i--){
+          const kb = node[0][i]
+          if(kb >= LB && kb <= UB) yield [kb, node[1][i]]
+        }
+      }
     }
   }
-  static ITER_REV_LE_TO_GT = function*(){
-    const lb = this.ITER_LB
-    const ub = this.ITER_UB
-    for(let i = this[2] - 1; i > -1; i--){
-      const kb = this[0][i]
-      if(kb > lb && kb <= ub) yield [kb, this[1][i]]
+  ITER_REV_LE_TO_GT(LB = 0, UB = 255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let i = node[2] - 1; i > -1; i--){
+          const kb = node[0][i]
+          if(kb > LB && kb <= UB) yield [kb, node[1][i]]
+        }
+      }
     }
   }
-  static ITER_REV_LT_TO_GE = function*(){
-    const lb = this.ITER_LB
-    const ub = this.ITER_UB
-    for(let i = this[2] - 1; i > -1; i--){
-      const kb = this[0][i]
-      if(kb >= lb && kb < ub) yield [kb, this[1][i]]
+  ITER_REV_LT_TO_GE(LB = 0, UB = 255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let i = node[2] - 1; i > -1; i--){
+          const kb = node[0][i]
+          if(kb >= LB && kb < UB) yield [kb, node[1][i]]
+        }
+      }
     }
   }
-  static ITER_REV_LT_TO_GT = function*(){
-    const lb = this.ITER_LB
-    const ub = this.ITER_UB
-    for(let i = this[2] - 1; i > -1; i--){
-      const kb = this[0][i]
-      if(kb > lb && kb < ub) yield [kb, this[1][i]]
+  ITER_REV_LT_TO_GT(LB = 0, UB = 255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let i = node[2] - 1; i > -1; i--){
+          const kb = node[0][i]
+          if(kb > LB && kb < UB) yield [kb, node[1][i]]
+        }
+      }
     }
   }
 }
 
 export class Node16 extends Array { 
-  ITER_LB = 0;
-  ITER_UB = 255  
-  static ITER_FWD_GE_TO_LE = function*(){
-    const start = this.#binarySearch_for_LB(
-      this.ITER_LB,
-      0, this[2]
-    )
-    const ub = this.ITER_UB
-    for(let i = start; i < this[2] && this[0][i] <= ub; i++) yield [this[0][i], this[1][i]] 
-  } 
-  static ITER_FWD_GE_TO_LT = function*(){
-    const start = this.#binarySearch_for_LB(
-      this.ITER_LB,
-      0, this[2]
-    )
-    const ub = this.ITER_UB
-    for(let i = start; i < this[2] && this[0][i] < ub; i++) yield [this[0][i], this[1][i]]
-  } 
-  static ITER_FWD_GT_TO_LE = function*(){
-    const start = this.#binarySearch_for_LB(
-      this.ITER_LB,
-      0, this[2]
-    ) + 1
-    if(start >= this[2]) return
-    const ub = this.ITER_UB
-    for(let i = start; i < this[2] && this[0][i] <= ub; i++) yield [this[0][i], this[1][i]]
-  }  
-  static ITER_FWD_GT_TO_LT = function*(){
-    const start = this.#binarySearch_for_LB(
-      this.ITER_LB,
-      0, this[2]
-    ) + 1
-    if(start >= this[2]) return
-    const ub = this.ITER_UB
-    for(let i = start; i < this[2] && this[0][i] < ub; i++) yield [this[0][i], this[1][i]]
-  }  
-  static ITER_REV_LE_TO_GE = function*(){
-    const start = this.#binarySearch_for_UB(
-      this.ITER_UB,
-      0, this[2]
-    ) - 1
-    const lb = this.ITER_LB
-    for(let i = start; i>=0 && this[0][i] >= lb; i--) yield [this[0][i], this[1][i]] 
-  } 
-  static ITER_REV_LE_TO_GT = function*(){
-    const start = this.#binarySearch_for_UB(
-      this.ITER_UB,
-      0, this[2]
-    ) - 1
-    const lb = this.ITER_LB
-    for(let i = start; i>=0 && this[0][i] > lb; i--) yield [this[0][i], this[1][i]]
-  } 
-  static ITER_REV_LT_TO_GE = function*(){
-    const start = this.#binarySearch_for_UB(
-      this.ITER_UB,
-      0, this[2]
-    ) - 2
-    if(start >= this[2] || start < 0) return
-    const lb = this.ITER_LB
-    for(let i = start; i>=0 && this[0][i] >= lb; i--) yield [this[0][i], this[1][i]]
-  }  
-  static ITER_REV_LT_TO_GT = function*(){
-    const start = this.#binarySearch_for_UB(
-      this.ITER_UB,
-      0, this[2]
-    ) - 2
-    if(start >= this[2] || start < 0) return
-    const lb = this.ITER_LB
-    for(let i = start; i>=0 && this[0][i] > lb; i--) yield [this[0][i], this[1][i]]
-  } 
+  ITER_FWD_GE_TO_LE(LB = 0, UB = 255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        const start = node.binarySearch_for_LB(
+          LB,
+          0, node[2]
+        )
+        for(let i = start; i < node[2] && node[0][i] <= UB; i++) yield [node[0][i], node[1][i]]
+      }
+    }
+  }
+  ITER_FWD_GE_TO_LT(LB = 0, UB = 255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        const start = node.binarySearch_for_LB(
+          LB,
+          0, node[2]
+        )
+        for(let i = start; i < node[2] && node[0][i] < UB; i++) yield [node[0][i], node[1][i]]
+      }
+    }
+  }
+  ITER_FWD_GT_TO_LE(LB = 0, UB = 255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        const start = node.binarySearch_for_LB(
+          LB,
+          0, node[2]
+        ) + 1
+        if(start >= node[2]) return
+        for(let i = start; i < node[2] && node[0][i] <= UB; i++) yield [node[0][i], node[1][i]]
+      }
+    }
+  }
+  ITER_FWD_GT_TO_LT(LB = 0, UB = 255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        const start = node.binarySearch_for_LB(
+          LB,
+          0, node[2]
+        ) + 1
+        if(start >= node[2]) return
+        for(let i = start; i < node[2] && node[0][i] < UB; i++) yield [node[0][i], node[1][i]]
+      }
+    }
+  }
+  ITER_REV_LE_TO_GE(LB = 0, UB = 255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        const start = node.binarySearch_for_UB(
+          UB,
+          0, node[2]
+        ) - 1
+        for(let i = start; i>=0 && node[0][i] >= LB; i--) yield [node[0][i], node[1][i]] 
+      }
+    }
+  }
+  ITER_REV_LE_TO_GT(LB = 0, UB = 255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        const start = node.binarySearch_for_UB(
+          UB,
+          0, node[2]
+        ) - 1
+        for(let i = start; i>=0 && node[0][i] > LB; i--) yield [node[0][i], node[1][i]] 
+      }
+    }
+  }
+  ITER_REV_LT_TO_GE(LB = 0, UB = 255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        const start = node.binarySearch_for_UB(
+          UB,
+          0, node[2]
+        ) - 2
+        if(start >= node[2] || start < 0) return
+        for(let i = start; i>=0 && node[0][i] >= LB; i--) yield [node[0][i], node[1][i]] 
+      }
+    }
+  }
+  ITER_REV_LT_TO_GT(LB = 0, UB = 255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        const start = node.binarySearch_for_UB(
+          UB,
+          0, node[2]
+        ) - 2
+        if(start >= node[2] || start < 0) return
+        for(let i = start; i>=0 && node[0][i] > LB; i--) yield [node[0][i], node[1][i]] 
+      }
+    }
+  }
   constructor(){
     super()
     this[0] = new Uint8Array(16)
     this[1] = Array.from({length:16}).fill(null)
     this[2] = 0;
-    /*this[Symbol.iterator] = function*(){
-      for(let i = 0; i < this[2]; i++) yield [this[0][i],this[1][i]]
-    }  */
-    this[Symbol.iterator] = Node16.ITER_FWD_GE_TO_LE
   }
   #binarySearch(key, LB, UB){
     for(;;){
@@ -1136,7 +1183,7 @@ export class Node16 extends Array {
     }
     return -2
   }
-  #binarySearch_for_LB(key, LB, UB){
+  binarySearch_for_LB(key, LB, UB){
     for(; LB < UB;){
       const MP = Math.floor((LB+UB)/2)
       if(key <= this[0][MP]) UB = MP
@@ -1145,7 +1192,7 @@ export class Node16 extends Array {
     if(LB<this[2] && this[0][LB]<key) LB++
     return LB
   }
-  #binarySearch_for_UB(key, LB, UB){
+  binarySearch_for_UB(key, LB, UB){
     for(; LB < UB;){
       const MP = Math.floor((LB+UB)/2)
       if(key >= this[0][MP]) LB = MP + 1
