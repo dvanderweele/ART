@@ -36,8 +36,7 @@ const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
   const prefixes = JSON.parse(await fs.readFile(path.join(__dirname,"prefixes.mobyDick.json"),{encoding:"utf8"}))
   performance.mark("prefix.iter.before")
   for(let prefix of prefixes){
-    console.log(prefix[0])
-    for(let x of deduped.allWithPrefixFwdV(new Uint8Array(prefix[1]))){console.log("\tpref fnd s")}
+    for(let x of deduped.allWithPrefixFwdV(new Uint8Array(prefix[1]))){}
   }
   performance.mark("prefix.iter.after")
   const result = {

@@ -16,4 +16,8 @@ for(let i=0;i<1000;i++){
   execSync("node --expose-gc benchmarks/shakespeare.bench.avl.js")
   console.log("\t-js art tree")
   execSync("node --expose-gc benchmarks/shakespeare.bench.art.js")
+  console.log("Uint32x1M bench:")
+  execSync("node --expose-gc benchmarks/Uint32x1M.bench.js")
+  console.log("Melville vs Shakespeare Set Operations")
+  execSync("node benchmarks/melville_v_shakespeare.js")
 }

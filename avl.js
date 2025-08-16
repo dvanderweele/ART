@@ -696,13 +696,17 @@ export class AVL  {
     comp_lt = AVL.COMP_LT,
     comp_gt = AVL.COMP_GT
   ){    
+    /*
     a[Symbol.iterator] = AVL.ITER_FWD_GE_TO_LE
     a.ITER_LB = -Infinity
     a.ITER_UB = Infinity
+    */
     const aMembers = [...a].map(v=>[v[1],v[5]]);
+    /*
     b[Symbol.iterator] = AVL.ITER_FWD_GE_TO_LE
     b.ITER_LB = -Infinity
     b.ITER_UB = Infinity
+    */
     const bMembers = [...b].map(v=>[v[1],v[5]]);
     const ab = []
     for(let i = 0, j = 0; i < aMembers.length || j < bMembers.length;){
@@ -742,13 +746,17 @@ export class AVL  {
     comp_gt = AVL.COMP_GT,
     comp_eq = AVL.COMP_EQ
   ){
+    /*
     a[Symbol.iterator] = AVL.ITER_FWD_GE_TO_LE
     a.ITER_LB = -Infinity
     a.ITER_UB = Infinity
+    */
     const aMembers = [...a].map(v=>[v[1],v[5]]);
+    /*
     b[Symbol.iterator] = AVL.ITER_FWD_GE_TO_LE
     b.ITER_LB = -Infinity
     b.ITER_UB = Infinity
+    */
     const bMembers = [...b].map(v=>[v[1],v[5]]);
     const ab = []
     for(let i = 0, j = 0; i < aMembers.length && j < bMembers.length;){
@@ -776,15 +784,19 @@ export class AVL  {
     b,
     serialize = key => JSON.stringify(key)
   ){
+    /*
     b[Symbol.iterator] = AVL.ITER_FWD_GE_TO_LE
     b.ITER_LB = -Infinity
     b.ITER_UB = Infinity
+    */
     const bMembers = [...b].map(v=>serialize(v[1]));
     const bSet = new Set(bMembers)
     const ab=[]
+    /*
     a[Symbol.iterator] = AVL.ITER_FWD_GE_TO_LE
     a.ITER_LB = -Infinity
     a.ITER_UB = Infinity
+    */
     for(let n of a){
       if(
         !bSet.has(serialize(n[1]))

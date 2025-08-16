@@ -54,6 +54,12 @@ const __dirname = path.dirname(__filename)
         avg: r.orderedIterationDurationMS,
         sum: r.orderedIterationDurationMS
       },
+      iterateAll6CharPrefixes: {
+        max: r.iterateAll6CharPrefixes,
+        min: r.iterateAll6CharPrefixes,
+        avg: r.iterateAll6CharPrefixes,
+        sum: r.iterateAll6CharPrefixes
+      },
       deltaMemoryRSS: { 
         max: r.orderedIterationDurationMS,
         min: r.orderedIterationDurationMS,
@@ -91,11 +97,15 @@ const __dirname = path.dirname(__filename)
       if(s.fastestIterationDurationMS.max < r.fastestIterationDurationMS) s.fastestIterationDurationMS.max = r.fastestIterationDurationMS
       if(s.fastestIterationDurationMS.min > r.fastestIterationDurationMS) s.fastestIterationDurationMS.min = r.fastestIterationDurationMS
       s.fastestIterationDurationMS.sum += r.fastestIterationDurationMS
-      s.fastestIterationDurationMS.avg = s.fastestIterationDurationMS.sum / s.testCount
+      s.fastestIterationDurationMS.avg = s.fastestIterationDurationMS.sum / s.testCount 
       if(s.orderedIterationDurationMS.max < r.orderedIterationDurationMS) s.orderedIterationDurationMS.max = r.orderedIterationDurationMS
       if(s.orderedIterationDurationMS.min > r.orderedIterationDurationMS) s.orderedIterationDurationMS.min = r.orderedIterationDurationMS
       s.orderedIterationDurationMS.sum += r.orderedIterationDurationMS
-      s.orderedIterationDurationMS.avg = s.orderedIterationDurationMS.sum / s.testCount
+      s.orderedIterationDurationMS.avg = s.orderedIterationDurationMS.sum / s.testCount 
+      if(s.iterateAll6CharPrefixes.max < r.iterateAll6CharPrefixes) s.iterateAll6CharPrefixes.max = r.iterateAll6CharPrefixes
+      if(s.iterateAll6CharPrefixes.min > r.iterateAll6CharPrefixes) s.iterateAll6CharPrefixes.min = r.iterateAll6CharPrefixes
+      s.iterateAll6CharPrefixes.sum += r.iterateAll6CharPrefixes
+      s.iterateAll6CharPrefixes.avg = s.iterateAll6CharPrefixes.sum / s.testCount
       if(s.deltaMemoryRSS.max < r.deltaMemoryRSS) s.deltaMemoryRSS.max = r.deltaMemoryRSS
       if(s.deltaMemoryRSS.min > r.deltaMemoryRSS) s.deltaMemoryRSS.min = r.deltaMemoryRSS
       s.deltaMemoryRSS.sum += r.deltaMemoryRSS
@@ -162,6 +172,7 @@ Plotly.newPlot('myDiv', data, layout);
         "dedupeDurationMS",
         "fastestIterationDurationMS",
         "orderedIterationDurationMS",
+        "iterateAll6CharPrefixes",
         "deltaMemoryHeapUsed"
       ].map(
         stat => `<h2>${stat}</h2>${[...[...(rmap.keys())].filter(k=>k.startsWith(rc)).reduce((a,c)=>a.has(ex.exec(c)[1])?a:(()=>{a.add(ex.exec(c)[1]);return a})(),new Set()).values()].sort().map(
@@ -178,6 +189,7 @@ Plotly.newPlot('myDiv', data, layout);
                 "dedupeDurationMS",
                 "fastestIterationDurationMS",
                 "orderedIterationDurationMS",
+                "iterateAll6CharPrefixes",
                 "deltaMemoryHeapUsed"
               ].map(
                 stat => `const traces_${

@@ -881,6 +881,7 @@ export class Node4 extends Array {
       index--
     }
     this[0][index] = keyByte
+    this[1][index] = null
     this[2]++
     return index
   }
@@ -1106,6 +1107,7 @@ export class Node16 extends Array {
           chs[j+1] = chs[j]
         }
         this[0][IP] = keyByte
+        this[1][IP] = null
         this[2]++
         return IP
       }
@@ -1409,10 +1411,8 @@ export class ART {
       switch(ip){
         case -1: {//full
           const rplc = new Node4()
-          for(let kc of cnode){
-            const i = rplc.insert(kc[0])
-            rplc[1][i] = kc[1]
-          }
+          const i = rplc.insert(cnode[0].charCodeAt(0)) 
+          rplc[1][i] = cnode[1]
           if(pnode){
             if(pnode instanceof Node1)
               pnode[1] = rplc
@@ -1420,18 +1420,25 @@ export class ART {
               pnode[1][selfidx] = rplc
           } else this.root = rplc
           const nip = rplc.insert(kb)
+          //if(rplc[1][nip] instanceof NodeLeaf) console.log("art.ins",-1) // hit
           if(rplc[1][nip] instanceof NodeLeaf) return 0
           const next = isLast ? new NodeLeaf() : new Node1()
           rplc[1][nip] = next
           pnode = rplc
           selfidx = nip
           cnode = next
-          depth++
+          depth++ 
+          if(next instanceof NodeLeaf){
+            if(value != null) cnode[0] = value 
+            this.size++
+            return 1
+          }
           break
         }
         case -2: {//dupe
           pnode = cnode
           cnode = cnode[1]
+          //if(cnode instanceof NodeLeaf) console.log("art.ins",-2)
           if(cnode instanceof NodeLeaf) return 0
           depth++
           break
@@ -1450,7 +1457,8 @@ export class ART {
             if(pnode instanceof Node1) pnode[1] = replacement
             else pnode[1][selfidx] = replacement
           }
-          const idx = replacement.insert(kb,key)
+          const idx = replacement.insert(kb)
+          //if(replacement[1][idx] instanceof NodeLeaf) console.log("art.ins",-3) // hit
           if(replacement[1][idx] instanceof NodeLeaf) return 0
           const next = isLast ? new NodeLeaf() : new Node1()
           replacement[1][idx] = next
@@ -1458,12 +1466,18 @@ export class ART {
           selfidx = idx
           pnode = replacement
           depth++ 
+          if(next instanceof NodeLeaf){
+            if(value != null) cnode[0] = value 
+            this.size++
+            return 1
+          }
           break
         }
         case -4:{ // n4 dupe
           selfidx = cnode.indexOf(kb)
           pnode = cnode
           cnode = cnode[1][selfidx] 
+          //if(cnode instanceof NodeLeaf) console.log("art.ins",-4)
           if(cnode instanceof NodeLeaf) return 0
           depth++
           break
@@ -1483,19 +1497,26 @@ export class ART {
             else pnode[1][selfidx] = replacement
           }
           const idx = replacement.insert(kb)
+          //if(replacement[1][idx] instanceof NodeLeaf) console.log("art.ins",-5)
           if(replacement[1][idx] instanceof NodeLeaf) return 0
           const next = isLast ? new NodeLeaf() : new Node1()
           replacement[1][idx] = next
           cnode = next
           selfidx = idx
           pnode = replacement
-          depth++
+          depth++ 
+          if(next instanceof NodeLeaf){
+            if(value != null) cnode[0] = value 
+            this.size++
+            return 1
+          }
           break
         }
         case -6: { // N16 DUPE
           selfidx = cnode.indexOf(kb)
           pnode = cnode
           cnode = cnode[1][selfidx] 
+          //if(cnode instanceof NodeLeaf) console.log("art.ins",-6)
           if(cnode instanceof NodeLeaf) return 0
           depth++
           break
@@ -1515,19 +1536,26 @@ export class ART {
             else pnode[1][selfidx] = replacement
           }
           const idx = replacement.insert(kb)
+          //if(replacement[1][idx] instanceof NodeLeaf) console.log("art.ins",-7)
           if(replacement[1][idx] instanceof NodeLeaf) return 0
           const next = isLast ? new NodeLeaf() : new Node1()
           replacement[1][idx] = next
           cnode = next
           selfidx = idx
           pnode = replacement
-          depth++
+          depth++ 
+          if(next instanceof NodeLeaf){
+            if(value != null) cnode[0] = value 
+            this.size++
+            return 1
+          }
           break
         }
         case -8: { // N48 DUPE
           selfidx = cnode.indexOf(kb)
           pnode = cnode
           cnode = cnode[1][selfidx] 
+          //if(cnode instanceof NodeLeaf) console.log("art.ins",-8)
           if(cnode instanceof NodeLeaf) return 0
           depth++
           break
@@ -1536,26 +1564,39 @@ export class ART {
           selfidx = cnode.indexOf(kb)
           pnode = cnode
           cnode = cnode[1][selfidx] 
+          //if(cnode instanceof NodeLeaf) console.log("art.ins",-9)
           if(cnode instanceof NodeLeaf) return 0
           depth++
           break
         }
         default: { 
           if(cnode instanceof Node1){
+            //if(cnode[1] instanceof NodeLeaf) console.log("art.ins default, cnode[1] == n1")
             if(cnode[1] instanceof NodeLeaf) return 0
             const next = isLast ? new NodeLeaf() : new Node1()
             pnode = cnode
             cnode[1] = next
             cnode = next
-            depth++
+            depth++ 
+            if(next instanceof NodeLeaf){
+              if(value != null) cnode[0] = value 
+              this.size++
+              return 1
+            }
           } else {
+            //if(cnode[1][ip] instanceof NodeLeaf) console.log("art.ins default, cnode[1][ip] != n1, ip",ip,"kb",kb,"cnode.keyBytes",cnode[0].join(),"cnode.children",cnode[1],"cnode.size",cnode[2]) // hit
             if(cnode[1][ip] instanceof NodeLeaf) return 0
             selfidx = ip
             pnode = cnode
             const next = isLast ? new NodeLeaf() : new Node1()
             cnode[1][ip] = next
             cnode = next
-            depth++
+            depth++ 
+            if(next instanceof NodeLeaf){
+              if(value != null) cnode[0] = value 
+              this.size++
+              return 1
+            }
           }
         }
       }
