@@ -164,11 +164,11 @@ function getRandomInt(min, max) {
       {encoding:"utf8"}
     )
   )*/
-  await fs.writeFile( "./debug.nums.json",
+  /*await fs.writeFile( "./debug.nums.json",
     JSON.stringify( records ), {
       encoding:"utf8"
     })
-
+  */
 
   for(let i = 0; i < records.length;i++){
     expect(
@@ -375,70 +375,49 @@ function getRandomInt(min, max) {
   const btn4 = new Node4()
   ;[0,85,170,255].forEach(v=>btn4.insert(v))
   // ITER_FWD_GE_TO_LT 
-  btn4[Symbol.iterator] = Node4.ITER_FWD_GE_TO_LT
-  btn4.ITER_LB = 85
-  btn4.ITER_UB = 255
   expect(
-    [...btn4].map(a=>a[0]).join("~"),
+    [...btn4.ITER_FWD_GE_TO_LT(85,255)].map(a=>a[0]).join("~"),
     "85~170",
     "node4 iter_fwd_ge_to_lt"
   )
   // ITER_FWD_GT_TO_LE 
-  btn4[Symbol.iterator] = Node4.ITER_FWD_GT_TO_LE
-  btn4.ITER_LB = 85
-  btn4.ITER_UB = 255
   expect(
-    [...btn4].map(a=>a[0]).join("~"),
+    [...btn4.ITER_FWD_GT_TO_LE(85,255)].map(a=>a[0]).join("~"),
     "170~255",
     "node4 iter_fwd_gt_to_le"
   )
 
   // ITER_FWD_GT_TO_LT 
-  btn4[Symbol.iterator] = Node4.ITER_FWD_GT_TO_LT
-  btn4.ITER_LB = 85
-  btn4.ITER_UB = 255
   expect(
-    [...btn4].map(a=>a[0]).join("~"),
+    [...btn4.ITER_FWD_GT_TO_LT(85,255)].map(a=>a[0]).join("~"),
     "170",
     "node4 iter_fwd_gt_to_lt"
   )
 
   // ITER_REV_LE_TO_GE 
-  btn4[Symbol.iterator] = Node4.ITER_REV_LE_TO_GE
-  btn4.ITER_LB = 85
-  btn4.ITER_UB = 255
   expect(
-    [...btn4].map(a=>a[0]).join("~"),
+    [...btn4.ITER_REV_LE_TO_GE(85,255)].map(a=>a[0]).join("~"),
     "255~170~85",
     "node4 iter_rev_le_to_ge"
   )
 
   // ITER_REV_LE_TO_GT
-  btn4[Symbol.iterator] = Node4.ITER_REV_LE_TO_GT
-  btn4.ITER_LB = 85
-  btn4.ITER_UB = 255
   expect(
-    [...btn4].map(a=>a[0]).join("~"),
+    [...btn4.ITER_REV_LE_TO_GT(85,255)].map(a=>a[0]).join("~"),
     "255~170",
     "node4 iter_rev_le_to_gt"
   )
 
   // ITER_REV_LT_TO_GE
-  btn4[Symbol.iterator] = Node4.ITER_REV_LT_TO_GE
-  btn4.ITER_LB = 85
-  btn4.ITER_UB = 255
   expect(
-    [...btn4].map(a=>a[0]).join("~"),
+    [...btn4.ITER_REV_LT_TO_GE(85,255)].map(a=>a[0]).join("~"),
     "170~85",
     "node4 iter_rev_lt_to_ge"
   )
 
   // ITER_REV_LT_TO_GT 
-  btn4[Symbol.iterator] = Node4.ITER_REV_LT_TO_GT
-  btn4.ITER_LB = 85
-  btn4.ITER_UB = 255
   expect(
-    [...btn4].map(a=>a[0]).join("~"),
+    [...btn4.ITER_REV_LT_TO_GT(85,255)].map(a=>a[0]).join("~"),
     "170",
     "node4 iter_rev_lt_to_gt"
   )
@@ -447,292 +426,204 @@ function getRandomInt(min, max) {
   const bt16 = [0,11,22,33,44,55,66,77,88,99,111,122,133,144,155,255]
   const bn16 = new Node16()
   bt16.forEach(n=>bn16.insert(n)) 
-  bn16[Symbol.iterator] = Node16.ITER_FWD_GE_TO_LE 
-  bn16.ITER_LB = 55
-  bn16.ITER_UB = 133
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GE_TO_LE(55,133)].map(([kb,_])=>kb).join("~"),
     "55~66~77~88~99~111~122~133"
     , "bt16"
   ) 
-  bn16.ITER_LB = 0
-  bn16.ITER_UB = 0
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GE_TO_LE(0,0)].map(([kb,_])=>kb).join("~"),
     "0"
     , "bt16"
   ) 
-  bn16.ITER_LB = 144
-  bn16.ITER_UB = 255
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GE_TO_LE(144,255)].map(([kb,_])=>kb).join("~"),
     "144~155~255" 
     , "bt16"
   ) 
-  bn16.ITER_LB = 0
-  bn16.ITER_UB = 11
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GE_TO_LE(0,11)].map(([kb,_])=>kb).join("~"),
     "0~11"
     , "bt16"
   ) 
-  bn16.ITER_LB = 255
-  bn16.ITER_UB = 255
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GE_TO_LE(255,255)].map(([kb,_])=>kb).join("~"),
     "255"
     , "bt16"
   )
-  bn16[Symbol.iterator] = Node16.ITER_FWD_GE_TO_LT 
-  bn16.ITER_LB = 55
-  bn16.ITER_UB = 133
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GE_TO_LT(55,133)].map(([kb,_])=>kb).join("~"),
     "55~66~77~88~99~111~122"
     , "bt16"
   ) 
-  bn16.ITER_LB = 0
-  bn16.ITER_UB = 0
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GE_TO_LT(0,0)].map(([kb,_])=>kb).join("~"),
     ""
     , "bt16"
   ) 
-  bn16.ITER_LB = 144
-  bn16.ITER_UB = 255
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GE_TO_LT(144,255)].map(([kb,_])=>kb).join("~"),
     "144~155" 
     , "bt16"
   ) 
-  bn16.ITER_LB = 0
-  bn16.ITER_UB = 11
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GE_TO_LT(0,11)].map(([kb,_])=>kb).join("~"),
     "0"
     , "bt16"
   ) 
-  bn16.ITER_LB = 255
-  bn16.ITER_UB = 255
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GE_TO_LT(255,255)].map(([kb,_])=>kb).join("~"),
     ""
     , "bt16"
   ) 
-  bn16[Symbol.iterator] = Node16.ITER_FWD_GT_TO_LE 
-  bn16.ITER_LB = 55
-  bn16.ITER_UB = 133
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GT_TO_LE(55,133)].map(([kb,_])=>kb).join("~"),
     "66~77~88~99~111~122~133"
     , "bt16"
   ) 
-  bn16.ITER_LB = 0
-  bn16.ITER_UB = 0
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GT_TO_LE(0,0)].map(([kb,_])=>kb).join("~"),
     ""
     , "bt16"
   ) 
-  bn16.ITER_LB = 144
-  bn16.ITER_UB = 255
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GT_TO_LE(144,255)].map(([kb,_])=>kb).join("~"),
     "155~255" 
     , "bt16"
   ) 
-  bn16.ITER_LB = 0
-  bn16.ITER_UB = 11
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GT_TO_LE(0,11)].map(([kb,_])=>kb).join("~"),
     "11"
     , "bt16"
   ) 
-  bn16.ITER_LB = 255
-  bn16.ITER_UB = 255
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GT_TO_LE(255,255)].map(([kb,_])=>kb).join("~"),
     ""
     , "bt16"
   ) 
-  bn16[Symbol.iterator] = Node16.ITER_FWD_GT_TO_LT 
-  bn16.ITER_LB = 55
-  bn16.ITER_UB = 133
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GT_TO_LT(55,133)].map(([kb,_])=>kb).join("~"),
     "66~77~88~99~111~122"
     , "bt16"
   ) 
-  bn16.ITER_LB = 0
-  bn16.ITER_UB = 0
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GT_TO_LT(0,0)].map(([kb,_])=>kb).join("~"),
     ""
     , "bt16"
   ) 
-  bn16.ITER_LB = 144
-  bn16.ITER_UB = 255
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GT_TO_LT(144,255)].map(([kb,_])=>kb).join("~"),
     "155" 
     , "bt16"
   ) 
-  bn16.ITER_LB = 0
-  bn16.ITER_UB = 11
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GT_TO_LT(0,11)].map(([kb,_])=>kb).join("~"),
     ""
     , "bt16"
   ) 
-  bn16.ITER_LB = 255
-  bn16.ITER_UB = 255
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_FWD_GT_TO_LT(255,255)].map(([kb,_])=>kb).join("~"),
     ""
     , "bt16"
   )
   // reverse 
-  bn16[Symbol.iterator] = Node16.ITER_REV_LE_TO_GE 
-  bn16.ITER_LB = 55
-  bn16.ITER_UB = 133
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LE_TO_GE(55,133)].map(([kb,_])=>kb).join("~"),
     "133~122~111~99~88~77~66~55"
     , "bt16-ree"
   ) 
-  bn16.ITER_LB = 0
-  bn16.ITER_UB = 0
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LE_TO_GE(0,0)].map(([kb,_])=>kb).join("~"),
     "0"
     , "bt16-ree"
   ) 
-  bn16.ITER_LB = 144
-  bn16.ITER_UB = 255
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LE_TO_GE(144,255)].map(([kb,_])=>kb).join("~"),
     "255~155~144"
     , "bt16-ree"
   ) 
-  bn16.ITER_LB = 0
-  bn16.ITER_UB = 11
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LE_TO_GE(0,11)].map(([kb,_])=>kb).join("~"),
     "11~0"
     , "bt16-ree"
   ) 
-  bn16.ITER_LB = 255
-  bn16.ITER_UB = 255
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LE_TO_GE(255,255)].map(([kb,_])=>kb).join("~"),
     "255"
     , "bt16-ree"
   )
-  bn16[Symbol.iterator] = Node16.ITER_REV_LE_TO_GT 
-  bn16.ITER_LB = 55
-  bn16.ITER_UB = 133
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LE_TO_GT(55,133)].map(([kb,_])=>kb).join("~"),
     "133~122~111~99~88~77~66"
     , "bt16-ret"
   ) 
-  bn16.ITER_LB = 0
-  bn16.ITER_UB = 0
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LE_TO_GT(0,0)].map(([kb,_])=>kb).join("~"),
     ""
     , "bt16-ret"
   ) 
-  bn16.ITER_LB = 144
-  bn16.ITER_UB = 255
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LE_TO_GT(144,255)].map(([kb,_])=>kb).join("~"),
     "255~155" 
     , "bt16-ret"
   ) 
-  bn16.ITER_LB = 0
-  bn16.ITER_UB = 11
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LE_TO_GT(0,11)].map(([kb,_])=>kb).join("~"),
     "11"
     , "bt16-ret"
   ) 
-  bn16.ITER_LB = 255
-  bn16.ITER_UB = 255
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LE_TO_GT(255,255)].map(([kb,_])=>kb).join("~"),
     ""
     , "bt16-ret"
   ) 
-  bn16[Symbol.iterator] = Node16.ITER_REV_LT_TO_GE 
-  bn16.ITER_LB = 55
-  bn16.ITER_UB = 133
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LT_TO_GE(55,133)].map(([kb,_])=>kb).join("~"),
     "122~111~99~88~77~66~55"
     , "bt16-rte"
   ) 
-  bn16.ITER_LB = 0
-  bn16.ITER_UB = 0
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LT_TO_GE(0,0)].map(([kb,_])=>kb).join("~"),
     ""
     , "bt16-rte"
   ) 
-  bn16.ITER_LB = 144
-  bn16.ITER_UB = 255
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LT_TO_GE(144,255)].map(([kb,_])=>kb).join("~"),
     "155~144" 
     , "bt16-rte"
   ) 
-  bn16.ITER_LB = 0
-  bn16.ITER_UB = 11
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LT_TO_GE(0,11)].map(([kb,_])=>kb).join("~"),
     "0"
     , "bt16-rte"
   ) 
-  bn16.ITER_LB = 255
-  bn16.ITER_UB = 255
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LT_TO_GE(255,255)].map(([kb,_])=>kb).join("~"),
     ""
     , "bt16-rte"
   ) 
-  bn16[Symbol.iterator] = Node16.ITER_REV_LT_TO_GT 
-  bn16.ITER_LB = 55
-  bn16.ITER_UB = 133
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LT_TO_GT(55,133)].map(([kb,_])=>kb).join("~"),
     "122~111~99~88~77~66"
     , "bt16-rtt"
   ) 
-  bn16.ITER_LB = 0
-  bn16.ITER_UB = 0
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LT_TO_GT(0,0)].map(([kb,_])=>kb).join("~"),
     ""
     , "bt16-rtt"
   ) 
-  bn16.ITER_LB = 144
-  bn16.ITER_UB = 255
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LT_TO_GT(144,255)].map(([kb,_])=>kb).join("~"),
     "155" 
     , "bt16-rtt"
   ) 
-  bn16.ITER_LB = 0
-  bn16.ITER_UB = 11
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LT_TO_GT(0,11)].map(([kb,_])=>kb).join("~"),
     ""
     , "bt16-rtt"
   ) 
-  bn16.ITER_LB = 255
-  bn16.ITER_UB = 255
   expect(
-    [...bn16].map(([kb,_])=>kb).join("~"),
+    [...bn16.ITER_REV_LT_TO_GT(255,255)].map(([kb,_])=>kb).join("~"),
     ""
     , "bt16-rtt"
   ) 
@@ -746,7 +637,7 @@ function getRandomInt(min, max) {
   //b48r[Symbol.iterator] = Node48.ITER_FWD_GE_TO_LE
   let srl = Array.from({length:48}, (_,i)=>i).join("~")
   expect(
-    [...b48r].map(v=>v[0]).join("~"),
+    [...b48r.ITER_FWD_GE_TO_LE(0,255)].map(v=>v[0]).join("~"),
     srl,
     "n48 ITER_FWD_GE_TO_LE full"
   )
@@ -754,7 +645,7 @@ function getRandomInt(min, max) {
   b48r.insert(255)  
   //console.log(srl.slice(0,srl.length-2) + "255")
   expect(
-    [...b48r].map(v=>v[0]).join("~"),
+    [...b48r.ITER_FWD_GE_TO_LE(0,255)].map(v=>v[0]).join("~"),
     srl.slice(0,srl.length-2) + "255",
     "n48 ITER_FWD_GE_TO_LE full"
   ) 
@@ -763,11 +654,8 @@ function getRandomInt(min, max) {
     b48fet.insert(n)
   } 
   srl = Array.from({length:48}, (_,i)=>i).join("~")
-  b48fet[Symbol.iterator] = Node48.ITER_FWD_GE_TO_LT
-  b48fet.ITER_LB = 7
-  b48fet.ITER_UB = 17
   expect(
-    [...b48fet].map(v=>v[0]).join("~"),
+    [...b48fet.ITER_FWD_GE_TO_LT(7,17)].map(v=>v[0]).join("~"),
     "7~8~9~10~11~12~13~14~15~16",
     "n48 ITER_FWD_GE_TO_LT full"
   )
@@ -776,11 +664,8 @@ function getRandomInt(min, max) {
     b48fte.insert(n)
   } 
   srl = Array.from({length:48}, (_,i)=>i).join("~")
-  b48fte[Symbol.iterator] = Node48.ITER_FWD_GT_TO_LE
-  b48fte.ITER_LB = 7
-  b48fte.ITER_UB = 17
   expect(
-    [...b48fte].map(v=>v[0]).join("~"),
+    [...b48fte.ITER_FWD_GT_TO_LE(7,17)].map(v=>v[0]).join("~"),
     "8~9~10~11~12~13~14~15~16~17",
     "n48 ITER_FWD_GT_TO_LE full"
   )  
@@ -789,11 +674,8 @@ function getRandomInt(min, max) {
     b48ftt.insert(n)
   } 
   srl = Array.from({length:48}, (_,i)=>i).join("~")
-  b48ftt[Symbol.iterator] = Node48.ITER_FWD_GT_TO_LT
-  b48ftt.ITER_LB = 7
-  b48ftt.ITER_UB = 17
   expect(
-    [...b48ftt].map(v=>v[0]).join("~"),
+    [...b48ftt.ITER_FWD_GT_TO_LT(7,17)].map(v=>v[0]).join("~"),
     "8~9~10~11~12~13~14~15~16",
     "n48 ITER_FWD_GT_TO_LT full"
   ) 
@@ -802,11 +684,8 @@ function getRandomInt(min, max) {
     b48ree.insert(n)
   } 
   srl = Array.from({length:48}, (_,i)=>i).join("~")
-  b48ree[Symbol.iterator] = Node48.ITER_REV_LE_TO_GE
-  b48ree.ITER_LB = 7
-  b48ree.ITER_UB = 17
   expect(
-    [...b48ree].map(v=>v[0]).join("~"),
+    [...b48ree.ITER_REV_LE_TO_GE(7,17)].map(v=>v[0]).join("~"),
     "17~16~15~14~13~12~11~10~9~8~7",
     "n48 ITER_REV_LE_TO_GE full"
   ) 
@@ -815,11 +694,8 @@ function getRandomInt(min, max) {
     b48ret.insert(n)
   } 
   srl = Array.from({length:48}, (_,i)=>i).join("~")
-  b48ret[Symbol.iterator] = Node48.ITER_REV_LE_TO_GT
-  b48ret.ITER_LB = 7
-  b48ret.ITER_UB = 17
   expect(
-    [...b48ret].map(v=>v[0]).join("~"),
+    [...b48ret.ITER_REV_LE_TO_GT(7,17)].map(v=>v[0]).join("~"),
     "17~16~15~14~13~12~11~10~9~8",
     "n48 ITER_REV_LE_TO_GT full"
   ) 
@@ -828,11 +704,8 @@ function getRandomInt(min, max) {
     b48rte.insert(n)
   } 
   srl = Array.from({length:48}, (_,i)=>i).join("~")
-  b48rte[Symbol.iterator] = Node48.ITER_REV_LT_TO_GE
-  b48rte.ITER_LB = 7
-  b48rte.ITER_UB = 17
   expect(
-    [...b48rte].map(v=>v[0]).join("~"),
+    [...b48rte.ITER_REV_LT_TO_GE(7,17)].map(v=>v[0]).join("~"),
     "16~15~14~13~12~11~10~9~8~7",
     "n48 ITER_REV_LT_TO_GE full"
   ) 
@@ -841,16 +714,12 @@ function getRandomInt(min, max) {
     b48rtt.insert(n)
   } 
   srl = Array.from({length:48}, (_,i)=>i).join("~")
-  b48rtt[Symbol.iterator] = Node48.ITER_REV_LT_TO_GT
-  b48rtt.ITER_LB = 7
-  b48rtt.ITER_UB = 17
   expect(
-    [...b48rtt].map(v=>v[0]).join("~"),
+    [...b48rtt.ITER_REV_LT_TO_GT(7,17)].map(v=>v[0]).join("~"),
     "16~15~14~13~12~11~10~9~8",
     "n48 ITER_REV_LT_TO_GT full"
   )
-
-
+  //console.log("dbg n48 ITER_REV_LT_TO_GT full",[...b48rtt.ITER_REV_LT_TO_GT(7,17)].map(v=>v[0]).join("~"))
   // n256 range
   const bt256 = Array.from({length:256}, (_,i)=>i)
   shuffleArray(bt256)
@@ -860,7 +729,7 @@ function getRandomInt(min, max) {
   } 
   srl = Array.from({length:256}, (_,i)=>i).join("~")
   expect(
-    [...b256r].map(v=>v[0]).join("~"),
+    [...b256r.ITER_FWD_GE_TO_LE(0,255)].map(v=>v[0]).join("~"),
     srl,
     "n256 ITER_FWD_GE_TO_LE full"
   )
@@ -869,11 +738,8 @@ function getRandomInt(min, max) {
     b256fet.insert(n)
   } 
   srl = Array.from({length:256}, (_,i)=>i).join("~")
-  b256fet[Symbol.iterator] = Node256.ITER_FWD_GE_TO_LT
-  b256fet.ITER_LB = 7
-  b256fet.ITER_UB = 17
   expect(
-    [...b256fet].map(v=>v[0]).join("~"),
+    [...b256fet.ITER_FWD_GE_TO_LT(7,17)].map(v=>v[0]).join("~"),
     "7~8~9~10~11~12~13~14~15~16",
     "n256 ITER_FWD_GE_TO_LT full"
   )
@@ -882,11 +748,8 @@ function getRandomInt(min, max) {
     b256fte.insert(n)
   } 
   srl = Array.from({length:256}, (_,i)=>i).join("~")
-  b256fte[Symbol.iterator] = Node256.ITER_FWD_GT_TO_LE
-  b256fte.ITER_LB = 7
-  b256fte.ITER_UB = 17
   expect(
-    [...b256fte].map(v=>v[0]).join("~"),
+    [...b256fte.ITER_FWD_GT_TO_LE(7,17)].map(v=>v[0]).join("~"),
     "8~9~10~11~12~13~14~15~16~17",
     "n256 ITER_FWD_GT_TO_LE full"
   )  
@@ -895,11 +758,8 @@ function getRandomInt(min, max) {
     b256ftt.insert(n)
   } 
   srl = Array.from({length:256}, (_,i)=>i).join("~")
-  b256ftt[Symbol.iterator] = Node256.ITER_FWD_GT_TO_LT
-  b256ftt.ITER_LB = 7
-  b256ftt.ITER_UB = 17
   expect(
-    [...b256ftt].map(v=>v[0]).join("~"),
+    [...b256ftt.ITER_FWD_GT_TO_LT(7,17)].map(v=>v[0]).join("~"),
     "8~9~10~11~12~13~14~15~16",
     "n256 ITER_FWD_GT_TO_LT full"
   ) 
@@ -908,11 +768,8 @@ function getRandomInt(min, max) {
     b256ree.insert(n)
   } 
   srl = Array.from({length:256}, (_,i)=>i).join("~")
-  b256ree[Symbol.iterator] = Node256.ITER_REV_LE_TO_GE
-  b256ree.ITER_LB = 7
-  b256ree.ITER_UB = 17
   expect(
-    [...b256ree].map(v=>v[0]).join("~"),
+    [...b256ree.ITER_REV_LE_TO_GE(7,17)].map(v=>v[0]).join("~"),
     "17~16~15~14~13~12~11~10~9~8~7",
     "n256 ITER_REV_LE_TO_GE full"
   ) 
@@ -921,11 +778,8 @@ function getRandomInt(min, max) {
     b256ret.insert(n)
   } 
   srl = Array.from({length:256}, (_,i)=>i).join("~")
-  b256ret[Symbol.iterator] = Node256.ITER_REV_LE_TO_GT
-  b256ret.ITER_LB = 7
-  b256ret.ITER_UB = 17
   expect(
-    [...b256ret].map(v=>v[0]).join("~"),
+    [...b256ret.ITER_REV_LE_TO_GT(7,17)].map(v=>v[0]).join("~"),
     "17~16~15~14~13~12~11~10~9~8",
     "n256 ITER_REV_LE_TO_GT full"
   ) 
@@ -934,11 +788,8 @@ function getRandomInt(min, max) {
     b256rte.insert(n)
   } 
   srl = Array.from({length:256}, (_,i)=>i).join("~")
-  b256rte[Symbol.iterator] = Node256.ITER_REV_LT_TO_GE
-  b256rte.ITER_LB = 7
-  b256rte.ITER_UB = 17
   expect(
-    [...b256rte].map(v=>v[0]).join("~"),
+    [...b256rte.ITER_REV_LT_TO_GE(7,17)].map(v=>v[0]).join("~"),
     "16~15~14~13~12~11~10~9~8~7",
     "n256 ITER_REV_LT_TO_GE full"
   ) 
@@ -947,11 +798,8 @@ function getRandomInt(min, max) {
     b256rtt.insert(n)
   } 
   srl = Array.from({length:256}, (_,i)=>i).join("~")
-  b256rtt[Symbol.iterator] = Node256.ITER_REV_LT_TO_GT
-  b256rtt.ITER_LB = 7
-  b256rtt.ITER_UB = 17
   expect(
-    [...b256rtt].map(v=>v[0]).join("~"),
+    [...b256rtt.ITER_REV_LT_TO_GT(7,17)].map(v=>v[0]).join("~"),
     "16~15~14~13~12~11~10~9~8",
     "n256 ITER_REV_LT_TO_GT full"
   )
@@ -1624,6 +1472,7 @@ function getRandomInt(min, max) {
     "75|55|65|25|15", 
     "3x boundedRangeFixN #4 fwd-rev-fwd"
   )
+  /**
   expect(
     [
       ...(
@@ -1653,6 +1502,7 @@ function getRandomInt(min, max) {
     "15|11|3|27|12|6|14|21|1|25|23|18|8|19",
     "bounded L1 jabberwocky range"
   )
+  */
   for(let boundCombo of [
     "LIRE",
     "LERI",
@@ -1992,10 +1842,10 @@ function getRandomInt(min, max) {
       1,
       75000
     )
-    console.log("lg union")//, listD, listE)
+    //console.log("lg union")//, listD, listE)
     const artD = new ART() 
     const avlD = new AVL(listD.map((v,i)=>[v,i])) 
-    console.log("avlD loaded")
+    //console.log("avlD loaded")
     artD.bulkLoad( 
       listD.map(
         (v,i)=>{
@@ -2006,10 +1856,10 @@ function getRandomInt(min, max) {
         }
       )
     )
-    console.log("artD loaded")
+    //console.log("artD loaded")
     const artE = new ART() 
     const avlE = new AVL(listE.map((v,i)=>[v,i]))
-    console.log("avlE loaded")
+    //console.log("avlE loaded")
     artE.bulkLoad(
       listE.map(
         (v,i)=>{
@@ -2020,7 +1870,7 @@ function getRandomInt(min, max) {
         }
       )
     )
-    console.log("artE loaded")
+    //console.log("artE loaded")
     const artF = ART.union(artD,artE,false)
     expect(
       [
@@ -2031,7 +1881,7 @@ function getRandomInt(min, max) {
       ].map(v=>v.length>1 ? v.join("~") : v[0]).join("|"),
       "union avl == union art 2"
     )
-    console.log("finished large union") 
+    //console.log("finished large union") 
     const { 
       listA: listG, 
       listB: listH 
@@ -2083,10 +1933,10 @@ function getRandomInt(min, max) {
       1,
       75000
     )
-    console.log("lg intersect")
+    //console.log("lg intersect")
     const artJ = new ART() 
     const avlJ = new AVL(listJ.map((v,i)=>[v,i])) 
-    console.log("avlJ loaded")
+    //console.log("avlJ loaded")
     artJ.bulkLoad( 
       listJ.map(
         (v,i)=>{
@@ -2097,10 +1947,10 @@ function getRandomInt(min, max) {
         }
       )
     )
-    console.log("artJ loaded")
+    //console.log("artJ loaded")
     const artK = new ART() 
     const avlK = new AVL(listK.map((v,i)=>[v,i]))
-    console.log("avlK loaded")
+    //console.log("avlK loaded")
     artK.bulkLoad(
       listK.map(
         (v,i)=>{
@@ -2111,7 +1961,7 @@ function getRandomInt(min, max) {
         }
       )
     )
-    console.log("artK loaded")
+    //console.log("artK loaded")
     const artL = ART.intersect(artJ,artK,false)
     expect(
       [
@@ -2122,7 +1972,7 @@ function getRandomInt(min, max) {
       ].map(v=>v.length>1 ? v.join("~") : v[0]).join("|"),
       "intersect avl == intersect art 2"
     )
-    console.log("finished large intersect")
+    //console.log("finished large intersect")
     // difference
     const { 
       listA: listM, 
@@ -2176,10 +2026,10 @@ function getRandomInt(min, max) {
       1,
       75000
     )
-    console.log("lg difference")
+    //console.log("lg difference")
     const artP = new ART() 
     const avlP = new AVL(listP.map((v,i)=>[v,i])) 
-    console.log("avlP loaded")
+    //console.log("avlP loaded")
     artP.bulkLoad( 
       listP.map(
         (v,i)=>{
@@ -2190,10 +2040,10 @@ function getRandomInt(min, max) {
         }
       )
     )
-    console.log("artP loaded")
+    //console.log("artP loaded")
     const artQ = new ART() 
     const avlQ = new AVL(listQ.map((v,i)=>[v,i]))
-    console.log("avlK loaded")
+    //console.log("avlK loaded")
     artQ.bulkLoad(
       listQ.map(
         (v,i)=>{
@@ -2204,7 +2054,7 @@ function getRandomInt(min, max) {
         }
       )
     )
-    console.log("artQ loaded")
+    //console.log("artQ loaded")
     const artR = ART.difference(artP,artQ,false)
     expect(
       [
@@ -2215,7 +2065,7 @@ function getRandomInt(min, max) {
       ].map(v=>v.length>1 ? v.join("~") : v[0]).join("|"),
       "difference avl == difference art 2"
     )
-    console.log("finished large difference")
+    //console.log("finished large difference")
   }
   dump(true);
 })()

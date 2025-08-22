@@ -273,10 +273,7 @@ export class FixStackEntry {
     ]
     const iterFuncName = iterFuncNames[order + (nodeLowInclusive ? LOWER_BOUND_INCLUSIVE: EXCLUSIVE)+ (nodeHiInclusive ? UPPER_BOUND_INCLUSIVE : EXCLUSIVE)];
     //console.log("DBG275",iterFuncName,node.constructor,node)
-    node[Symbol.iterator] = node.constructor[iterFuncName]
-    node.ITER_LB = canLowerAlign ? lowerBound : 0
-    node.ITER_UB = canUpperAlign ? upperBound : 255
-    const g = node[Symbol.iterator]()
+    const g = (node[iterFuncName](canLowerAlign ? lowerBound : 0,canUpperAlign ? upperBound : 255))[Symbol.iterator]()
     this.#generator = g
     const fyield = g.next()
     if(fyield.done){
@@ -1204,64 +1201,70 @@ export class Node16 extends Array {
 }
 
 export class Node48 extends Array { 
-  ITER_LB = 0
-  ITER_UB = 255 
-  static ITER_FWD_GE_TO_LE = function*(){
-    const bmp = this[3]
-    bmp[Symbol.iterator] = BitMap.ITER_SETS_FWD_GE_TO_LE
-    bmp.ITER_LB = this.ITER_LB
-    bmp.ITER_UB = this.ITER_UB
-    for(let kb of bmp) yield [kb, this[1][this[0][kb]]]
-  }   
-  static ITER_FWD_GE_TO_LT = function*(){
-    const bmp = this[3]
-    bmp[Symbol.iterator] = BitMap.ITER_SETS_FWD_GE_TO_LT
-    bmp.ITER_LB = this.ITER_LB
-    bmp.ITER_UB = this.ITER_UB
-    for(let kb of bmp) yield [kb, this[1][this[0][kb]]]
-  }
-  static ITER_FWD_GT_TO_LE = function*(){
-    const bmp = this[3]
-    bmp[Symbol.iterator] = BitMap.ITER_SETS_FWD_GT_TO_LE
-    bmp.ITER_LB = this.ITER_LB
-    bmp.ITER_UB = this.ITER_UB
-    for(let kb of bmp) yield [kb, this[1][this[0][kb]]]
-  }
-  static ITER_FWD_GT_TO_LT = function*(){
-    const bmp = this[3]
-    bmp[Symbol.iterator] = BitMap.ITER_SETS_FWD_GT_TO_LT
-    bmp.ITER_LB = this.ITER_LB
-    bmp.ITER_UB = this.ITER_UB
-    for(let kb of bmp) yield [kb, this[1][this[0][kb]]]
+  ITER_FWD_GE_TO_LE(LB=0,UB=255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let kb of node[3].ITER_SETS_FWD_GE_TO_LE(LB,UB)) yield [kb, node[1][node[0][kb]]]
+      }
+    }
+  }  
+  ITER_FWD_GE_TO_LT(LB=0,UB=255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let kb of node[3].ITER_SETS_FWD_GE_TO_LT(LB,UB)) yield [kb, node[1][node[0][kb]]]
+      }
+    }
+  }  
+  ITER_FWD_GT_TO_LE(LB=0,UB=255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let kb of node[3].ITER_SETS_FWD_GT_TO_LE(LB,UB)) yield [kb, node[1][node[0][kb]]]
+      }
+    }
+  }  
+  ITER_FWD_GT_TO_LT(LB=0,UB=255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let kb of node[3].ITER_SETS_FWD_GT_TO_LT(LB,UB)) yield [kb, node[1][node[0][kb]]]
+      }
+    }
+  }  
+  ITER_REV_LE_TO_GE(LB=0,UB=255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let kb of node[3].ITER_SETS_REV_LE_TO_GE(LB,UB)) yield [kb, node[1][node[0][kb]]]
+      }
+    }
+  }  
+  ITER_REV_LE_TO_GT(LB=0,UB=255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let kb of node[3].ITER_SETS_REV_LE_TO_GT(LB,UB)) yield [kb, node[1][node[0][kb]]]
+      }
+    }
+  }  
+  ITER_REV_LT_TO_GE(LB=0,UB=255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let kb of node[3].ITER_SETS_REV_LT_TO_GE(LB,UB)) yield [kb, node[1][node[0][kb]]]
+      }
+    }
+  }  
+  ITER_REV_LT_TO_GT(LB=0,UB=255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let kb of node[3].ITER_SETS_REV_LT_TO_GT(LB,UB)) yield [kb, node[1][node[0][kb]]]
+      }
+    }
   } 
-  static ITER_REV_LE_TO_GE = function*(){
-    const bmp = this[3]
-    bmp[Symbol.iterator] = BitMap.ITER_SETS_REV_LE_TO_GE
-    bmp.ITER_LB = this.ITER_LB
-    bmp.ITER_UB = this.ITER_UB
-    for(let kb of bmp) yield [kb, this[1][this[0][kb]]]
-  }   
-  static ITER_REV_LE_TO_GT = function*(){
-    const bmp = this[3]
-    bmp[Symbol.iterator] = BitMap.ITER_SETS_REV_LE_TO_GT
-    bmp.ITER_LB = this.ITER_LB
-    bmp.ITER_UB = this.ITER_UB
-    for(let kb of bmp) yield [kb, this[1][this[0][kb]]]
-  }
-  static ITER_REV_LT_TO_GE = function*(){
-    const bmp = this[3]
-    bmp[Symbol.iterator] = BitMap.ITER_SETS_REV_LT_TO_GE
-    bmp.ITER_LB = this.ITER_LB
-    bmp.ITER_UB = this.ITER_UB
-    for(let kb of bmp) yield [kb, this[1][this[0][kb]]]
-  }
-  static ITER_REV_LT_TO_GT = function*(){
-    const bmp = this[3]
-    bmp[Symbol.iterator] = BitMap.ITER_SETS_REV_LT_TO_GT
-    bmp.ITER_LB = this.ITER_LB
-    bmp.ITER_UB = this.ITER_UB
-    for(let kb of bmp) yield [kb, this[1][this[0][kb]]]
-  }
   constructor(){
     super()
     const x = new Uint8Array(256) 
@@ -1272,7 +1275,6 @@ export class Node48 extends Array {
     this[2] = 0  // size
     this[3] = new BitMap(8) // byte map
     this[4] = new BitMap(2) // child map
-    this[Symbol.iterator] = Node48.ITER_FWD_GE_TO_LE
   }
   #alloc(keyByte){
     if(
@@ -1322,71 +1324,73 @@ export class Node48 extends Array {
     this[2]--
     return 1
   }
-  /*[Symbol.iterator] = function*(){
-    this[3][Symbol.iterator] = BitMap.ITER_SETS
-    for(let keyByte of this[3]) yield [keyByte, this[1][this.indexOf(keyByte)]]
-  }*/
 }
 
-export class Node256 extends Array { 
-  ITER_LB = 0
-  ITER_UB = 255 
-  static ITER_FWD_GE_TO_LE = function*(){
-    const bmp = this[0]
-    bmp[Symbol.iterator] = BitMap.ITER_SETS_FWD_GE_TO_LE
-    bmp.ITER_LB = this.ITER_LB
-    bmp.ITER_UB = this.ITER_UB
-    for(let kb of bmp) yield [kb, this[1][kb]]
-  }   
-  static ITER_FWD_GE_TO_LT = function*(){
-    const bmp = this[0]
-    bmp[Symbol.iterator] = BitMap.ITER_SETS_FWD_GE_TO_LT
-    bmp.ITER_LB = this.ITER_LB
-    bmp.ITER_UB = this.ITER_UB
-    for(let kb of bmp) yield [kb, this[1][kb]]
-  }
-  static ITER_FWD_GT_TO_LE = function*(){
-    const bmp = this[0]
-    bmp[Symbol.iterator] = BitMap.ITER_SETS_FWD_GT_TO_LE
-    bmp.ITER_LB = this.ITER_LB
-    bmp.ITER_UB = this.ITER_UB
-    for(let kb of bmp) yield [kb, this[1][kb]]
-  }
-  static ITER_FWD_GT_TO_LT = function*(){
-    const bmp = this[0]
-    bmp[Symbol.iterator] = BitMap.ITER_SETS_FWD_GT_TO_LT
-    bmp.ITER_LB = this.ITER_LB
-    bmp.ITER_UB = this.ITER_UB
-    for(let kb of bmp) yield [kb, this[1][kb]]
+export class Node256 extends Array {  
+  ITER_FWD_GE_TO_LE(LB=0,UB=255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let kb of node[0].ITER_SETS_FWD_GE_TO_LE(LB,UB)) yield [kb, node[1][kb]]
+      }
+    }
+  }  
+  ITER_FWD_GE_TO_LT(LB=0,UB=255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let kb of node[0].ITER_SETS_FWD_GE_TO_LT(LB,UB)) yield [kb, node[1][kb]]
+      }
+    }
+  }  
+  ITER_FWD_GT_TO_LE(LB=0,UB=255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let kb of node[0].ITER_SETS_FWD_GT_TO_LE(LB,UB)) yield [kb, node[1][kb]]
+      }
+    }
+  }  
+  ITER_FWD_GT_TO_LT(LB=0,UB=255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let kb of node[0].ITER_SETS_FWD_GT_TO_LT(LB,UB)) yield [kb, node[1][kb]]
+      }
+    }
+  }  
+  ITER_REV_LE_TO_GE(LB=0,UB=255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let kb of node[0].ITER_SETS_REV_LE_TO_GE(LB,UB)) yield [kb, node[1][kb]]
+      }
+    }
+  }  
+  ITER_REV_LE_TO_GT(LB=0,UB=255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let kb of node[0].ITER_SETS_REV_LE_TO_GT(LB,UB)) yield [kb, node[1][kb]]
+      }
+    }
+  }  
+  ITER_REV_LT_TO_GE(LB=0,UB=255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let kb of node[0].ITER_SETS_REV_LT_TO_GE(LB,UB)) yield [kb, node[1][kb]]
+      }
+    }
+  }  
+  ITER_REV_LT_TO_GT(LB=0,UB=255){
+    const node = this
+    return {
+      *[Symbol.iterator](){
+        for(let kb of node[0].ITER_SETS_REV_LT_TO_GT(LB,UB)) yield [kb, node[1][kb]]
+      }
+    }
   } 
-  static ITER_REV_LE_TO_GE = function*(){
-    const bmp = this[0]
-    bmp[Symbol.iterator] = BitMap.ITER_SETS_REV_LE_TO_GE
-    bmp.ITER_LB = this.ITER_LB
-    bmp.ITER_UB = this.ITER_UB
-    for(let kb of bmp) yield [kb, this[1][kb]]
-  }   
-  static ITER_REV_LE_TO_GT = function*(){
-    const bmp = this[0]
-    bmp[Symbol.iterator] = BitMap.ITER_SETS_REV_LE_TO_GT
-    bmp.ITER_LB = this.ITER_LB
-    bmp.ITER_UB = this.ITER_UB
-    for(let kb of bmp) yield [kb, this[1][kb]]
-  }
-  static ITER_REV_LT_TO_GE = function*(){
-    const bmp = this[0]
-    bmp[Symbol.iterator] = BitMap.ITER_SETS_REV_LT_TO_GE
-    bmp.ITER_LB = this.ITER_LB
-    bmp.ITER_UB = this.ITER_UB
-    for(let kb of bmp) yield [kb, this[1][kb]]
-  }
-  static ITER_REV_LT_TO_GT = function*(){
-    const bmp = this[0]
-    bmp[Symbol.iterator] = BitMap.ITER_SETS_REV_LT_TO_GT
-    bmp.ITER_LB = this.ITER_LB
-    bmp.ITER_UB = this.ITER_UB
-    for(let kb of bmp) yield [kb, this[1][kb]]
-  }
   constructor(){
     super()
     this[0] = new BitMap(8)
@@ -1394,7 +1398,6 @@ export class Node256 extends Array {
       length:256
     }).fill(null)
     this[2] = 0 
-    this[Symbol.iterator] = Node256.ITER_FWD_GE_TO_LE
   }
   #alloc(keyByte){
     if(!(
@@ -1428,10 +1431,6 @@ export class Node256 extends Array {
     this[2]--
     return 1
   }
-  /*[Symbol.iterator] = function*(){
-    this[0][Symbol.iterator] = BitMap.ITER_SETS
-    for(let keyByte of this[0]) yield [keyByte, this[1][keyByte]]
-  }*/
 }
 
 export class NodeLeaf extends Array {}
@@ -1492,10 +1491,7 @@ export class ART {
         }
         case -3: { // N4 FULL 
           const replacement = new Node16()
-          cnode[Symbol.iterator] = Node4.ITER_FWD_GE_TO_LE
-          cnode.ITER_LB = 0
-          cnode.ITER_UB = 255
-          for(let ent of cnode){
+          for(let ent of cnode.ITER_FWD_GE_TO_LE(0,255)){
             const i = replacement.insert(ent[0])
             replacement[1][i] = ent[1]
           }
@@ -1531,10 +1527,7 @@ export class ART {
         }        
         case -5: { // N16 FULL
           const replacement = new Node48() 
-          cnode[Symbol.iterator] =Node16.ITER_FWD_GE_TO_LE
-          cnode.ITER_LB = 0
-          cnode.ITER_UB = 255
-          for(let ent of cnode){
+          for(let ent of cnode.ITER_FWD_GE_TO_LE(0,255)){
             const i = replacement.insert(ent[0])
             replacement[1][i] = ent[1]
           }
@@ -1570,10 +1563,7 @@ export class ART {
         }
         case -7: { // N48 FULL
           const replacement = new Node256() 
-          cnode[Symbol.iterator] =Node48.ITER_FWD_GE_TO_LE
-          cnode.ITER_LB = 0
-          cnode.ITER_UB = 255
-          for(let ent of cnode){
+          for(let ent of cnode.ITER_FWD_GE_TO_LE(0,255)){
             const i = replacement.insert(ent[0])
             replacement[1][i] = ent[1]
           }
@@ -1780,10 +1770,7 @@ export class ART {
         case 1: {
           // shrink n4 to n1
           const replacement = new Node1()
-          current[Symbol.iterator] = Node4.ITER_FWD_GE_TO_LE
-          current.ITER_LB = 0
-          current.ITER_UB = 255
-          for(let ent of current){
+          for(let ent of current.ITER_FWD_GE_TO_LE(0,255)){
             replacement.insert(ent[0])
             replacement[1] = ent[1]
           } 
@@ -1802,10 +1789,7 @@ export class ART {
         case 4: {
           // shrink n16 to n4
           const replacement = new Node4() 
-          current[Symbol.iterator] =Node16.ITER_FWD_GE_TO_LE
-          current.ITER_LB = 0
-          current.ITER_UB = 255
-          for(let ent of current){
+          for(let ent of current.ITER_FWD_GE_TO_LE(0,255)){
             const i = replacement.insert(ent[0])
             replacement[1][i] = ent[1]
           }
@@ -1824,10 +1808,7 @@ export class ART {
         case 16: {
           // shrink n48 to n16
           const replacement = new Node16() 
-          current[Symbol.iterator] =Node48.ITER_FWD_GE_TO_LE
-          current.ITER_LB = 0
-          current.ITER_UB = 255
-          for(let ent of current){
+          for(let ent of current.ITER_FWD_GE_TO_LE(0,255)){
             const i = replacement.insert(ent[0])
             replacement[1][i] = ent[1]
           }
@@ -1846,10 +1827,7 @@ export class ART {
         case 48: {
           // shrink n256 to n48
           const replacement = new Node48() 
-          current[Symbol.iterator] = Node256.ITER_FWD_GE_TO_LE
-          current.ITER_LB = 0
-          current.ITER_UB = 255
-          for(let ent of current){
+          for(let ent of current.ITER_FWD_GE_TO_LE(0,255)){
             const i = replacement.insert(ent[0])
             replacement[1][i] = ent[1]
           }
@@ -1902,10 +1880,7 @@ export class ART {
               continue
             }
             default: {
-              root[Symbol.iterator] = root.constructor["ITER_FWD_GE_TO_LE"]
-              root.ITER_LB = 0
-              root.ITER_UB = 255
-              const i = root[Symbol.iterator]()
+              const i = (root.ITER_FWD_GE_TO_LE(0,255))[Symbol.iterator]()
               stack.push(i)
               const {value} = i.next()
               root = value[1]
@@ -1948,10 +1923,7 @@ export class ART {
               continue
             }
             default: {
-              root[Symbol.iterator] = root.constructor["ITER_REV_LE_TO_GE"]
-              root.ITER_LB = 0
-              root.ITER_UB = 255
-              const i = root[Symbol.iterator]()
+              const i = (root.ITER_REV_LE_TO_GE(0,255))[Symbol.iterator]()
               stack.push(i)
               const {value} = i.next()
               root = value[1]
@@ -1962,7 +1934,7 @@ export class ART {
       }
     }
   } 
-  fullFwdRangeKV(start = this.root, prefix = new ByteStack(), f=false){ 
+  fullFwdRangeKV(start = this.root, prefix = new ByteStack()){ 
     return {
       [Symbol.iterator]: function*(){
         let root = start
@@ -1974,7 +1946,6 @@ export class ART {
         }
         const nStack = []
         do {
-          if(f)console.log("fullFwdRangeKV.dbg::do, kstack",kStack.size, kStack.dv.buffer, "nStack", nStack.length)
           if(!root) break
           switch(root.constructor.name){
             case "Node1": {
@@ -1982,7 +1953,6 @@ export class ART {
                 kStack.push(root[0].charCodeAt(0))
                 nStack.push(root)
                 root = root[1]
-                if(f)console.log("fullFwdRangeKV.dbg::n1, kstack",kStack.size, kStack.dv.buffer, "nStack", nStack.length)
               } while(
                 root.constructor.name == "Node1"
               )
@@ -1990,7 +1960,6 @@ export class ART {
             }
             case "NodeLeaf": {
               yield [kStack.pull(), root]
-              if(f)console.log("fullFwdRangeKV.dbg::do.nl.post yield, kstack",kStack.size, kStack.dv.buffer, "nStack", nStack.length)
               let lla = true
               kStack.pop()
               root = nStack[nStack.length - 1]
@@ -2000,22 +1969,17 @@ export class ART {
                 && nStack.length > 0
                 && lla
               ){
-               if(f)console.log("fullFwdRangeKV.dbg::do.nl.while, kstack",kStack.size, kStack.dv.buffer, "nStack", nStack.length)
                 if(root instanceof Node1){
-                  if(f)console.log("fullFwdRangeKV.dbg.fo.while.ifn1",kStack.size, kStack.dv.buffer, "nStack", nStack.length,"about to pop both stacks")
                   kStack.pop()
                   nStack.pop()
                   root = nStack[nStack.length - 1]
                 } else {
                   const {done, value} = root.next()
                   if(done){
-                    if(f)console.log("fullFwdRangeKV.dbg.fo.while.ifn+.done",kStack.size, kStack.dv.buffer, "nStack", nStack.length,"about to pop both stacks")
                     kStack.pop()
                     nStack.pop()
                     root = nStack[nStack.length - 1]
-                    if(f)console.log("fullFwdRangeKV special dbg",kStack.size, kStack.dv.buffer, "nStack",nStack.length, root)
                   } else {
-                    if(f)console.log("fullFwdRangeKV.dbg.fo.while.ifn+.undone",kStack.size, kStack.dv.buffer, "nStack", nStack.length,"about to push to kStack w/o pushing to nStack")
                     kStack.push(value[0])
                     root = value[1]
                     lla = false
@@ -2025,10 +1989,7 @@ export class ART {
               continue
             }
             default: {
-              root[Symbol.iterator] = root.constructor["ITER_FWD_GE_TO_LE"]
-              root.ITER_LB = 0
-              root.ITER_UB = 255
-              const i = root[Symbol.iterator]()
+              const i = (root.ITER_FWD_GE_TO_LE(0,255))[Symbol.iterator]()
               nStack.push(i)
               const {value} = i.next()
               kStack.push(value[0])
@@ -2095,10 +2056,7 @@ export class ART {
               continue
             }
             default: {
-              root[Symbol.iterator] = root.constructor["ITER_REV_LE_TO_GE"]
-              root.ITER_LB = 0
-              root.ITER_UB = 255
-              const i = root[Symbol.iterator]()
+              const i = (root.ITER_REV_LE_TO_GE(0,255))[Symbol.iterator]()
               nStack.push(i)
               const {value} = i.next()
               kStack.push(value[0])
@@ -2578,16 +2536,10 @@ export class ART {
               let a1Done = false
               let b1Done = false
               if(!aSingle){
-                aRoot.ITER_LB = 0
-                aRoot.ITER_UB = 255
-                aRoot[Symbol.iterator] = aRoot.constructor.ITER_FWD_GE_TO_LE
-                aRoot = aRoot[Symbol.iterator]()
+                aRoot = (aRoot.ITER_FWD_GE_TO_LE(0,255))[Symbol.iterator]()
               }
               if(!bSingle){
-                bRoot.ITER_LB = 0
-                bRoot.ITER_UB = 255
-                bRoot[Symbol.iterator] = bRoot.constructor.ITER_FWD_GE_TO_LE
-                bRoot = bRoot[Symbol.iterator]()
+                bRoot = (bRoot.ITER_FWD_GE_TO_LE(0,255))[Symbol.iterator]()
               }
               let aResult, bResult
               const getResult = (
@@ -2739,16 +2691,10 @@ export class ART {
               let a1Done = false
               let b1Done = false
               if(!aSingle){
-                aRoot.ITER_LB = 0
-                aRoot.ITER_UB = 255
-                aRoot[Symbol.iterator] = aRoot.constructor.ITER_FWD_GE_TO_LE
-                aRoot = aRoot[Symbol.iterator]()
+                aRoot = (aRoot.ITER_FWD_GE_TO_LE(0,255))[Symbol.iterator]()
               }
               if(!bSingle){
-                bRoot.ITER_LB = 0
-                bRoot.ITER_UB = 255
-                bRoot[Symbol.iterator] = bRoot.constructor.ITER_FWD_GE_TO_LE
-                bRoot = bRoot[Symbol.iterator]()
+                bRoot = (bRoot.ITER_FWD_GE_TO_LE(0,255))[Symbol.iterator]()
               }
               let aResult, bResult
               const getResult = (

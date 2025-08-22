@@ -207,7 +207,7 @@ export class BitMap extends Uint32Array {
     const pages = this
     return {
       *[Symbol.iterator](){
-        const lb = Math.max(0, LB)
+        const lb = Math.max(0, LB+1)
         const bitCount = length * 32
         const ub = Math.min(bitCount - 1, UB-1)
         const minPageIdx = Math.floor(lb / 32)
