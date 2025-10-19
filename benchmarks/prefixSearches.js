@@ -6,101 +6,7 @@ import os from "os"
 import {ART} from "../art.js"
 import {AVL} from "../avl.js"
 import Latin1 from "../collations/Latin1/Latin1.js"
-import crypto from "node:crypto"
 
-;(async()=>{
-  for(let i = 10_000; i < 1_000_001; i+=10_000){
-    const testResult = (()=>{  
-      gc()
-      const setMBase = process.memoryUsage()
-      performance.mark(`set-${i}`)
-      ;(()=>{
-        // set
-        const x = new Set()
-        for(let _ = 0; _ < i; _++){ 
-          const uuid = new Uint8Array(crypto.randomUUID()
-            .split("-")
-            .join("")
-            .replace(
-              /[0-9a-g]{2}/g,
-              v=>`,${Number("0x" + v)}`
-            )
-            .slice(1)
-            .split(",")
-            .map(v=>Number(v)))
-          const strk = [...uuid].map(v=>String.fromCharCode(v)).join("")
-          x.add(strk)
-        }
-      })()  
-      performance.mark(`set-${i}-end`)
-      const setMUsed = process.memoryUsage()
-      gc()
-      const avlMBase = process.memoryUsage()
-      performance.mark(`avl-${i}`)
-      ;(()=>{
-        // avl
-        const x = new AVL()
-        for(let _ = 0; _ < i; _++){ 
-          const uuid = new Uint8Array(crypto.randomUUID()
-            .split("-")
-            .join("")
-            .replace(
-              /[0-9a-g]{2}/g,
-              v=>`,${Number("0x" + v)}`
-            )
-            .split(",")
-            .filter(v=>v!="")
-            .map(v=>Number(v)))
-          const strk = [...uuid].map(v=>String.fromCharCode(v)).join("")
-          x.insert(strk)
-        }
-      })()
-      performance.mark(`avl-${i}-end`)
-      const avlMUsed = process.memoryUsage()
-      gc()
-      const artMBase = process.memoryUsage()
-      performance.mark(`art-${i}`)
-      ;(()=>{
-        // art
-        const x = new ART()
-        for(let _ = 0; _ < i; _++){ 
-          const uuid = new Uint8Array(crypto.randomUUID()
-            .split("-")
-            .join("")
-            .replace(
-              /[0-9a-g]{2}/g,
-              v=>`,${Number("0x" + v)}`
-            )
-            .split(",")
-            .filter(v=>v!="")
-            .map(v=>Number(v)))
-          x.insert(uuid)
-        }
-      })()
-      performance.mark(`post-${i}`)
-      const artMUsed = process.memoryUsage()
-      return {
-        "testType": "Compressed UUIDs", 
-        "quantity": i,
-        "ts": (new Date()).toISOString(),
-        "osType": os.type(),
-        "osPlatform": os.platform(),
-        "osArch": os.arch(),
-        "osAvailableParallelism": os.availableParallelism(),
-        "nodeVersion": process.version,
-        "setDurationMS": performance.measure("x",`set-${i}`,`set-${i}-end`).duration,
-        "setHeapUsedDeltaBytes": setMUsed.heapUsed - setMBase.heapUsed,
-        "avlDurationMS": performance.measure("x",`avl-${i}`,`avl-${i}-end`).duration,
-        "avlHeapUsedDeltaBytes": avlMUsed.heapUsed - avlMBase.heapUsed,
-        "artDurationMS": performance.measure("x",`art-${i}`,`post-${i}`).duration,
-        "artHeapUsedDeltaBytes": artMUsed.heapUsed - artMBase.heapUsed
-      }
-    })()
-    // write test result
-    console.log(testResult)
-  }
-})()
-/*
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
@@ -185,7 +91,7 @@ const shakespeare_file = path.join(__dirname,"shakespeare.txt")
     let cd_smh_iter_cnt = 0
     for(let _ of cd_smh.fullFwdRangeKV()) cd_smh_iter_cnt++
     return {
-      type: "ART difference-smh", 
+      type: "ART difference-smh",
       "ts": (new Date()).toISOString(),
       "osType": os.type(),
       "osPlatform": os.platform(),
@@ -314,4 +220,3 @@ const shakespeare_file = path.join(__dirname,"shakespeare.txt")
   await fs.writeFile(path.join(__dirname,"melville_v_shakespeare",`avl.result.cd_smh.${Date.now()}.json`),JSON.stringify(avl_cd_smh),{encoding:"utf8"})
   await fs.writeFile(path.join(__dirname,"melville_v_shakespeare",`avl.result.cu.${Date.now()}.json`),JSON.stringify(avl_cu),{encoding:"utf8"})
 })()
-*/

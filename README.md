@@ -1,17 +1,17 @@
-# How I Built An Index Faster Than Binary Search Trees and B-Trees: An Adaptive Radix Tree in JavaScript Optimized for Range Queries over Compound Keys
+# How I Built An Adaptive Radix Tree, Compound Key Index, Latin1 Collation, Regex Compiler, and 116KB Regex Pattern for Moby Dick — All in JavaScript
 
 Years ago in undergraduate, on a whim I read the essential piece on adaptive radix trees by Viktor Leis and friends (*The Adaptive Radix Tree:
 ARTful Indexing for Main-Memory Databases*). It was the first serious discussion on practical approaches to implementing a trie data structure that I'd ever encountered, and it launched a years' long obsession.
 
-Of course, at the get-go I was not even close to being a mature enough programmer for a project like this. Indeed, I made various attempts on and off over the years, failing yet again after returning to the problem as if drawn by a siren's call.
+Of course, at the get-go I was not even close to being a mature enough programmer for a project like this. I made various attempts on and off over the years, failing yet again after returning to the problem as if drawn by a siren's call.
 
-Well, I'm proud to share after all this time and years of professional experience under my belt, **I've finally done it!**
+I'm proud to share after all this time, **I've finally done it!**
 
-While I'm not ready to open source the code, I'm excited to share a conceptual overview of my unique approach along with comparative benchmarks (*my order-statistic AVL tree and the ART go head to head!*) and a "Flockbuster" demonstration.
+Releasing this project under a GPL license, I'm excited to share a conceptual overview of my unique approach along with comparative benchmarks (*my order-statistic AVL tree, native JavaScript Set, and the ART go head to head with datasets like Moby Dick and the Complete Works of Shakespeare!*) and bonus features like the trie regex compiler.
 
 ## A Quick Word on Trees, Tries, and the ART
 
-It goes without saying that computer scientists have a proclivity for organizing information in tree-like structures. This is not a new principle either. It's difficult to conceive of any serious information retrieval system which does not use trees in a significant capacity.
+It goes without saying that computer scientists have a proclivity for organizing information in tree-like structures. This is not a new principle. It's difficult to conceive of any serious information retrieval system which does not use tree-like data structures in a significant capacity.
 
 Classically, tree data structures would work by storing at least a whole key (for example, a number) within each internal branch. [Self-balancing binary search trees](https://dvanderweele.com/order-statistic-avl-tree-javascript-library-docs) are a genus that comes to mind for most when considering this kind of data structuring, though there are others. 
 
@@ -29,7 +29,7 @@ Most obvious perhaps is the boon to those who need to work with variable-length 
 
 And perhaps most excitingly, this kind of data structure allows you to start to reason about the design of your own programs in terms of Codd's *relational algebra*, a privilege more commonly limited to the realm of database software. Your designs can take on a tabular nature, where you enable performant, multi-column, **multi-dimensional** indexing. 
 
-This is all possible, if we can manage to overcome a venerable challenge associated with tries — their notorious hunger for memory. That is where the Adaptive Radix Tree suggests a pragmatic solution.
+This is all possible, and even faster for some use cases than self-balancing binary search trees, if we can manage to overcome a venerable challenge associated with tries — their notorious hunger for memory. That is where the Adaptive Radix Tree suggests a pragmatic solution.
 
 ## The Protypical Adaptive Radix Tree of Viktor Leis et al
 
@@ -114,7 +114,7 @@ And so development proceeds to the Node256 implementation. It seems almost the s
 
 Really, since there is a parallel between the implementation of Node256 and 256-capacity key byte array of the Node48 (where actually *at most* and *often fewer* slots will be occupied), it means there are more spots during growth and shrinkage from Node48 where this linear searching will happen.
 
-It was hereabouts I started to feel vaguely dim-witted, which is a negative sign in the world of developer experience.
+It was hereabouts I started to feel vaguely dim-witted, which is a negative sign in the world of developer experience. Then again, in a language like JavaScript, the pursuit of avoiding array iterations can be a "micro-optimization" that misses the forest of lower level engine optimizations for a few trees of cleverness. Nonetheless, I wanted to take time to consider potential performance improvements.
 
 I spent time reasoning through the workflows involving these nodes and it came to me that it is not only these so-called "amortized operations" of growth and shrinkage which are beset with this performance concern. Also, evidently insertions can be impacted. And, perhaps most importantly, this kind of arrangement can seriously hamper the kind of bounded range queries which are supposed to be *a chief use-case* for this kind of data structure.
 
@@ -124,7 +124,7 @@ For a time I considered implementing a sort of doubly-linked allocation list for
 
 *What does solve these problems nicely is, as the section heading suggests, a bitmap.*
 
-Of course, this means a new data supporting data structure, and because we're in JavaScript-world, it's sure to get weird :-).
+Of course, this means a new supporting data structure, and because we're in JavaScript-world, it's sure to get weird :-).
 
 Complications arise because Javascript numbers are always 64-bit floats — except when they aren't. If you use TypedArrays, the numbers are stored according to the format you expect (e.g., unsigned 32-bit integer), but when you read it into a variable or try to do maths with that value then suddenly you're teleported to the realm of floating point wickedness. And if you then attempt bitwise operations on those numbers, it gets even more BANANAS.
 
@@ -149,7 +149,7 @@ for i in range 0 to final index of bitmap:
 
 Next you can create iterator functions to iterate over a bounded range of set bits. It uses same principle as computing first set rank, but more arithmetic required to calculate which "page" of bits in your bitmap array contains your bounds. Every time you yield the rank of a set bit, you unset that rank in a temporary variable before attempting another yield. And you continue until that temporary variable reaches zero.
 
-It's finicky but possible in JavaScript. The way I do it is I make a class that extends Uint32Array, and then the class gets static generator functions for iterating over bounded ranges of set bits. Each combination of lower bound and upper bound being inclusive or exclusive is a separate method which you assign to the instance's `Symbol.iterator` as required.
+It's finicky but possible in JavaScript. The way I do it is I make a class that extends Uint32Array and then implement methods which return iterators over bounded ranges of bits.
 
 # Making JavaScript Numbers Binary Comparable
 
@@ -665,9 +665,11 @@ This is by far the most challenging part of the journey. Debugging my test cases
 
 Part of the complexity was that I tried to implement a single monolithic `query` method. I wanted a query method you could give an array of bound definitions, one for each subcomponent of the compound keys stored in the tree. Each definition could specify the inclusiveness of the bounds as well as whether that subcomponent has a fixed or variable length. I maintain that it's not impossible, but if you plan the composability of your methods optimally then you may be able break things up into more bite-sized pieces.
 
+Importantly, as I later realized either solution misses obvious points of common sense wisdom — that leaf nodes can also hold other radix trees, vastly simplifying some compound key index implementations. Also that means notably that leaves may hold other species of data structures, and beating some other data structures performance-wise and feature-wise when it comes to indexing fixed-length keys *could* be difficult for tries from time to time. Anyway...
+
 There is an invariant in the context of the bounded traversal that at any time, the key path to any node within the traversal must be lexicographically greater than the lower bound and less than the upper bound. Of course, inclusive versions of this invariant also exist. Almost wildly fewer lines of code (and lesser cyclomatic complexity) is attainable in the so-called naïve pursuit of this invariant whereby a full-length comparison of the current key prefix is permissible at each inner node of the trie. Evocative of this is the arrangement of full key comparisons performed at every node in logarithmic runtime algorithms for trees such as the self-balancing binary search species, and so I could not stomach this design choice.
 
-Unmistakably, the stakes are higher than ever before in this project. The task at hand feels daunting, insurmountable even. If we walk away now, we lose critical features needed to approach our programs from a relational/tabular perspective, scalable by way of compound-key indices that span multiple columns. Realy, we lose a core range query feature, exactly the kind of feature that drew us to tree data structures to begin with.
+Unmistakably, the stakes are higher than ever before in this project. The task at hand feels daunting, insurmountable even. If we walk away now, we could lose critical features needed to approach our programs from a relational/tabular perspective, scalable by way of compound-key indices that span multiple columns. Really, we lose a core range query feature, exactly the kind of feature that drew us to tree data structures to begin with.
 
 The way forward then is ensuring that the traversal is accurately stateful. This is not a small task. There is naturally the question of recursion versus an iterative, stack-based approach. I believe there is a more productive starting point, however, from which to commence our search for a solution. Ironically, my breakthrough came when I decided to try to reason about the state of my traversal routine by way of a table.
 
@@ -755,138 +757,112 @@ This significantly reduced complexity of the loop for this traversal function, a
 
 **Victory is sweet!**
 
-For variable-length keys, we elect to demarcate end of the key's byte sequence with a sentinel, or reserved, byte value. Traditionally, this is the null byte, although we ought to support any reserved byte the user desires to configure. We have to tackle the same state problem we had for fixed-length keys, always being aware of when we are or are not aligned with either of the bounds and act accordingly.
+I also tried extensively to create support for bounded traversals over variable-length keys. Unfortunately, it turned out to be exceptionally tricky to accomplish in bug free fashion, so that will have to remain a potential future improvement. 
 
-The logic behind the customary null-valued reserve byte does become evident when you approach this problem attempting to support an arbtrary choice for the reserved byte value. 
+## Comparative Benchmarking the AVL Binary Search, the Adaptive Radix Tree, and the Native JavaScript Set
 
-Here is a small demonstration of why arbitrary sentinel support is troublesome (or at least counterintuitive): 
+Basically I worked on benchmarks until I got bored of it. I also got really lucky with success in the first benchmark category, and found that the remaining benchmark categories I actually tried indicated challenges for the ART.
 
-```
-Alphabet: A B C D E
+Summary first (and gory details after):
 
-D RESERVED
+* **my ART can deduplicate all the words in Moby Dick faster than both my JavaScript AVL tree AND the native JavaScript set data structure!** For fun a similar benchmark was done for the complete works of Shakespeare.
+* **numbers and even high cardinality strings like compressed UUIDs are unlikely to have success in comparative benchmarks against other kinds of data structures unless you have a really specific, compatible use case and you really know what you're doing.**
+* **any successes discussed are in terms of time — while the ART's memory usage is much less than naïve tries, it is still dead last for space consumption in all these contests.**
 
-1 2 3 4 5 6
-= = = = = =
-A B C C E E
-E A A A A E 
-D D B D B D 
-    D   D
+### Deduplicating, Searching, and Iterating the Words in Moby Dick and The Complete Works of Shakespeare FTW!
 
-LB = CAB(D) 
-UB = EAB(D)
+Apart from my ART, the other two contestants were:
 
-CA(D) < CAB(D) !
-```
+1. My Order-Statistic AVL Self-Balancing Binary Search Tree implemented in JavaScript
+2. JavaScript's native Set data structure
 
-And so, to avoid this scenario where our traversal could yield out-of-bound keys due to the location of the sentinel in the overall alphabet, it becomes an easier implementation if we instead always choose the first symbol in the alphabet (A in the above example) as our reserved byte.
+Naturally these three different tools each have different strengths and weaknesses, so as always it's never a truly fair comparison. For example, the AVL has the ability to do order statistic queries and therefore percentiles, a trick lost on the other two contestants. And the Set, it has a seemingly magical performance cheat-code enabled by surely lower-level engine implementations.
 
-This is dissatisfying to me though because it imposes almost too strict of requirements upon the kind of strings we can index in the tree. Imagine a more arcane file format with a sequence of records separated by a record separator or other control byte besides the null byte.
+I had the idea of deduplicating the Moby Dick words from a YouTube video I watched once on tries. After having success, I replicated similar success in the Complete Works of Shakespeare. 
 
-What we need to do is consider a possible state table for each combination of bound (lower vs upper) and inclusivity.
+Other related benchmarks, like iterating the contents of each data structure, were slower for the ART. I believe it's a testament to the profound speed of array and similar native data structure iterations in JavaScript. And in a way, this truth renders the relative speed of the Moby Dick deduplication benchmark even more impressive. 
 
-First, lower bound:
+### Fixed-Length Keys like Numbers and Compressed UUIDs are a Tough Benchmark
 
-```
-LEGEND
-======
-CanY = Can Yield
-CanD = Can Descend
-CLAn = Can Lower Align
-ILAn = Is Lower Aligned
-CBIS = Current Byte is Sentinel
-Dept = Depth
-   $ = At depth of Lower Bound's Sentinel
- $-1 = At depth of Last Byte of Lower Bound before Sentinel
-<$-1 = At depth before $-1
-  $+ = At depth greater than that of Lower Bound's Sentinel
+That the ART struggles wih these benchmarks reveals limitations to the deduplication discussed above. 
 
-STATES:
-0-3      4     8    16
-Dept  CBIS  CLAn  ILAn  CanY  CanD SUM
-====  ====  ====  ====  ====  ==== ===
-<$-1     N     N     N     N     Y   0
-<$-1     N     Y     N     N     Y   8
-<$-1     N     Y     Y     N     Y  24
-<$-1     Y     N     N     Y     N   4
-<$-1     Y     Y     N     N     N  12
- $-1     N     N     N     N     Y   1
- $-1     N     Y     N     N     Y   9
- $-1     N     Y     Y     N     Y  25
- $-1     Y     N     N     Y     N   5
- $-1     Y     Y     N     N     N  13
-   $     N     N     N     N     Y   2
-   $     N     Y     N     N     Y  10
-   $     Y     N     N     Y     N   6
-   $     Y     Y     Y     Y     N  30
-  $+     N     N     N     N     Y   3
-  $+     Y     N     N     Y     N   7
-```
+The ART's speed relies in part on biases of the data set being indexed. The kinds of prefixes found in the natural language words used in novels, plays, and poetry result in significant cost savings when indexing in a prefix tree.
 
-Second, upper bound:
+Short and/or high cardinality fixed length keys like numbers and UUIDs often naturally lack those sorts of frequently shared prefixes, giving the ART an indexing task that takes a bit longer.
+
+Finally, it's almost unfair to compare the ART's ability to index numbers with a JavaScript Set (so long as you don't need features the Set lacks). A hash-based data structure doesn't probably need to do as much work to derive an integer from some type of number as opposed to a string of arbitrary length.
+
+## Compiling Trie-Style Regex Patterns, Including a 116KB Regex Pattern that Matches Every Word in Moby Dick!
+
+This is a super useful use case that can save you loads of time personally, even if your data sets are small or otherwise unlikely to be "faster" from an indexing and traversal standpoint. That you can use the kind of ART I created to compile valid regular expressions (even *massive* ones) is a unique capability which you very likely won't replicate with a binary search tree or hash set.
+
+The truth is (scout's honor) I did not set out to create a trie with a design ideally suited for compiling regex patterns. But I ended up with one so could not pass up on the opportunity once I recognized it.
+
+My concept was a method intended for use with ARTs containing sentinel-terminated, variable-length keys. It would return a structure containing an intermediate result which logically defines the trie-style regex pattern derived from the keys in tree. The intermediate result also has a serialization method attached to it which on invocation walks the intermediate result and renders a regex pattern string suitable for compiling into JavaScript RegExp or within many other regex engines.
+
+Before I describe the ART-to-regex compilation procedure, a few words on what trie(-style) regexes are and why they are worth our trouble.
+
+Consider the following strings:
 
 ```
-LEGEND
-======
-CanY = Can Yield
-CanD = Can Descend
-CUAn = Can Upper Align
-IUAn = Is Upper Aligned
-KBEx = Key Bound is Exclusive
-CBIS = Current Byte is Sentinel
-Dept = Depth
-   $ = At depth of Upper Bound's Sentinel
- $-1 = At depth of Last Byte of Upper Bound before Sentinel
-<$-1 = At depth before $-1
-  $+ = At depth greater than that of Upper Bound's Sentinel
-
-OFFSET 32
-STATES:
-0-3      4     8    16    32
-Dept  CBIS  CUAn  IUAn  KBEx  CanY  CanD SUM
-====  ====  ====  ====  ====  ====  ==== ===
-<$-1     N     N     N     N     N     Y  32
-<$-1     N     N     N     Y     N     Y  64
-<$-1     N     Y     N     N     N     Y  40
-<$-1     N     Y     N     Y     N     Y  72
-<$-1     N     Y     Y     N     N     Y  56
-<$-1     N     Y     Y     Y     N     Y  88
-<$-1     Y     N     N     N     Y     N  36
-<$-1     Y     N     N     Y     Y     N  68
-<$-1     Y     Y     N     N     Y     N  44
-<$-1     Y     Y     N     Y     Y     N  76
- $-1     N     N     N     N     N     Y  33
- $-1     N     N     N     Y     N     Y  65
- $-1     N     Y     N     N     N     Y  41
- $-1     N     Y     N     Y     N     Y  73
- $-1     N     Y     Y     N     N     Y  57
- $-1     N     Y     Y     Y     N     Y  89
- $-1     Y     N     N     N     Y     N  37
- $-1     Y     N     N     Y     Y     N  69
- $-1     Y     Y     N     N     Y     N  45
- $-1     Y     Y     N     Y     Y     N  77
-   $     N     N     N     N     N     Y  34
-   $     N     N     N     Y     N     Y  66
-   $     N     Y     N     N     N     N  42
-   $     N     Y     N     Y     N     Y  74
-   $     Y     N     N     N     Y     N  38
-   $     Y     N     N     Y     Y     N  70
-   $     Y     Y     Y     N     Y     N  62
-   $     Y     Y     Y     Y     Y     N  94
-  $+     N     N     N     N     N     Y  35
-  $+     N     N     N     Y     N     Y  67
-  $+     Y     N     N     N     Y     N  39
-  $+     Y     N     N     Y     Y     N  71
+Neurotoxin dispersal in: 10 seconds
+Neurotoxin dispersal in: 9 seconds
+Neurotoxin dispersal in: 8 seconds
+Neurotoxin dispersal in: 7 seconds
+Neurotoxin dispersal in: 6 seconds
+Neurotoxin dispersal in: 5 seconds
+Neurotoxin dispersal in: 4 seconds
+Neurotoxin dispersal in: 3 seconds
+Neurotoxin dispersal in: 2 seconds
+Neurotoxin dispersal in: 1 second
 ```
 
-### boundedRangeVarN
+You need a pattern able to match any of them. 
 
-## The Suffix Tree Use Case
+The most trivial method to produce such a pattern is to concatenate all of the strings, delimiting them with the union/alternation operator. It looks like this:
 
-## Future Improvements
+```
+Neurotoxin dispersal in: 10 seconds|Neurotoxin dispersal in: 9 seconds|Neurotoxin dispersal in: 8 seconds|Neurotoxin dispersal in: 7 seconds|Neurotoxin dispersal in: 6 seconds|Neurotoxin dispersal in: 5 seconds|Neurotoxin dispersal in: 4 seconds|Neurotoxin dispersal in: 3 seconds|Neurotoxin dispersal in: 2 seconds|Neurotoxin dispersal in: 1 second
+```
 
-## Comparative Benchmarking the AVL Binary Search and the Adaptive Radix Tree
+Even though this is a simple example, there are some general downsides to this approach. There is duplicate content in the form of a long shared prefix amongst all the options. Assuming no or minimal optimizations by your chosen regex engine, this will likely cause the expenditure of additional resources in your program, such as time. In backtracking engines, this could cause wasteful backtracking. In automata-oriented engines, this could cause a non-determinism scenario which results in the NFA simulation situation where a copy of the NFA is simulated for each different option.
 
-## The "Flockbuster" Demonstration
+While I think you'll be hard pressed to find a modern engine that struggles with the specific example under consideration, the habit is still problematic. Some regexes will be scheduled to run millions of times or more, or over massive datasets. Some regexes will be used in programming environments with inflexible character count restrictions. And finally, with some engines such a habit may eventually result in a run-in with a pathological case that takes the engine years or more of computation to solve.
 
+A better practice is to reduce the non-determinism, starting by affording the expression degrees of prefix compression.
 
+Consider the followong, much shorter pattern:
+
+```
+Neurotoxin dispersal in: (?:1 second|2 seconds| 3 seconds|4 seconds|5 seconds|6 seconds|7 seconds|8 seconds|9 seconds|10 seconds)
+```
+
+The common prefix will be matched once (or not), and we can move on.
+
+There are further forms of optimization possible, but they become trickier and more costly to implement.
+
+A naïve form of suffix compression is somewhat trivially attainable for cases where there is a common suffix shared by all alternatives in a group. This example does not fit that requirement because of the `1 second` option not terminated by an `s`. However, human intelligence naturally suggests it is possible to work around that by separating out that one odd duck option or working probabilistically to simply make the final `s` optional. These options are are, in the former case, difficult and costly to think of automating accurately, and in the latter more a kind of heuristic that does not suit all kinds of work.
+
+But this primary benefit of prefix compression we can implement without much trouble!
+
+The approach I follow is a depth-first traversal of the Adaptive Radix Tree. Over the course this traversal, I use a pair of stacks to compile an intermediate structure that posseses its own method for serializing (in my own preferred fashion) the expression tree into a regex pattern string. Alternatively, the intermediate representation can be walked for the purpose of implementing a custom serialization routine.
+
+Walk the tree to produce the intermediate representation. When you encounter a higher order Node type (Node4 capacity or bigger) you start a new group of alternatives. Each key byte in that node represents the start of the literal string of one of the alternatives. Node1 types mean you are concatenating a character onto the current literal string sequence. 
+
+Finally, it's important to remember that although our radix tree supports strings which are prefixes of others by way of null-byte or other sentinel-byte terminating them, we don't follow this practice in regex patterns; instead, to support matching of strings which are prefixes of other strings, we use this trick during traversal: if a higher order node type (Node4+) contains the sentinel key byte, then we flip a flag on the corresponding group to ensure that it is optional (rendered with a suffix like `?` or `{0,1}`).
+
+There is no special trick for serializing the pattern string from the intermediate representation. It's just another depth first search. Only a limited allowlist of word type of characters in the pattern do I render literally, the remainder I render in the form of hexadecimal escape codes supported by many regex engines. Optionally, before you implement serialization, you could do any number of post-processing optimization phases on the intermediate structure, like suffix compression.
+
+Naturally as I mentioned I tested this on a large dataset, the words in Moby Dick. The test was successful, keeping in mind the limitation of the need for collation. As it turns out not 100% of words even in Moby Dick fit in a traditional Latin1 collation.
+
+Some of those words:
+
+* `shepherd’s`
+* `nothing’s`
+* `fœtal`
+
+If you don't put the words through the collation prior to regex testing them, by my math barely north of about 98.6% of words in the (non-deduplicated) list will match the regex made from the Latin1 keys inserted into the ART. That isn't too bad. And if you Latin1 collate the test strings before testing then 100% of them match the regex.
+
+There are ways around this lossy collation. A quick analysis of Melville's work would probably still yield an alphabet of less than 256 characters, and as he was not a well known user of control codes, there are likely a number of unused characters in Latin1 range you could "reclaim" to attain lossless collation and regex compilation — albeit with extra work on your part.
+
+Alternatively, I have considered the limited number of out-of-range code points, and I'm okay with my Latin1 collation replacing all of those characters with an arbitrary, designated out-of-range code point. If you prefer, you may also find-and-replace such characters in a custom way before collating.

@@ -33,6 +33,94 @@ export const FORWARD = 0,
       VARIABLE_LENGTH_KEY = 6,
       LEAF_COMPONENT = 7
 
+export class CompilationResult {
+  constructor(result){
+    this.result = result
+  }
+  serialize(){
+    const patternArray = [this.result instanceof CapturingGroup ? "(" : "(?:"]
+    const stack = [
+      null, {
+        iter: this.result[Symbol.iterator](),
+        type: this.result.constructor.name,
+        opt: this.result.optional
+      }
+    ]
+
+    while(stack[stack.length-1]){
+      const t = stack[stack.length-1]
+      const n = t.iter.next()
+      if(n.done){
+        if(
+          t.type == "CapturingGroup"
+          || t.type == "NonCapturingGroup"
+        ){
+          patternArray.push(t.opt ? ")?" : ")")
+        }
+        stack.pop()
+      }else {
+        const v = n.value
+        switch(v.constructor.name){
+          case "CapturingGroup":{
+            patternArray.push("(")
+            stack.push({
+              iter: v[Symbol.iterator](),
+              type: "CapturingGroup",
+              opt: v.optional
+            })
+            break
+          }
+          case "NonCapturingGroup":{
+            patternArray.push("(?:")
+            stack.push({
+              iter: v[Symbol.iterator](),
+              type: "NonCapturingGroup",
+              opt: v.optional
+            })
+            break
+          }
+          case "ByteStack":{
+            const tail = patternArray[patternArray.length - 1]
+            if(tail != null && !(/^[(](?:[?][:])?/.test(tail))) patternArray.push("|")
+            for(let cp of v){
+              // digit 0 = 48
+              // digit 9 = 57
+              // A = 65
+              // Z = 90
+              // a = 97
+              // z = 122
+              if(
+                (cp >= 48 && cp <= 57)
+                || (cp >= 65 && cp <= 90)
+                || (cp >= 97 && cp <= 122)
+              ) patternArray.push(String.fromCharCode(cp))
+              else patternArray.push("\\x",Number(cp).toString(16).padStart(2,"0"))
+            }
+          }
+          case "CharacterClass":{}
+        }
+      }
+    }
+    return patternArray.join("")
+  }
+}
+export class CharacterClass extends Array {
+  constructor(...args){
+    super(...args)
+  }
+}
+export class NonCapturingGroup extends Array {
+  optional = false
+  constructor(...args){
+    super(...args)
+  }
+}
+export class CapturingGroup extends Array {
+  optional = false
+  constructor(...args){
+    super(...args)
+  }
+}
 
 export class ByteStack {
   [Symbol.iterator] = function*(){
@@ -1848,6 +1936,114 @@ export class ART {
     this.size--
     return result
   } 
+  toRegex(
+    suffixCompress = true,
+    capturingGroups = false,
+    sentinel = 0,
+    anyCodePoint = null
+  ){
+    if(this.root == null) return ""
+    const Group = capturingGroups ? CapturingGroup : NonCapturingGroup
+    let result = new Group()
+    // walk ART to build result
+    let artStack = [null]
+    let resStack = [null]
+    let current = this.root
+    switch(current.constructor.name){ 
+      case "NodeLeaf": 
+        return ""
+      case "Node1": {
+        let seq = new ByteStack(1)
+        result.push(seq)
+        do {
+          seq.push(current[0].charCodeAt(0))
+          current = current[1]
+        } while(current instanceof Node1)
+        if(current instanceof NodeLeaf) break
+      }
+      default: { 
+        const cg = new Group()
+        result.push(cg)
+        resStack.push(cg) 
+        const i = (current.ITER_FWD_GE_TO_LE(0,255))[Symbol.iterator]()
+        artStack.push(i)
+        break
+      }
+    }
+    while(artStack[artStack.length-1] != null){
+      const ir = artStack[artStack.length-1].next()
+      if(ir.done){
+        artStack.pop()
+        resStack.pop()
+      } else { 
+        let current = ir.value
+        if(current[0] == sentinel){ 
+          resStack[resStack.length-1].optional = true
+          continue
+        }
+        const tail = resStack[resStack.length-1]
+        if(tail == null) break
+        const rg = tail
+        const seq = new ByteStack(1)
+        rg.push(seq)
+        seq.push(current[0])
+        current = current[1]
+        let skip = false
+        while(current instanceof Node1){
+          const cc = current[0].charCodeAt(0)
+          if(
+            cc == sentinel 
+            || current[1] instanceof NodeLeaf
+          ){ 
+            skip = true
+            break
+          }
+          seq.push(cc)
+          current = current[1]
+        }
+        if(skip) continue
+        else {
+          const ng = new Group()
+          rg.push(ng) 
+          resStack.push(ng)
+          const i = (current.ITER_FWD_GE_TO_LE(0,255))[Symbol.iterator]()
+          artStack.push(i)
+        }
+      }
+    }
+    /*
+    // walk result to suffix compress, if applicable
+    resStack.push(result)
+    while(resStack[resStack.length-1]!=null){
+      const current = resStack[resStack.length-1]
+      let seqCount = 0
+      const nestedGroups = current.filter(
+        e => !(e instanceof ByteStack)
+      )
+      if(nestedGroups.length == 0){
+        // suffix compress candidate
+        resStack.pop()
+      } else {
+        ;
+      }
+    }
+    // walk result to compress Groups to character classes where possible
+    */
+    /*
+     * UNWRAP Conditions
+     * - root is a group
+     * - root has length one
+     * - root's child is a group
+     * - root's child is not optional
+     */
+    if(
+      result instanceof Group
+      && result.length == 1
+      && result[0] instanceof Group
+      && !(result[0].optional)
+    ) result = result[0]
+    return new CompilationResult(result)
+  }
   fullFwdRangeV(start = this.root){
     return {
       [Symbol.iterator]: function*(){
@@ -1879,7 +2075,7 @@ export class ART {
               }
               continue
             }
-            default: {
+            default: { 
               const i = (root.ITER_FWD_GE_TO_LE(0,255))[Symbol.iterator]()
               stack.push(i)
               const {value} = i.next()
