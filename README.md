@@ -1,4 +1,4 @@
-# How I Built An Adaptive Radix Tree, Compound Key Index, Latin1 Collation, Regex Compiler, and 116KB Regex Pattern for Moby Dick — All in JavaScript
+# How I Built An Adaptive Radix Tree, Compound Key Index, Latin1 Collation, Regex Compiler, and 183KB Regex Pattern for the Complete Works of Shakespeare — All in JavaScript
 
 Years ago in undergraduate, on a whim I read the essential piece on adaptive radix trees by Viktor Leis and friends (*The Adaptive Radix Tree:
 ARTful Indexing for Main-Memory Databases*). It was the first serious discussion on practical approaches to implementing a trie data structure that I'd ever encountered, and it launched a years' long obsession.
@@ -13,11 +13,11 @@ Releasing this project under a GPL license, I'm excited to share a conceptual ov
 
 It goes without saying that computer scientists have a proclivity for organizing information in tree-like structures. This is not a new principle. It's difficult to conceive of any serious information retrieval system which does not use tree-like data structures in a significant capacity.
 
-Classically, tree data structures would work by storing at least a whole key (for example, a number) within each internal branch. [Self-balancing binary search trees](https://dvanderweele.com/order-statistic-avl-tree-javascript-library-docs) are a genus that comes to mind for most when considering this kind of data structuring, though there are others. 
+Many tree data structures work by storing at least a whole key (for example, a number) within each internal branch. [Self-balancing binary search trees](https://dvanderweele.com/order-statistic-avl-tree-javascript-library-docs) are a genus that comes to mind for most when considering this kind of data structuring, though there are others. 
 
 And it depends on what you are actually doing with data. If your only interest is speedy insertions, removals, and membership tests, you'll encounter the refrain to just use a hash-based data structure. After all, for those so-called point queries, hashing offers hard-to-beat constant-time performance.
 
-That utility evaporates though once you run into a problem that necessitates tasks such as efficiently iterating over a bounded range of numbers or strings within a larger collection. That's generally not possible with hash-based data structures, whose keys are strewn seemingly in random order within their backing arrays. And so the big picture is that's why we commonly tolerate the logarithmic runtimes of common tree data structures. Trees are naturally suited for you to range over their branches.
+That utility evaporates though once you run into a problem that necessitates tasks such as efficiently iterating over a bounded range of numbers or strings within a larger collection. That's generally difficult with hash-based data structures, whose keys are strewn seemingly in random order within their backing arrays. And so the big picture is that's why we commonly tolerate the logarithmic runtimes of common tree data structures. Trees are naturally suited for you to range over their branches.
 
 Naturally the question arises, is it possible to accomplish all these things and more while *beating* the traditional logarithmic time bound?
 
@@ -786,15 +786,15 @@ Other related benchmarks, like iterating the contents of each data structure, we
 
 That the ART struggles wih these benchmarks reveals limitations to the deduplication discussed above. 
 
-The ART's speed relies in part on biases of the data set being indexed. The kinds of prefixes found in the natural language words used in novels, plays, and poetry result in significant cost savings when indexing in a prefix tree.
+The ART's speed relies in part on biases of the dataset being indexed. The kinds of prefixes found in the natural language words used in novels, plays, and poetry result in significant cost savings when indexing in a prefix tree.
 
-Short and/or high cardinality fixed length keys like numbers and UUIDs often naturally lack those sorts of frequently shared prefixes, giving the ART an indexing task that takes a bit longer.
+High cardinality fixed length keys like numbers and UUIDs often naturally lack those sorts of frequently shared prefixes, giving the ART an indexing task that takes a bit longer.
 
 Finally, it's almost unfair to compare the ART's ability to index numbers with a JavaScript Set (so long as you don't need features the Set lacks). A hash-based data structure doesn't probably need to do as much work to derive an integer from some type of number as opposed to a string of arbitrary length.
 
-## Compiling Trie-Style Regex Patterns, Including a 116KB Regex Pattern that Matches Every Word in Moby Dick!
+## Compiling Trie-Style Regex Patterns, Including a 116KB Regex Pattern that Matches Every Word in Moby Dick and a 183KB Pattern for the Complete Works of Shakespeare!
 
-This is a super useful use case that can save you loads of time personally, even if your data sets are small or otherwise unlikely to be "faster" from an indexing and traversal standpoint. That you can use the kind of ART I created to compile valid regular expressions (even *massive* ones) is a unique capability which you very likely won't replicate with a binary search tree or hash set.
+This is a super useful use case that can save you loads of time personally, even if your data sets are small or otherwise unlikely to be "faster" from an indexing and traversal standpoint. That you can use the kind of ART I created to compile valid regular expressions (even *massive* ones) is a special capability which you very likely won't replicate with a binary search tree or hash set.
 
 The truth is (scout's honor) I did not set out to create a trie with a design ideally suited for compiling regex patterns. But I ended up with one so could not pass up on the opportunity once I recognized it.
 
@@ -827,7 +827,7 @@ Neurotoxin dispersal in: 10 seconds|Neurotoxin dispersal in: 9 seconds|Neurotoxi
 
 Even though this is a simple example, there are some general downsides to this approach. There is duplicate content in the form of a long shared prefix amongst all the options. Assuming no or minimal optimizations by your chosen regex engine, this will likely cause the expenditure of additional resources in your program, such as time. In backtracking engines, this could cause wasteful backtracking. In automata-oriented engines, this could cause a non-determinism scenario which results in the NFA simulation situation where a copy of the NFA is simulated for each different option.
 
-While I think you'll be hard pressed to find a modern engine that struggles with the specific example under consideration, the habit is still problematic. Some regexes will be scheduled to run millions of times or more, or over massive datasets. Some regexes will be used in programming environments with inflexible character count restrictions. And finally, with some engines such a habit may eventually result in a run-in with a pathological case that takes the engine years or more of computation to solve.
+While I think you'll be hard pressed to find a modern engine that struggles pathologically with the specific example under consideration, the habit is still problematic. Some regexes will be scheduled to run millions of times or more, or over massive datasets. Some regexes will be used in programming environments with inflexible character count restrictions. And finally, with some engines such a habit may eventually result in a run-in with a pathological case that takes the engine years or more of computation to solve.
 
 A better practice is to reduce the non-determinism, starting by affording the expression degrees of prefix compression.
 
@@ -851,9 +851,9 @@ Walk the tree to produce the intermediate representation. When you encounter a h
 
 Finally, it's important to remember that although our radix tree supports strings which are prefixes of others by way of null-byte or other sentinel-byte terminating them, we don't follow this practice in regex patterns; instead, to support matching of strings which are prefixes of other strings, we use this trick during traversal: if a higher order node type (Node4+) contains the sentinel key byte, then we flip a flag on the corresponding group to ensure that it is optional (rendered with a suffix like `?` or `{0,1}`).
 
-There is no special trick for serializing the pattern string from the intermediate representation. It's just another depth first search. Only a limited allowlist of word type of characters in the pattern do I render literally, the remainder I render in the form of hexadecimal escape codes supported by many regex engines. Optionally, before you implement serialization, you could do any number of post-processing optimization phases on the intermediate structure, like suffix compression.
+There is no special trick for serializing the pattern string from the intermediate representation. It's just another depth first traversal. Only a limited allowlist of word type of characters in the pattern do I render literally, the remainder I render in the form of hexadecimal escape codes supported by many regex engines. Optionally, before you implement serialization, you could do any number of post-processing optimization phases on the intermediate structure, like suffix compression.
 
-Naturally as I mentioned I tested this on a large dataset, the words in Moby Dick. The test was successful, keeping in mind the limitation of the need for collation. As it turns out not 100% of words even in Moby Dick fit in a traditional Latin1 collation.
+Naturally as I mentioned I tested this on large datasets, the words in Moby Dick and the words in all of Shakespeare. The test was successful, keeping in mind the limitation of the need for collation. As it turns out not 100% of words even in Moby Dick fit in a traditional Latin1 collation.
 
 Some of those words:
 
