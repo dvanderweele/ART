@@ -106,14 +106,14 @@ const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
         let lastPrefix = null
         for(let ch of nextVal){
           const nxtPfx = prefixStr + (ch).toString(16).padStart(2,"0")
-          const srcId = prefixStr == "" ? "[*]" : prefixStr
+          const srcId = prefixStr == "" ? "[*]" : "x" + prefixStr
           const dstId = nxtPfx
-          const rule = `    ${srcId} : " " --> ${dstId}: ${String.fromCharCode(ch)}`
+          const rule = `    ${srcId} : " " --> x${dstId}: ${String.fromCharCode(ch)}`
           lastPrefix = dstId
           prefixStr = nxtPfx
           tokens.push(rule)
         }
-        tokens.push(`    ${lastPrefix} : " " --> [*]: ε`)
+        tokens.push(`    x${lastPrefix} : " " --> [*]: ε`)
       }else{
         // BranchSequence 
         const nextVal = next.value
@@ -125,15 +125,15 @@ const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
           for(let ch of nextVal.prefix){
             prefix.push(ch)
             const nxtPfx = prefixStr + (ch).toString(16).padStart(2,"0")
-            const srcId = prefixStr == "" ? "[*]" : prefixStr
+            const srcId = prefixStr == "" ? "[*]" : "x"+prefixStr
             const dstId = nxtPfx
-            const rule = `    ${srcId} : " " --> ${dstId}: ${String.fromCharCode(ch)}`
+            const rule = `    ${srcId} : " " --> x${dstId}: ${String.fromCharCode(ch)}`
             lastPrefix = dstId
             prefixStr = nxtPfx
             tokens.push(rule)
           }
         }
-        if(nextVal.tails.optional) tokens.push(`    ${lastPrefix} : " " --> [*]: ε`)
+        if(nextVal.tails.optional) tokens.push(`    x${lastPrefix} : " " --> [*]: ε`)
         stack.push(nextVal)
       }
     }
