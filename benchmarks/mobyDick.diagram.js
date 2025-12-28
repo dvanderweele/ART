@@ -81,7 +81,9 @@ const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
       rexpr.result
     )
   ]
-  const tokens = ["---\ntitle: Simple sample\n---\nstateDiagram-v2"]
+  const headerParts = ["---","title: Non-Deterministic Finite Automaton","---","stateDiagram-v2"]
+  const stateDefs = new Set()
+  const transitions = []
   const buildRule = (p,n,t) => {
     const dv = p.pull()
     const prefix = p.size == 0 ? "[*]" : [...(new Uint8Array(dv.buffer))].map(b=>(b).toString(16).padStart(2,"0")).join("")
@@ -108,12 +110,14 @@ const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
           const nxtPfx = prefixStr + (ch).toString(16).padStart(2,"0")
           const srcId = prefixStr == "" ? "[*]" : "x" + prefixStr
           const dstId = nxtPfx
-          const rule = `    ${srcId}${srcId == "[*]" ? "" : ' : " "'} --> x${dstId}: ${String.fromCharCode(ch)}`
+          const rule = `    ${srcId} --> x${dstId}: ${String.fromCharCode(ch)}`
           lastPrefix = dstId
           prefixStr = nxtPfx
-          tokens.push(rule)
+          if(srcId != "[*]") stateDefs.add("    " + srcId + ': " "')
+          transitions.push(rule)
         }
-        tokens.push(`    x${lastPrefix} : " " --> [*]: ε`)
+        stateDefs.add(`    x${lastPrefix}: " "`)
+        transitions.push(`    x${lastPrefix} --> [*]: ε`)
       }else{
         // BranchSequence 
         const nextVal = next.value
@@ -127,13 +131,15 @@ const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
             const nxtPfx = prefixStr + (ch).toString(16).padStart(2,"0")
             const srcId = prefixStr == "" ? "[*]" : "x"+prefixStr
             const dstId = nxtPfx
-            const rule = `    ${srcId}${srcId == "[*]" ? "" : ' : " "'} --> x${dstId}: ${String.fromCharCode(ch)}`
+            const rule = `    ${srcId} --> x${dstId}: ${String.fromCharCode(ch)}`
             lastPrefix = dstId
             prefixStr = nxtPfx
-            tokens.push(rule)
+            if(srcId != "[*]") stateDefs.add("    "+srcId + ': " "')
+            transitions.push(rule)
           }
         }
-        if(nextVal.tails.optional) tokens.push(`    x${lastPrefix} : " " --> [*]: ε`)
+        stateDefs.add(`    x${lastPrefix}: " "`)
+        if(nextVal.tails.optional) tokens.push(`    x${lastPrefix} --> [*]: ε`)
         stack.push(nextVal)
       }
     }
@@ -151,7 +157,7 @@ const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
        */
   }
   //console.log(tokens.join("\n"))
-  await fs.writeFile(path.join(__dirname,"mobyDick.mmd"),tokens.join("\n"),{encoding:"utf8"})
+  await fs.writeFile(path.join(__dirname,"mobyDick.mmd"),[...headerParts, ...stateDefs, ...transitions].join("\n"),{encoding:"utf8"})
   
   /**
    OLD
