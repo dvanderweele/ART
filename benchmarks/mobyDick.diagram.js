@@ -86,7 +86,7 @@ const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
     const dv = p.pull()
     const prefix = p.size == 0 ? "[*]" : [...(new Uint8Array(dv.buffer))].map(b=>(b).toString(16).padStart(2,"0")).join("")
     const dst = t ? "[*]" : (n).toString(16).padStart(2,"0")
-    const rule = `${prefix} : " " --> ${p.size > 0 ? prefix : ""}${dst} : ${dst == "[*]" ? "ε" : String.fromCharCode(n)}`
+    const rule = `${prefix}${prefix == "[*]" ? "" : ' : " "'} --> ${p.size > 0 ? prefix : ""}${dst} : ${dst == "[*]" ? "ε" : String.fromCharCode(n)}`
     console.log(rule)
     return rule
   }
@@ -108,7 +108,7 @@ const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
           const nxtPfx = prefixStr + (ch).toString(16).padStart(2,"0")
           const srcId = prefixStr == "" ? "[*]" : "x" + prefixStr
           const dstId = nxtPfx
-          const rule = `    ${srcId} : " " --> x${dstId}: ${String.fromCharCode(ch)}`
+          const rule = `    ${srcId}${srcId == "[*]" ? "" : ' : " "'} --> x${dstId}: ${String.fromCharCode(ch)}`
           lastPrefix = dstId
           prefixStr = nxtPfx
           tokens.push(rule)
@@ -127,7 +127,7 @@ const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
             const nxtPfx = prefixStr + (ch).toString(16).padStart(2,"0")
             const srcId = prefixStr == "" ? "[*]" : "x"+prefixStr
             const dstId = nxtPfx
-            const rule = `    ${srcId} : " " --> x${dstId}: ${String.fromCharCode(ch)}`
+            const rule = `    ${srcId}${srcId == "[*]" ? "" : ' : " "'} --> x${dstId}: ${String.fromCharCode(ch)}`
             lastPrefix = dstId
             prefixStr = nxtPfx
             tokens.push(rule)
