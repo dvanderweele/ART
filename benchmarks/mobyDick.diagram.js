@@ -81,8 +81,7 @@ const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
       rexpr.result
     )
   ]
-  const headerParts = ["---","title: Non-Deterministic Finite Automaton","---","stateDiagram-v2"]
-  const stateDefs = new Set()
+  const headerParts = ["digraph NFA {","  rankdir=TD;","  splines=true;","  overlap=false;","","  node [shape=circle, label=\"\", width=0.25, fixedsize=true];","  edge [fontsize=8];","  start [shape=point];","end [shape=doublecircle];"]
   const transitions = []
   const buildRule = (p,n,t) => {
     const dv = p.pull()
@@ -108,16 +107,14 @@ const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
         let lastPrefix = null
         for(let ch of nextVal){
           const nxtPfx = prefixStr + (ch).toString(16).padStart(2,"0")
-          const srcId = prefixStr == "" ? "[*]" : "x" + prefixStr
+          const srcId = prefixStr == "" ? "start" : "x" + prefixStr
           const dstId = nxtPfx
-          const rule = `    ${srcId} --> x${dstId}: ${String.fromCharCode(ch)}`
+          const rule = `  ${srcId} -> x${dstId} [label="${String.fromCharCode(ch)}"];`
           lastPrefix = dstId
           prefixStr = nxtPfx
-          if(srcId != "[*]") stateDefs.add("    " + srcId + ': " "')
           transitions.push(rule)
         }
-        stateDefs.add(`    x${lastPrefix}: " "`)
-        transitions.push(`    x${lastPrefix} --> [*]: ε`)
+        transitions.push(`  x${lastPrefix} -> end [label="ε"];`)
       }else{
         // BranchSequence 
         const nextVal = next.value
@@ -129,17 +126,15 @@ const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
           for(let ch of nextVal.prefix){
             prefix.push(ch)
             const nxtPfx = prefixStr + (ch).toString(16).padStart(2,"0")
-            const srcId = prefixStr == "" ? "[*]" : "x"+prefixStr
+            const srcId = prefixStr == "" ? "start" : "x"+prefixStr
             const dstId = nxtPfx
-            const rule = `    ${srcId} --> x${dstId}: ${String.fromCharCode(ch)}`
+            const rule = `  ${srcId} -> x${dstId} [label="${String.fromCharCode(ch)}"];`
             lastPrefix = dstId
             prefixStr = nxtPfx
-            if(srcId != "[*]") stateDefs.add("    "+srcId + ': " "')
             transitions.push(rule)
           }
         }
-        stateDefs.add(`    x${lastPrefix}: " "`)
-        if(nextVal.tails.optional) tokens.push(`    x${lastPrefix} --> [*]: ε`)
+        if(nextVal.tails.optional) tokens.push(`  x${lastPrefix} -> end [label="ε"];`)
         stack.push(nextVal)
       }
     }
@@ -157,7 +152,7 @@ const mobydick_file = path.join(__dirname,"mobydick.stripped.txt")
        */
   }
   //console.log(tokens.join("\n"))
-  await fs.writeFile(path.join(__dirname,"mobyDick.mmd"),[...headerParts, ...stateDefs, ...transitions].join("\n"),{encoding:"utf8"})
+  await fs.writeFile(path.join(__dirname,"mobyDick.gv"),[...headerParts, ...transitions, "}"].join("\n"),{encoding:"utf8"})
   
   /**
    OLD
