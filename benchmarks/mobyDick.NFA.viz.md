@@ -1,5 +1,9 @@
 # Visualizing MASSIVE NFA State Machines for Shakespeare (66MB SVG) and Moby Dick (44MB SVG) Unique Words by Compiling from Adaptive Radix Tree (ART) to GraphViz
 
+* [YouTube Demo of the SVGs]()
+* [MobyDick SVG on GitHub](https://github.com/dvanderweele/ART/blob/main/benchmarks/mobyDick.svg)
+* [Shakespeare SVG on GitHub](https://github.com/dvanderweele/ART/blob/main/benchmarks/shakespeare.svg)
+
 After the initial release of my [JavaScript Adaptive Radix Tree project](https://dvanderweele.com/how-i-built-an-adaptive-radix-tree-compound-key-index-latin1-collation-regex-compiler-and-183kb-regex-pattern-for-the-complete-works-of-shakespeare-all-in-javascript) where we compiled massive regular expressions that match all the unique words in Moby Dick and the Complete Works of Shakespeare, I was mulling over diagram-as-code options for planning future projects.
 
 I happened upon [Mermaid.js State Diagrams](https://mermaid.js.org/syntax/stateDiagram.html). This would seem to be exactly what I was after! The label on the tin hits a lot of notes:
@@ -23,7 +27,7 @@ That's seriously disappointing. Let's say I don't want something resource- or ti
 
 Wow! I guess that means Mermaid is doing some really fancy and excellent things. So I plan on using my laptop for the build and meanwhile move on with development.
 
-The Mermaid documentation, while giving some syntax examples, does not appear to have actual BNF or other grammar. It's not the end of the world but it does require some more elbow grease to derive correct syntax in some cases. It did not prevent me from ultimately producing a valid `.mmd` file for mermaid-cli, but I did learn that for some reason it's not possible syntax-wise in this framework to define vertices in same command that you defined labelled transitions between them. 
+The Mermaid documentation, while giving some syntax examples, does not appear to have actual BNF or other grammar. It's not the end of the world but it does require some more elbow grease to derive correct syntax in some cases. It did not prevent me from ultimately producing a valid `.mmd` file for mermaid-cli. 
 
 Finally, it was the moment of truth. I had compiled my `.mmd` file of commands from the intermediate result returned by my Adaptive Radix Tree's `toRegex` method. The resulting file was in the neighborhood of 3MB in size. I was ready to run the mermaid-cli to compile an epic SVG.
 
@@ -46,7 +50,7 @@ While it was still running, I looked into alternate options.
 GraphViz has a number of things going for it.
 
 * It works easily on ARM64 and is even installable through Termux `pkg` manager
-* Evidently it's faster for algorithmic reasons and also written in C
+* According to low-effort web research, it's faster for algorithmic reasons and also written in C
 * No messing around, they are literally just putting rule grammars in the documentation.
 * The syntax is quite similar to Mermaid but you evidently don't have to define your vertices separately from transitions.
 
@@ -60,7 +64,7 @@ The SVG for the NFA which recognizes all the words in Moby Dick is around 44MB i
 
 The SVG for the Complete Works of Shakespeare NFA (compiled after Moby Dick) is about 66MB. Actually, it took more than 4 hours to complete in Termux (with full battery and mostly plugged in, too); since the file sizes are not even greater by a factor of two, this to me indicates even the GraphViz algorithms are superlinear somehow in terms of time complexity. However, clearly far faster than Mermaid. The aspect ratio for the Shakespeare SVG is about 1×328, or more than 1.25 American football fields if printed on an a 1-foot tall banner.
 
-And so it is hard to really get a proper view of these huge SVGs in any medium, but I found LibreOffice Draw as usual just works for this random need I had.
+And so it is hard to really get a proper view of these huge state machine diagrams in any medium, but I found LibreOffice Draw as usual just works for this random need I had.
 
 These extreme aspect ratios are a testament to one of the chief advantages of trie data structures and also trie-style NFAs (trie regexes) for recognizing natural language words. That is, the height of the data structures, and therefore time required for membership tests, is limited to the length of words stored therein. As additional words are added, primarily the data structures keep growing horizontally.
 
